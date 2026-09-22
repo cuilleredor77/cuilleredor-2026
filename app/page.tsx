@@ -733,45 +733,6 @@ export default function Home() {
           </p>
         </div>
         <CatalogueTabs
-          aperitifs={
-            <div className="signature">
-              <div className="signature-photo">
-                <ResponsiveImage
-                  base="/plantains"
-                  sizes="(max-width: 720px) 100vw, 42vw"
-                  width={900}
-                  height={600}
-                  alt="Assiette de bananes plantains dressée par Cuillère d'Or"
-                />
-                <div className="photo-caption">
-                  <span>Vin d’honneur</span>
-                  <strong>30 créations au choix</strong>
-                </div>
-              </div>
-              <div className="signature-content">
-                <h3>Composez votre vin d’honneur</h3>
-                <p>
-                  Choisissez 10 pièces parmi nos créations salées et sucrées. 4
-                  cocktails signature complètent la formule.
-                </p>
-                <div className="aperitif-price">
-                  <strong>25 €</strong>
-                  <span>par personne · tarif unique</span>
-                </div>
-                <a
-                  className="signature-menu-link"
-                  href="#carte"
-                  data-select-formula="aperitifs"
-                  data-formula-target="menu"
-                >
-                  Découvrir les 30 créations <ArrowRight size={16} />
-                </a>
-                <p className="season-note">
-                  La sphère de foie gras est disponible de décembre à mars.
-                </p>
-              </div>
-            </div>
-          }
           plats={
             <div className="menu-showcase">
               <div className="section-heading">
