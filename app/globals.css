@@ -5423,6 +5423,12 @@ footer {
   .footer-copy {
     grid-column: 1/-1;
   }
+  .contact {
+    padding: 72px 40px;
+  }
+  .contact address {
+    padding: 28px;
+  }
 }
 @media (max-width: 720px) {
   footer {
