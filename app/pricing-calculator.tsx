@@ -493,7 +493,7 @@ export default function PricingCalculator() {
             }
           />
           <small className="calculator-field-help">
-            Repas adapté aux 3-12 ans · 20 €/personne.
+            Repas adapté aux 5-12 ans · 20 €/personne.
           </small>
         </label>
         <label>
