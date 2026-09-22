@@ -647,15 +647,18 @@ export default function Home() {
             Choisissez d’abord le style de réception. Vous estimerez le budget
             avant de composer le menu.
           </p>
-          <ol className="journey-steps journey-three">
+          <ol className="journey-steps">
             <li className="active">
               <span>01</span>Choisir
             </li>
             <li>
-              <span>02</span>Construire
+              <span>02</span>Découvrir
             </li>
             <li>
-              <span>03</span>Devis
+              <span>03</span>Construire
+            </li>
+            <li>
+              <span>04</span>Devis
             </li>
           </ol>
         </div>

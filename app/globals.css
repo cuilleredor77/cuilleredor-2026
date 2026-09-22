@@ -6241,9 +6241,6 @@ footer {
 }
 
 /* Parcours simplifié : trois moments visibles, détails à la demande */
-.journey-steps.journey-three {
-  grid-template-columns: repeat(3, 1fr);
-}
 .all-pricing-grids {
   margin: 24px 0 28px;
   border: 1px solid #d8cdbd;
@@ -6366,9 +6363,6 @@ html[data-selected-formula="brunch"]
 html[data-commercial-formula="buffet"] .formula-menu-list>[data-menu-formula="buffet"] summary strong:before,html[data-commercial-formula="plateau"] .formula-menu-list>[data-menu-formula="plateau"] summary strong:before,html[data-commercial-formula="assiette"] .formula-menu-list>[data-menu-formula="assiette"] summary strong:before,html[data-commercial-formula="aperitifs"] .formula-menu-list>[data-menu-formula="aperitifs"] summary strong:before,html[data-commercial-formula="brunch"] .formula-menu-list>[data-menu-formula="brunch"] summary strong:before{content:"Votre ";color:#fff}
 html[data-commercial-formula="buffet"] .formula-menu-list>[data-menu-formula="buffet"] .formula-choose-cta,html[data-commercial-formula="plateau"] .formula-menu-list>[data-menu-formula="plateau"] .formula-choose-cta,html[data-commercial-formula="assiette"] .formula-menu-list>[data-menu-formula="assiette"] .formula-choose-cta,html[data-commercial-formula="aperitifs"] .formula-menu-list>[data-menu-formula="aperitifs"] .formula-choose-cta,html[data-commercial-formula="brunch"] .formula-menu-list>[data-menu-formula="brunch"] .formula-choose-cta{display:none}
 @media (max-width: 720px) {
-  .journey-steps.journey-three {
-    grid-template-columns: 1fr;
-  }
   .all-pricing-grids > summary {
     grid-template-columns: 1fr 34px;
   }
