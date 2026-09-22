@@ -54,6 +54,13 @@ const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
+    // The dev server (vite serving unbundled source files) doesn't set
+    // production-grade content-type headers, so `nosniff` + CSP there break
+    // things like raw .css requests. Only harden real deployments.
+    const applyHeaders = import.meta.env.PROD
+      ? withSecurityHeaders
+      : (response: Response) => response;
+
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
       const response = await handleImageOptimization(request, {
@@ -63,10 +70,10 @@ const worker = {
           return result.response();
         },
       }, allowedWidths);
-      return withSecurityHeaders(response);
+      return applyHeaders(response);
     }
 
-    return withSecurityHeaders(await handler.fetch(request, env, ctx));
+    return applyHeaders(await handler.fetch(request, env, ctx));
   },
 };
 

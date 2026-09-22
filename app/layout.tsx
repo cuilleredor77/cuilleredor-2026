@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-const SITE_URL = "https://cuillere-dor-catalogue-2026.cuilleredor4.workers.dev";
+const SITE_URL = import.meta.env.PROD
+  ? "https://cuillere-dor-catalogue-2026.cuilleredor4.workers.dev"
+  : "http://localhost:5173";
 const TITLE = "Cuillère d’Or | Traiteur événementiel - Catalogue 2026";
 const DESCRIPTION =
   "Composez votre réception avec Cuillère d’Or : vin d’honneur, buffet, plateau, service à l’assiette et Brunch Signature. Tarifs 2026 et devis personnalisé.";
