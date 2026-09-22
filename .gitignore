@@ -42,3 +42,6 @@ next-env.d.ts
 
 # scratch / extraction working files
 /tmp/
+
+# TypeScript incremental build cache
+*.tsbuildinfo
