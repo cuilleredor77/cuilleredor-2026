@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "cuillere-dor-catalogue-2026",
+  "name": "cuilleredor-2026",
   "account_id": "651db20122876c236858642c74c09c5d",
   "main": "./dist/server/index.js",
   "compatibility_date": "2026-05-22",

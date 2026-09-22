@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://cuillere-dor-catalogue-2026.cuilleredor4.workers.dev/</loc>
+    <loc>https://cuilleredor-2026.cuilleredor4.workers.dev/</loc>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://cuillere-dor-catalogue-2026.cuilleredor4.workers.dev/mentions-legales</loc>
+    <loc>https://cuilleredor-2026.cuilleredor4.workers.dev/mentions-legales</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://cuillere-dor-catalogue-2026.cuilleredor4.workers.dev/politique-confidentialite</loc>
+    <loc>https://cuilleredor-2026.cuilleredor4.workers.dev/politique-confidentialite</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
