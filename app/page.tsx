@@ -426,24 +426,9 @@ const faqItems = [
       "Comparez les 5 formules dans la section « Nos formules » : chacune précise son ambiance et son budget. Si vous hésitez entre deux options, écrivez-nous sur WhatsApp. Nous vous conseillerons selon le nombre de convives et le style de votre réception.",
   },
   {
-    question: "Que comprend le vin d’honneur ?",
-    answer:
-      "Le vin d’honneur comprend 10 pièces cocktail salées et sucrées, 4 cocktails signature au choix et le service pendant toute sa durée.",
-  },
-  {
     question: "À partir de combien de convives intervenez-vous ?",
     answer:
       "Nos prestations sont accessibles à partir de 10 participants, adultes, enfants et prestataires compris.",
-  },
-  {
-    question: "Le menu peut-il être personnalisé ?",
-    answer:
-      "Oui. Nous adaptons votre sélection aux allergies, intolérances, régimes spécifiques et préférences culturelles. Signalez ces besoins dès la demande de devis afin que nous puissions vous proposer les alternatives adaptées.",
-  },
-  {
-    question: "Qu’est-ce qui est inclus dans le prix ?",
-    answer:
-      "Selon la formule retenue : installation de l’équipe, mise en place de l’espace traiteur, présentation des plats, service, réapprovisionnement, débarrassage et nettoyage de l’espace traiteur. Les options et frais de déplacement sont indiqués séparément dans le devis.",
   },
   {
     question: "Comment réserver une date ?",
@@ -466,6 +451,21 @@ const faqItems = [
       "Toute annulation doit être formulée par écrit. Plus de 90 jours avant l’événement, l’acompte reste acquis. Entre 30 et 90 jours, 50 % du montant total est dû. À moins de 30 jours, la totalité de la prestation est due.",
   },
   {
+    question: "Que comprend le vin d’honneur ?",
+    answer:
+      "Le vin d’honneur comprend 10 pièces cocktail salées et sucrées, 4 cocktails signature au choix et le service pendant toute sa durée.",
+  },
+  {
+    question: "Le menu peut-il être personnalisé ?",
+    answer:
+      "Oui. Nous adaptons votre sélection aux allergies, intolérances, régimes spécifiques et préférences culturelles. Signalez ces besoins dès la demande de devis afin que nous puissions vous proposer les alternatives adaptées.",
+  },
+  {
+    question: "Qu’est-ce qui est inclus dans le prix ?",
+    answer:
+      "Selon la formule retenue : installation de l’équipe, mise en place de l’espace traiteur, présentation des plats, service, réapprovisionnement, débarrassage et nettoyage de l’espace traiteur. Les options et frais de déplacement sont indiqués séparément dans le devis.",
+  },
+  {
     question: "Quand transmettre le déroulé de l’événement ?",
     answer:
       "Idéalement 4 à 6 semaines avant la réception : horaires clés, plan de table si nécessaire, animations, discours et temps forts. Des ajustements restent possibles jusqu’à deux semaines avant l’événement.",
@@ -486,6 +486,7 @@ const faqItems = [
       "La dégustation se réserve sur rendez-vous et permet de goûter une sélection représentative, d’affiner le menu et d’échanger avec la cheffe. Elle est proposée à 70 € par personne, non déductibles du devis final. Une box à domicile peut également être étudiée sur demande.",
   },
 ];
+const FAQ_VISIBLE_COUNT = 5;
 
 export default function Home() {
   return (
@@ -628,7 +629,7 @@ export default function Home() {
               <MapPin size={16} /> Laboratoire · 29 rue de Montgeron, Brunoy
             </p>
             <a href="#devis">
-              Parler de votre réception <ArrowRight size={15} />
+              Demander un devis <ArrowRight size={15} />
             </a>
           </div>
         </div>
@@ -780,7 +781,7 @@ export default function Home() {
                   href="#menu-aperitifs"
                   data-catalogue-tab="plats"
                 >
-                  Voir les 30 créations <ArrowRight size={16} />
+                  Découvrir les 30 créations <ArrowRight size={16} />
                 </a>
                 <p className="season-note">
                   Toutes les pièces sont proposées au même tarif. La sphère de
@@ -797,7 +798,7 @@ export default function Home() {
               </div>
               <details className="formula-switcher">
                 <summary>
-                  Voir une autre formule <b aria-hidden="true">+</b>
+                  Changer de formule <b aria-hidden="true">+</b>
                 </summary>
                 <div>
                   <a
@@ -1162,7 +1163,7 @@ export default function Home() {
           </div>
         </div>
         <div className="faq-list">
-          {faqItems.map((item, index) => (
+          {faqItems.slice(0, FAQ_VISIBLE_COUNT).map((item, index) => (
             <details key={item.question}>
               <summary>
                 <span>{String(index + 1).padStart(2, "0")}</span>
@@ -1179,6 +1180,33 @@ export default function Home() {
               )}
             </details>
           ))}
+          <details className="faq-more">
+            <summary>
+              <span aria-hidden="true" />
+              Voir les {faqItems.length - FAQ_VISIBLE_COUNT} autres questions
+            </summary>
+            <div className="faq-more-list">
+              {faqItems.slice(FAQ_VISIBLE_COUNT).map((item, index) => (
+                <details key={item.question}>
+                  <summary>
+                    <span>
+                      {String(index + 1 + FAQ_VISIBLE_COUNT).padStart(2, "0")}
+                    </span>
+                    {item.question}
+                  </summary>
+                  {item.lines ? (
+                    <ul>
+                      {item.lines.map((line) => (
+                        <li key={line}>{line}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>{item.answer}</p>
+                  )}
+                </details>
+              ))}
+            </div>
+          </details>
         </div>
       </section>
 

@@ -1624,8 +1624,20 @@ footer {
   font-size: 1.35rem;
   font-weight: 300;
 }
-.faq-list details[open] summary:after {
+.faq-list details[open] > summary:after {
   content: "−";
+}
+.faq-list > details.faq-more {
+  grid-column: 1 / -1;
+}
+.faq-more-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 4vw;
+  border-top: 1px solid var(--line);
+}
+.faq-more-list details:last-child {
+  border-bottom: none;
 }
 .faq-list details p {
   margin: 0;
@@ -1731,7 +1743,8 @@ footer {
 }
 @media (max-width: 720px) {
   .faq-heading,
-  .faq-list {
+  .faq-list,
+  .faq-more-list {
     grid-template-columns: 1fr;
   }
   .faq-heading {

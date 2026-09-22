@@ -523,7 +523,7 @@ export default function PricingCalculator() {
           }
           onClick={requestQuote}
         >
-          Recevoir mon devis personnalisé <ArrowRight size={17} />
+          Demander mon devis personnalisé <ArrowRight size={17} />
         </a>
       </div>
       <p className="calculator-disclaimer">
