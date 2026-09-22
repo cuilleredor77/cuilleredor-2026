@@ -142,15 +142,15 @@ const offers = [
   {
     number: "02",
     title: "Plateau",
-    tone: "Pratique & professionnel",
+    tone: "Fluide & confortable",
     image: "/realisation",
     imageAlt: "Sélection de plats Cuillère d’Or présentée sur plateaux",
     description:
-      "Un plateau-repas individuel, apporté à table sans interrompre les échanges.",
+      "Le menu du buffet, présenté sur plateaux et apporté à table, sans interrompre les échanges entre convives.",
     firstLabel: "Composition",
-    firstValue: "Entrée · plat · dessert · pain · eau",
+    firstValue: "2 viandes · 2 poissons · 4 accompagnements · 1 légume",
     secondLabel: "Idéal pour",
-    secondValue: "Réunions, séminaires et événements professionnels",
+    secondValue: "Réception élégante avec un service fluide",
     price: "35 à 50 €",
     suffix: "/ personne",
     cta: "Choisir Plateau",
@@ -164,7 +164,7 @@ const offers = [
     description:
       "Chaque assiette est dressée et servie individuellement, au rythme de votre réception.",
     firstLabel: "Composition",
-    firstValue: "Entrée · plat · accompagnement · légume · dessert",
+    firstValue: "Entrée · plat · garniture · dessert",
     secondLabel: "Idéal pour",
     secondValue: "Mariage, dîner de gala et réception formelle",
     price: "60 à 70 €",
@@ -184,7 +184,7 @@ const offers = [
     secondLabel: "Idéal pour",
     secondValue: "Vin d’honneur, cocktail et événement d’entreprise",
     price: "25 €",
-    suffix: "/ personne",
+    suffix: "/ personne · dès 30 convives",
     cta: "Choisir Apéritifs",
   },
   {
@@ -201,7 +201,7 @@ const offers = [
     secondLabel: "Idéal pour",
     secondValue: "Lendemains de mariage et réceptions familiales en journée",
     price: "30 €",
-    suffix: "/ personne · dès 10 convives",
+    suffix: "/ personne · dès 30 convives",
     cta: "Choisir Brunch Signature",
     href: "#formulaire-brunch",
   },
@@ -426,7 +426,7 @@ const faqItems = [
   {
     question: "À partir de combien de convives intervenez-vous ?",
     answer:
-      "Nos prestations sont accessibles à partir de 10 participants, adultes, enfants et prestataires compris.",
+      "Nos prestations sont accessibles à partir de 10 participants, adultes, enfants et prestataires compris (30 convives minimum pour le vin d’honneur et le Brunch Signature).",
   },
   {
     question: "Comment réserver une date ?",
@@ -783,9 +783,7 @@ export default function Home() {
                   Découvrir les 30 créations <ArrowRight size={16} />
                 </a>
                 <p className="season-note">
-                  Certaines créations salées premium (dont la sphère de foie
-                  gras) peuvent entraîner un supplément. La sphère de foie
-                  gras est disponible de décembre à mars.
+                  La sphère de foie gras est disponible de décembre à mars.
                 </p>
               </div>
             </div>
@@ -918,9 +916,8 @@ export default function Home() {
                       </div>
                     </details>
                     <p className="formula-menu-note menu-season-note">
-                      Certaines créations salées premium (dont la sphère de
-                      foie gras) peuvent entraîner un supplément. La sphère de
-                      foie gras est disponible de décembre à mars.
+                      La sphère de foie gras est disponible de décembre à
+                      mars.
                     </p>
                   </div>
                 </details>
@@ -930,15 +927,15 @@ export default function Home() {
                     <div>
                       <strong>Plateau</strong>
                       <small>
-                        Entrée · plat · dessert · pain · eau
+                        2 viandes · 2 poissons · 4 accompagnements · 1 légume
                       </small>
                     </div>
                     <b aria-hidden="true">+</b>
                   </summary>
                   <div className="formula-menu-body">
                     <p className="formula-menu-note">
-                      Un plateau-repas individuel : entrée, plat et dessert,
-                      servis avec pain et eau.
+                      Le menu du buffet, présenté sur plateaux et apporté à
+                      table.
                     </p>
                     <a
                       className="formula-choose-cta"
@@ -953,7 +950,7 @@ export default function Home() {
                         Découvrir les plats <b aria-hidden="true">+</b>
                       </summary>
                       <div className="formula-menu-categories">
-                        {platedCategories.map((category) => (
+                        {buffetCategories.map((category) => (
                           <MenuCategory
                             key={`plateau-${category.title}`}
                             category={category}
@@ -970,7 +967,7 @@ export default function Home() {
                     <div>
                       <strong>Service à l’assiette</strong>
                       <small>
-                        Entrée · plat · garniture · légume · dessert
+                        Entrée · plat · garniture · dessert
                       </small>
                     </div>
                     <b aria-hidden="true">+</b>

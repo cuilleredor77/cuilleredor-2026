@@ -24,6 +24,13 @@ const services: Record<Formula, Array<{ value: Service; label: string }>> = {
   aperitifs: [{ value: "avec-vin", label: "Vin d’honneur inclus" }],
   brunch: [{ value: "sans-vin", label: "Brunch Signature" }],
 };
+const MIN_GUESTS: Record<Formula, number> = {
+  buffet: 10,
+  plateau: 10,
+  assiette: 10,
+  aperitifs: 30,
+  brunch: 30,
+};
 const formulaNames: Record<Formula, string> = {
   buffet: "Buffet",
   plateau: "Plateau",
@@ -34,10 +41,7 @@ const formulaNames: Record<Formula, string> = {
 
 function unitPrice(formula: Formula, guests: number, service: Service) {
   if (formula === "aperitifs") return 25;
-  if (formula === "brunch") {
-    if (guests >= 350) return null;
-    return guests < 200 ? 30 : 25;
-  }
+  if (formula === "brunch") return 30;
   if (formula === "assiette") {
     if (guests >= 350) return null;
     return guests < 200
@@ -294,19 +298,25 @@ export default function PricingCalculator() {
     mealTotal === null ? null : mealTotal + optionsTotal;
   const selectedService =
     services[formula].find((item) => item.value === service)?.label || "";
+  const minGuests = MIN_GUESTS[formula];
 
   function changeFormula(next: Formula) {
     setFormula(next);
     setService(services[next][0].value);
+    const nextMin = MIN_GUESTS[next];
+    if (guests < nextMin) {
+      setGuests(nextMin);
+      setGuestError("");
+    }
     window.dispatchEvent(
       new CustomEvent<Formula>("cuillere:formula", { detail: next }),
     );
   }
   function changeGuests(rawValue: string) {
     const value = Number(rawValue);
-    if (!Number.isFinite(value) || value < 10) {
-      setGuests(10);
-      setGuestError("Le minimum est de 10 adultes.");
+    if (!Number.isFinite(value) || value < minGuests) {
+      setGuests(minGuests);
+      setGuestError(`Le minimum est de ${minGuests} adultes.`);
     } else if (value > 1000) {
       setGuests(1000);
       setGuestError(
@@ -378,7 +388,7 @@ export default function PricingCalculator() {
           <span>Adultes</span>
           <input
             type="number"
-            min="10"
+            min={minGuests}
             max="1000"
             inputMode="numeric"
             value={guests}
@@ -392,7 +402,7 @@ export default function PricingCalculator() {
               guestError ? "calculator-field-error" : "calculator-field-help"
             }
           >
-            {guestError || "Entre 10 et 1 000 adultes."}
+            {guestError || `Entre ${minGuests} et 1 000 adultes.`}
           </small>
         </label>
         <label>
