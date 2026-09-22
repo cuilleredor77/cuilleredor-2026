@@ -137,7 +137,7 @@ const offers = [
     secondValue: "Tarifs dégressifs pour les grandes réceptions",
     price: "à partir de 35 €",
     suffix: "/ personne · 10 à 199 convives",
-    cta: "Choisir Buffet",
+    cta: "Choisir le buffet",
   },
   {
     number: "02",
@@ -153,7 +153,7 @@ const offers = [
     secondValue: "Réception élégante avec un service fluide",
     price: "35 à 50 €",
     suffix: "/ personne",
-    cta: "Choisir Plateau",
+    cta: "Choisir le plateau",
   },
   {
     number: "03",
@@ -169,7 +169,7 @@ const offers = [
     secondValue: "Mariage, dîner de gala et réception formelle",
     price: "60 à 70 €",
     suffix: "/ personne",
-    cta: "Choisir À l’assiette",
+    cta: "Choisir le service à l’assiette",
   },
   {
     number: "04",
@@ -185,7 +185,7 @@ const offers = [
     secondValue: "Vin d’honneur, cocktail et événement d’entreprise",
     price: "25 €",
     suffix: "/ personne · dès 30 convives",
-    cta: "Choisir Apéritifs",
+    cta: "Choisir les apéritifs",
   },
   {
     number: "05",
@@ -202,7 +202,7 @@ const offers = [
     secondValue: "Lendemains de mariage et réceptions familiales en journée",
     price: "30 €",
     suffix: "/ personne · dès 30 convives",
-    cta: "Choisir Brunch Signature",
+    cta: "Choisir le brunch",
     href: "#formulaire-brunch",
   },
 ];
@@ -554,8 +554,8 @@ export default function Home() {
             moment vraiment à part.
           </p>
           <div className="hero-actions">
-            <a className="button button-gold" href="#devis">
-              Demander un devis <ArrowRight size={17} />
+            <a className="button button-gold" href="#calculateur">
+              Estimer mon événement <ArrowRight size={17} />
             </a>
             <a
               className="button button-ghost"

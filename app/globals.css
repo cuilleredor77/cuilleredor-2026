@@ -5978,6 +5978,95 @@ footer {
   font-size: 0.75rem;
   line-height: 1.5;
 }
+.calculator-body {
+  display: block;
+}
+.calculator-summary-sticky {
+  margin-top: 24px;
+}
+@media (min-width: 1024px) {
+  .calculator-body {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 32px;
+    position: relative;
+  }
+  .calculator-summary-sticky {
+    margin-top: 0;
+  }
+  .calculator-summary-sticky .calculator-initial-result {
+    grid-template-columns: 1fr;
+  }
+  .calculator-summary-sticky .calculator-initial-actions {
+    width: 100%;
+    align-items: stretch;
+  }
+  .calculator-summary-sticky .calculator-quote-cta,
+  .calculator-summary-sticky .calculator-secondary-link {
+    justify-content: center;
+  }
+}
+.calculator-mobile-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: #171715;
+  color: #fff;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18);
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+.calculator-mobile-bar.is-visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.calculator-mobile-bar span {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+.calculator-mobile-bar strong {
+  color: var(--gold-bright, #d4af37);
+  font-size: 1rem;
+}
+.calculator-mobile-bar a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 10px 16px;
+  background: var(--gold-bright, #d4af37);
+  color: #171715;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+@media (min-width: 1024px) {
+  .calculator-mobile-bar {
+    display: none;
+  }
+}
+.pricing-tier-note {
+  margin: 0;
+  padding: 12px 22px;
+  color: #665b45;
+  background: #fffaf0;
+  border-top: 1px solid var(--line);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
 .pricing-tier-note {
   margin: 0;
   padding: 12px 22px;

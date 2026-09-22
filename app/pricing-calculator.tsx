@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, ListChecks } from "lucide-react";
 
 type Formula = "buffet" | "plateau" | "assiette" | "aperitifs" | "brunch";
@@ -228,6 +228,10 @@ function optionAmount(
 }
 
 export default function PricingCalculator() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
+  const [mobileBarVisible, setMobileBarVisible] = useState(false);
   const [formula, setFormula] = useState<Formula>("buffet");
   const [guests, setGuests] = useState(100);
   const [service, setService] = useState<Service>("avec-vin");
@@ -246,6 +250,65 @@ export default function PricingCalculator() {
     };
     window.addEventListener("cuillere:formula", syncFormula);
     return () => window.removeEventListener("cuillere:formula", syncFormula);
+  }, []);
+  useEffect(() => {
+    const node = rootRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setMobileBarVisible(entry.isIntersecting),
+      { rootMargin: "-72px 0px -72px 0px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    const HEADER_OFFSET = 106;
+    const DESKTOP_MIN_WIDTH = 1024;
+    function update() {
+      const body = bodyRef.current;
+      const summary = summaryRef.current;
+      if (!body || !summary) return;
+      if (window.innerWidth < DESKTOP_MIN_WIDTH) {
+        summary.style.position = "";
+        summary.style.top = "";
+        summary.style.left = "";
+        summary.style.right = "";
+        summary.style.bottom = "";
+        summary.style.width = "";
+        return;
+      }
+      const bodyRect = body.getBoundingClientRect();
+      const width = summary.offsetWidth || 360;
+      const height = summary.offsetHeight;
+      if (bodyRect.top > HEADER_OFFSET) {
+        summary.style.position = "";
+        summary.style.top = "";
+        summary.style.left = "";
+        summary.style.right = "";
+        summary.style.bottom = "";
+        summary.style.width = "";
+      } else if (bodyRect.bottom < HEADER_OFFSET + height) {
+        summary.style.position = "absolute";
+        summary.style.top = "auto";
+        summary.style.bottom = "0";
+        summary.style.right = "0";
+        summary.style.left = "auto";
+        summary.style.width = `${width}px`;
+      } else {
+        summary.style.position = "fixed";
+        summary.style.top = `${HEADER_OFFSET}px`;
+        summary.style.bottom = "auto";
+        summary.style.left = `${bodyRect.right - width}px`;
+        summary.style.width = `${width}px`;
+      }
+    }
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
   }, []);
 
   function setOptionValue(id: string, value: number) {
@@ -359,7 +422,12 @@ export default function PricingCalculator() {
   }
 
   return (
-    <div className="pricing-calculator" id="calculateur" aria-labelledby="calculator-title">
+    <div
+      ref={rootRef}
+      className="pricing-calculator"
+      id="calculateur"
+      aria-labelledby="calculator-title"
+    >
       <div className="calculator-heading">
         <div>
           <span>Estimation personnalisée</span>
@@ -370,6 +438,8 @@ export default function PricingCalculator() {
           immédiatement un ordre de budget.
         </p>
       </div>
+      <div className="calculator-body" ref={bodyRef}>
+      <div className="calculator-main">
       <div className="calculator-controls">
         <label>
           <span>Votre formule</span>
@@ -553,6 +623,8 @@ export default function PricingCalculator() {
         </div>
       </details>
 
+      </div>
+      <div className="calculator-summary-sticky" ref={summaryRef}>
       <div className="calculator-initial-result" aria-live="polite">
         <div>
           <span>Votre réception</span>
@@ -595,6 +667,32 @@ export default function PricingCalculator() {
         Estimation non contractuelle. Le déplacement et le détail du devis
         sont calculés avec vous à partir de votre demande.
       </p>
+      </div>
+      </div>
+      <div
+        className={`calculator-mobile-bar${mobileBarVisible ? " is-visible" : ""}`}
+        aria-hidden={!mobileBarVisible}
+      >
+        <span>
+          Estimation :{" "}
+          <strong>
+            {estimatedTotal === null
+              ? "Sur devis"
+              : `${estimatedTotal.toLocaleString("fr-FR", { minimumFractionDigits: estimatedTotal % 1 ? 2 : 0 })} €`}
+          </strong>
+        </span>
+        <a
+          href={
+            formula === "brunch"
+              ? "#formulaire-brunch"
+              : "#formulaire-evenement"
+          }
+          onClick={requestQuote}
+          tabIndex={mobileBarVisible ? 0 : -1}
+        >
+          Continuer <ArrowRight size={16} />
+        </a>
+      </div>
     </div>
   );
 }
