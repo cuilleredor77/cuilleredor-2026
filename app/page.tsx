@@ -542,6 +542,9 @@ export default function Home() {
         <div className="hero-content">
           <p className="eyebrow">Service traiteur · Catalogue 2026</p>
           <h1>
+            <span className="sr-only">
+              Traiteur événementiel en Île-de-France —{" "}
+            </span>
             Le goût en
             <br />
             <em>signature.</em>
