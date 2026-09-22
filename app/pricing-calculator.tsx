@@ -233,7 +233,7 @@ export default function PricingCalculator() {
   const summaryRef = useRef<HTMLDivElement>(null);
   const [mobileBarVisible, setMobileBarVisible] = useState(false);
   const [formula, setFormula] = useState<Formula>("buffet");
-  const [guests, setGuests] = useState(100);
+  const [guests, setGuests] = useState(MIN_GUESTS.buffet);
   const [service, setService] = useState<Service>("avec-vin");
   const [children, setChildren] = useState(0);
   const [providers, setProviders] = useState(0);
