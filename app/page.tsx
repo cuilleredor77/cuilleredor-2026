@@ -1102,19 +1102,6 @@ export default function Home() {
         />
       </section>
 
-      <section className="personalisation section-pad" id="personnaliser">
-        <div className="pricing-heading">
-          <p className="eyebrow dark">Déplacement</p>
-          <h2>
-            Les détails qui font
-            <br />
-            <em>la différence.</em>
-          </h2>
-          <p>Ajoutez le déplacement séparément du prix de la formule.</p>
-        </div>
-        <div id="personalisation-calculateur" />
-      </section>
-
       <section className="quote-path section-pad" id="devis">
         <div className="quote-heading">
           <div>

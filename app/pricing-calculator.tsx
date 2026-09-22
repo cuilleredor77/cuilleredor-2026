@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
-import { ArrowRight, ExternalLink, MapPin } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 type Formula = "buffet" | "plateau" | "assiette" | "aperitifs" | "brunch";
 type Service = "avec-vin" | "sans-vin" | "sans-service";
@@ -55,23 +54,12 @@ function unitPrice(formula: Formula, guests: number, service: Service) {
 }
 
 export default function PricingCalculator() {
-  const [personalisationTarget, setPersonalisationTarget] =
-    useState<HTMLElement | null>(null);
   const [formula, setFormula] = useState<Formula>("buffet");
   const [guests, setGuests] = useState(100);
   const [service, setService] = useState<Service>("avec-vin");
   const [children, setChildren] = useState(0);
   const [providers, setProviders] = useState(0);
-  const [eventAddress, setEventAddress] = useState("");
-  const [roundTripKm, setRoundTripKm] = useState(0);
   const [guestError, setGuestError] = useState("");
-  useEffect(
-    () =>
-      setPersonalisationTarget(
-        document.getElementById("personalisation-calculateur"),
-      ),
-    [],
-  );
   useEffect(() => {
     const syncFormula = (event: Event) => {
       const next = (event as CustomEvent<Formula>).detail;
@@ -88,18 +76,10 @@ export default function PricingCalculator() {
     [formula, totalGuests, service],
   );
   const mealTotal = price === null ? null : price * guests;
-  const optionsTotal = 50 + children * 20 + providers * 20;
-  const travelTotal = roundTripKm * 1.7;
   const estimatedTotal =
-    mealTotal === null ? null : mealTotal + optionsTotal + travelTotal;
-  const firstEstimate =
     mealTotal === null ? null : mealTotal + children * 20 + providers * 20 + 50;
   const selectedService =
     services[formula].find((item) => item.value === service)?.label || "";
-  const origin = "8 Allée des Bois, 77240 Vert-Saint-Denis, France";
-  const mapsUrl = eventAddress.trim()
-    ? `https://www.google.com/maps/dir/${encodeURIComponent(origin)}/${encodeURIComponent(eventAddress.trim())}/${encodeURIComponent(origin)}/`
-    : `https://www.google.com/maps/dir/${encodeURIComponent(origin)}/`;
   const optionLines: Array<{ label: string; amount: number }> = [
     { label: "Gestion des déchets", amount: 50 },
   ];
@@ -151,7 +131,7 @@ export default function PricingCalculator() {
             service: selectedService,
             options: optionLines.map((line) => line.label).join(" · "),
             total: estimatedTotal,
-            travelIncluded: roundTripKm > 0,
+            travelIncluded: false,
           },
         },
       }),
@@ -162,287 +142,151 @@ export default function PricingCalculator() {
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  const personalisationPanel = (
-    <div className="pricing-calculator personalization-calculator">
-      <div className="calculator-travel">
-        <div className="calculator-travel-heading">
-          <MapPin size={20} />
-          <div>
-            <span>Frais de déplacement</span>
-            <h4>Calculez la distance aller-retour</h4>
-            <p>Départ et retour : 8 allée des Bois, 77240 Vert-Saint-Denis.</p>
-          </div>
+  return (
+    <div className="pricing-calculator" id="calculateur" aria-labelledby="calculator-title">
+      <div className="calculator-heading">
+        <div>
+          <span>Estimation personnalisée</span>
+          <h3 id="calculator-title">Calculez votre réception</h3>
         </div>
-        <div className="calculator-travel-controls">
-          <label className="calculator-address">
-            <span>Adresse de l’événement</span>
-            <input
-              type="text"
-              value={eventAddress}
-              onChange={(e) => setEventAddress(e.target.value)}
-              placeholder="Ex. La Réthorée, 77120 Giremoutiers"
-            />
-          </label>
-          <a
-            className="calculator-maps-link"
-            href={mapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Voir l’aller-retour sur Google Maps <ExternalLink size={15} />
-          </a>
-          <label className="calculator-km">
-            <span>Distance totale aller-retour</span>
-            <div>
-              <input
-                type="number"
-                min="0"
-                step="1"
-                inputMode="decimal"
-                value={roundTripKm || ""}
-                onChange={(e) =>
-                  setRoundTripKm(Math.max(0, Number(e.target.value) || 0))
-                }
-                placeholder="0"
-              />
-              <strong>km AR</strong>
-            </div>
-          </label>
-        </div>
-        <p className="calculator-travel-help">
-          Tarif appliqué : <strong>1,70 € / km aller-retour</strong>.
+        <p>
+          Choisissez la formule et indiquez vos convives pour obtenir
+          immédiatement un ordre de budget.
         </p>
-        {roundTripKm === 0 && (
-          <p className="calculator-travel-warning">
-            <strong>Déplacement non inclus.</strong> Renseignez les kilomètres
-            pour compléter l’estimation.
-          </p>
-        )}
       </div>
-      <div className="calculator-breakdown" aria-live="polite">
-        <div>
-          <span>Formule / repas</span>
-          <strong>
-            {mealTotal === null
-              ? "Sur devis"
-              : `${mealTotal.toLocaleString("fr-FR")} €`}
-          </strong>
-          <small>
-            {formulaNames[formula]} ·{" "}
-            {price === null
-              ? "plus de 350 convives"
-              : `${price} € × ${guests} adulte${guests > 1 ? "s" : ""}`}
+      <div className="calculator-controls">
+        <label>
+          <span>Votre formule</span>
+          <select
+            value={formula}
+            onChange={(e) => changeFormula(e.target.value as Formula)}
+          >
+            <option value="buffet">Buffet</option>
+            <option value="plateau">Plateau</option>
+            <option value="assiette">Service à l’assiette</option>
+            <option value="aperitifs">Apéritifs & vin d’honneur</option>
+            <option value="brunch">Brunch Signature</option>
+          </select>
+        </label>
+        <label>
+          <span>Adultes</span>
+          <input
+            type="number"
+            min="10"
+            max="1000"
+            inputMode="numeric"
+            value={guests}
+            onChange={(e) => changeGuests(e.target.value)}
+            aria-invalid={Boolean(guestError)}
+            aria-describedby="adultes-aide"
+          />
+          <small
+            id="adultes-aide"
+            className={
+              guestError ? "calculator-field-error" : "calculator-field-help"
+            }
+          >
+            {guestError || "Entre 10 et 1 000 adultes."}
           </small>
-        </div>
-        <div>
-          <span>Options & repas spécifiques</span>
-          <strong>
-            {optionsTotal.toLocaleString("fr-FR", {
-              minimumFractionDigits: optionsTotal % 1 ? 2 : 0,
-            })}{" "}
-            €
-          </strong>
-          <ul className="calculator-cost-lines">
-            {optionLines.map((line) => (
-              <li key={line.label}>
-                <span>{line.label}</span>
-                <strong>
-                  {line.amount.toLocaleString("fr-FR", {
-                    minimumFractionDigits: line.amount % 1 ? 2 : 0,
-                  })}{" "}
-                  €
-                </strong>
-              </li>
+        </label>
+        <label>
+          <span>Enfants</span>
+          <input
+            type="number"
+            min="0"
+            max="1000"
+            inputMode="numeric"
+            value={children}
+            onChange={(e) =>
+              setChildren(
+                Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
+              )
+            }
+          />
+          <small className="calculator-field-help">
+            Repas adapté aux 5-12 ans.
+          </small>
+        </label>
+        <label>
+          <span>Prestataires</span>
+          <input
+            type="number"
+            min="0"
+            max="1000"
+            inputMode="numeric"
+            value={providers}
+            onChange={(e) =>
+              setProviders(
+                Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
+              )
+            }
+          />
+          <small className="calculator-field-help">
+            Photographe, DJ, vidéaste…
+          </small>
+        </label>
+        <label>
+          <span>Niveau de service</span>
+          <select
+            value={service}
+            disabled={formula === "brunch"}
+            onChange={(e) => setService(e.target.value as Service)}
+          >
+            {services[formula].map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
             ))}
-          </ul>
-        </div>
-        <div>
-          <span>Déplacement</span>
-          <strong>
-            {travelTotal.toLocaleString("fr-FR", {
-              minimumFractionDigits: travelTotal % 1 ? 2 : 0,
-            })}{" "}
-            €
-          </strong>
+          </select>
+        </label>
+        <div className="calculator-guest-total">
+          <span>Total des convives</span>
+          <strong>{totalGuests}</strong>
           <small>
-            {roundTripKm > 0 ? `${roundTripKm} km AR × 1,70 €` : "À compléter"}
+            {guests} adulte{guests > 1 ? "s" : ""} · {children} enfant
+            {children > 1 ? "s" : ""} · {providers} prestataire
+            {providers > 1 ? "s" : ""}
           </small>
         </div>
       </div>
-      <div className="calculator-result">
+      <div className="calculator-initial-result" aria-live="polite">
         <div>
-          <span>
-            {roundTripKm > 0
-              ? "Estimation totale"
-              : "Estimation hors déplacement"}
-          </span>
+          <span>Votre réception</span>
+          <strong>{formulaNames[formula]}</strong>
+          <small>
+            {totalGuests} convives · {selectedService}
+          </small>
+        </div>
+        <div>
+          <span>Votre estimation</span>
           <strong>
             {estimatedTotal === null
-              ? "Tarif sur devis"
+              ? "Sur devis"
               : `${estimatedTotal.toLocaleString("fr-FR", { minimumFractionDigits: estimatedTotal % 1 ? 2 : 0 })} €`}
           </strong>
-          <small>
-            {roundTripKm > 0
-              ? "Déplacement inclus"
-              : "Ajoutez la distance pour compléter votre budget"}
-          </small>
+          <small>Repas spécifiques et déchets inclus · hors déplacement</small>
         </div>
-        <a
-          href={
-            formula === "brunch"
-              ? "#formulaire-brunch"
-              : "#formulaire-evenement"
-          }
-          onClick={requestQuote}
-        >
-          Demander mon devis personnalisé <ArrowRight size={17} />
-        </a>
-      </div>
-      <p className="calculator-disclaimer">
-        Estimation non contractuelle. Le devis définitif dépendra des choix et
-        informations transmis.
-      </p>
-    </div>
-  );
-
-  return (
-    <>
-    <div className="pricing-calculator" id="calculateur" aria-labelledby="calculator-title">
-        <div className="calculator-heading">
-          <div>
-            <span>Estimation personnalisée</span>
-            <h3 id="calculator-title">Calculez votre réception</h3>
-          </div>
-          <p>
-            Choisissez la formule et indiquez vos convives pour obtenir
-            immédiatement un premier ordre de budget.
-          </p>
-        </div>
-        <div className="calculator-controls">
-          <label>
-            <span>Votre formule</span>
-            <select
-              value={formula}
-              onChange={(e) => changeFormula(e.target.value as Formula)}
-            >
-              <option value="buffet">Buffet</option>
-              <option value="plateau">Plateau</option>
-              <option value="assiette">Service à l’assiette</option>
-              <option value="aperitifs">Apéritifs & vin d’honneur</option>
-              <option value="brunch">Brunch Signature</option>
-            </select>
-          </label>
-          <label>
-            <span>Adultes</span>
-            <input
-              type="number"
-              min="10"
-              max="1000"
-              inputMode="numeric"
-              value={guests}
-              onChange={(e) => changeGuests(e.target.value)}
-              aria-invalid={Boolean(guestError)}
-              aria-describedby="adultes-aide"
-            />
-            <small
-              id="adultes-aide"
-              className={
-                guestError ? "calculator-field-error" : "calculator-field-help"
-              }
-            >
-              {guestError || "Entre 10 et 1 000 adultes."}
-            </small>
-          </label>
-          <label>
-            <span>Enfants</span>
-            <input
-              type="number"
-              min="0"
-              max="1000"
-              inputMode="numeric"
-              value={children}
-              onChange={(e) =>
-                setChildren(
-                  Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
-                )
-              }
-            />
-            <small className="calculator-field-help">
-              Repas adapté aux 5-12 ans.
-            </small>
-          </label>
-          <label>
-            <span>Prestataires</span>
-            <input
-              type="number"
-              min="0"
-              max="1000"
-              inputMode="numeric"
-              value={providers}
-              onChange={(e) =>
-                setProviders(
-                  Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
-                )
-              }
-            />
-            <small className="calculator-field-help">
-              Photographe, DJ, vidéaste…
-            </small>
-          </label>
-          <label>
-            <span>Niveau de service</span>
-            <select
-              value={service}
-              disabled={formula === "brunch"}
-              onChange={(e) => setService(e.target.value as Service)}
-            >
-              {services[formula].map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="calculator-guest-total">
-            <span>Total des convives</span>
-            <strong>{totalGuests}</strong>
-            <small>
-              {guests} adulte{guests > 1 ? "s" : ""} · {children} enfant
-              {children > 1 ? "s" : ""} · {providers} prestataire
-              {providers > 1 ? "s" : ""}
-            </small>
-          </div>
-        </div>
-        <div className="calculator-initial-result" aria-live="polite">
-          <div>
-            <span>Votre réception</span>
-            <strong>{formulaNames[formula]}</strong>
-            <small>
-              {totalGuests} convives · {selectedService}
-            </small>
-          </div>
-          <div>
-            <span>Première estimation</span>
-            <strong>
-              {firstEstimate === null
-                ? "Sur devis"
-                : `${firstEstimate.toLocaleString("fr-FR", { minimumFractionDigits: firstEstimate % 1 ? 2 : 0 })} €`}
-            </strong>
-            <small>
-              Repas spécifiques et déchets inclus · hors options et déplacement
-            </small>
-          </div>
-          <a href="#carte">
+        <div className="calculator-initial-actions">
+          <a
+            className="calculator-quote-cta"
+            href={
+              formula === "brunch"
+                ? "#formulaire-brunch"
+                : "#formulaire-evenement"
+            }
+            onClick={requestQuote}
+          >
+            Demander mon devis personnalisé <ArrowRight size={17} />
+          </a>
+          <a className="calculator-secondary-link" href="#carte">
             Voir les plats <ArrowRight size={17} />
           </a>
         </div>
-        <p className="calculator-disclaimer">
-          Estimation non contractuelle. Ajoutez ensuite uniquement les options
-          dont vous avez besoin.
-        </p>
       </div>
-      {personalisationTarget &&
-        createPortal(personalisationPanel, personalisationTarget)}
-    </>
+      <p className="calculator-disclaimer">
+        Estimation non contractuelle. Le déplacement et le détail du devis
+        sont calculés avec vous à partir de votre demande.
+      </p>
+    </div>
   );
 }
