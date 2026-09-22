@@ -596,7 +596,7 @@ export default function PricingCalculator() {
               }
             />
             <small className="calculator-field-help">
-              Repas adapté aux 3-12 ans.
+              Repas adapté aux 5-12 ans.
             </small>
           </label>
           <label>
