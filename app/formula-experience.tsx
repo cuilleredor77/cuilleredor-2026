@@ -45,11 +45,12 @@ export default function FormulaExperience() {
       link
         .closest<HTMLDetailsElement>(".formula-switcher")
         ?.removeAttribute("open");
-      document
-        .getElementById(
-          link.dataset.formulaTarget === "menu" ? "carte" : "tarifs",
-        )
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const target = document.getElementById(
+        link.dataset.formulaTarget === "menu" ? "carte" : "tarifs",
+      );
+      if (target && target.getBoundingClientRect().top > 80) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     };
     const onToggle = (event: Event) => {
       const opened = event.target;
