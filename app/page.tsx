@@ -776,8 +776,9 @@ export default function Home() {
                 </div>
                 <a
                   className="signature-menu-link"
-                  href="#menu-aperitifs"
-                  data-catalogue-tab="plats"
+                  href="#carte"
+                  data-select-formula="aperitifs"
+                  data-formula-target="menu"
                 >
                   Découvrir les 30 créations <ArrowRight size={16} />
                 </a>
