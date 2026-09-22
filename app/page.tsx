@@ -1202,7 +1202,7 @@ export default function Home() {
           </p>
           <div className="contact-actions">
             <a className="button button-gold" href="#devis">
-              Demander un devis <ArrowRight size={17} />
+              Demander mon devis personnalisé <ArrowRight size={17} />
             </a>
             <a
               className="button button-dark"
