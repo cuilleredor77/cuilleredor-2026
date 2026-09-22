@@ -16,10 +16,8 @@ import QuoteChooser from "./quote-chooser";
 import CatalogueTabs from "./catalogue-tabs";
 import FormulaExperience from "./formula-experience";
 
-const EVENT_FORM =
-  "https://docs.google.com/forms/d/1Z0JZAdGsovsO-Ux-S9DRxzcB8zNu3-YRSP8rqteL5FI/viewform?embedded=true";
-const BRUNCH_FORM =
-  "https://docs.google.com/forms/d/1UcUomzQNyGkJEVV_CL7N7LJY6K5L1Nx7mIusVdl1uKQ/viewform?embedded=true";
+const QUOTE_FORM =
+  "https://docs.google.com/forms/d/e/1FAIpQLSdgBezVdjmGFxCTjhBvonBf870csBIy79wLWkPZPq_03I7YUQ/viewform";
 const WHATSAPP =
   "https://wa.me/33783748971?text=Bonjour%20Cuill%C3%A8re%20d%27Or%2C%20je%20souhaite%20%C3%A9changer%20au%20sujet%20d%27une%20r%C3%A9ception.";
 
@@ -144,15 +142,15 @@ const offers = [
   {
     number: "02",
     title: "Plateau",
-    tone: "Fluide & confortable",
+    tone: "Pratique & professionnel",
     image: "/realisation",
     imageAlt: "Sélection de plats Cuillère d’Or présentée sur plateaux",
     description:
-      "Un menu généreux apporté à table, sans interrompre les échanges entre vos invités.",
+      "Un plateau-repas individuel, apporté à table sans interrompre les échanges.",
     firstLabel: "Composition",
-    firstValue: "2 viandes · 2 poissons · 4 accompagnements · 1 légume",
+    firstValue: "Entrée · plat · dessert · pain · eau",
     secondLabel: "Idéal pour",
-    secondValue: "Réception élégante avec un service fluide",
+    secondValue: "Réunions, séminaires et événements professionnels",
     price: "35 à 50 €",
     suffix: "/ personne",
     cta: "Choisir Plateau",
@@ -442,7 +440,7 @@ const faqItems = [
       "Acompte : 30 % à la signature",
       "Solde : 70 % deux mois avant l’événement",
       "Événement dans moins de 60 jours : règlement intégral à la signature",
-      "Espèces, virement bancaire, PayPal et Wero acceptés",
+      "Virement bancaire ou espèces",
     ],
   },
   {
@@ -483,7 +481,7 @@ const faqItems = [
   {
     question: "Comment se déroule une dégustation ?",
     answer:
-      "La dégustation se réserve sur rendez-vous et permet de goûter une sélection représentative, d’affiner le menu et d’échanger avec la cheffe. Elle est proposée à 70 € par personne, non déductibles du devis final. Une box à domicile peut également être étudiée sur demande.",
+      "La dégustation se réserve sur rendez-vous au restaurant Chez Lina, à Brunoy, et permet de goûter une sélection représentative, d’affiner le menu et d’échanger avec la cheffe. Elle est proposée à 70 € par personne, non déductibles du devis final.",
   },
 ];
 const FAQ_VISIBLE_COUNT = 5;
@@ -577,7 +575,7 @@ export default function Home() {
               sur devis
             </span>
             <span>
-              <Clock3 size={20} aria-hidden="true" /> Proposition sous 48 h
+              <Clock3 size={20} aria-hidden="true" /> Devis sous 48 à 72 h
             </span>
           </div>
         </div>
@@ -778,14 +776,16 @@ export default function Home() {
                 </div>
                 <a
                   className="signature-menu-link"
-                  href="#menu-aperitifs"
-                  data-catalogue-tab="plats"
+                  href="#carte"
+                  data-select-formula="aperitifs"
+                  data-formula-target="menu"
                 >
                   Découvrir les 30 créations <ArrowRight size={16} />
                 </a>
                 <p className="season-note">
-                  Toutes les pièces sont proposées au même tarif. La sphère de
-                  foie gras est disponible de décembre à mars, sans supplément.
+                  Certaines créations salées premium (dont la sphère de foie
+                  gras) peuvent entraîner un supplément. La sphère de foie
+                  gras est disponible de décembre à mars.
                 </p>
               </div>
             </div>
@@ -918,8 +918,9 @@ export default function Home() {
                       </div>
                     </details>
                     <p className="formula-menu-note menu-season-note">
-                      La sphère de foie gras est disponible de décembre à mars,
-                      sans supplément.
+                      Certaines créations salées premium (dont la sphère de
+                      foie gras) peuvent entraîner un supplément. La sphère de
+                      foie gras est disponible de décembre à mars.
                     </p>
                   </div>
                 </details>
@@ -929,15 +930,15 @@ export default function Home() {
                     <div>
                       <strong>Plateau</strong>
                       <small>
-                        2 viandes · 2 poissons · 4 accompagnements · 1 légume
+                        Entrée · plat · dessert · pain · eau
                       </small>
                     </div>
                     <b aria-hidden="true">+</b>
                   </summary>
                   <div className="formula-menu-body">
                     <p className="formula-menu-note">
-                      Le menu du buffet, présenté sur plateaux et apporté à
-                      table.
+                      Un plateau-repas individuel : entrée, plat et dessert,
+                      servis avec pain et eau.
                     </p>
                     <a
                       className="formula-choose-cta"
@@ -952,7 +953,7 @@ export default function Home() {
                         Découvrir les plats <b aria-hidden="true">+</b>
                       </summary>
                       <div className="formula-menu-categories">
-                        {buffetCategories.map((category) => (
+                        {platedCategories.map((category) => (
                           <MenuCategory
                             key={`plateau-${category.title}`}
                             category={category}
@@ -1117,11 +1118,7 @@ export default function Home() {
             Sinon, choisissez simplement Événement ou Brunch.
           </p>
         </div>
-        <QuoteChooser
-          eventForm={EVENT_FORM}
-          brunchForm={BRUNCH_FORM}
-          whatsapp={WHATSAPP}
-        />
+        <QuoteChooser formUrl={QUOTE_FORM} whatsapp={WHATSAPP} />
       </section>
 
       <section className="faq section-pad" id="faq" aria-labelledby="faq-title">
@@ -1224,8 +1221,8 @@ export default function Home() {
           <a href="tel:+33783748971">
             <Phone size={19} /> 07 83 74 89 71
           </a>
-          <a href="mailto:cuilleredor4@gmail.com">
-            <Mail size={19} /> cuilleredor4@gmail.com
+          <a href="mailto:contact@cuilleredor.fr">
+            <Mail size={19} /> contact@cuilleredor.fr
           </a>
           <span>
             <MapPin size={19} />

@@ -153,9 +153,13 @@ export default function PricingGrids() {
                   <td>65 €</td>
                 </tr>
                 <tr>
-                  <td>200 à 350</td>
+                  <td>200 à 349</td>
                   <td>65 €</td>
                   <td>60 €</td>
+                </tr>
+                <tr>
+                  <td>350 et +</td>
+                  <td colSpan={2}>Sur demande</td>
                 </tr>
               </tbody>
             </table>
@@ -197,21 +201,37 @@ export default function PricingGrids() {
             {summary(
               "05",
               "Brunch Signature",
-              "30 € par personne · tarif unique",
+              "25 à 30 € · selon les convives",
             )}
           </summary>
-          <div className="fixed-price-detail">
-            <div>
-              <span>Comprend</span>
-              <p>
-                Viennoiseries · pièces salées et sucrées · œufs · fruits ·
-                boissons
-              </p>
-            </div>
-            <strong>
-              30 € <small>par personne</small>
-            </strong>
-            <a href="#formulaire-brunch">
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Convives</th>
+                  <th>Tarif</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>10 à 199</td>
+                  <td>30 €</td>
+                </tr>
+                <tr>
+                  <td>200 à 349</td>
+                  <td>25 €</td>
+                </tr>
+                <tr>
+                  <td>350 et +</td>
+                  <td>Sur demande</td>
+                </tr>
+              </tbody>
+            </table>
+            <p className="pricing-tier-note">
+              Comprend viennoiseries, pièces salées et sucrées, œufs, fruits
+              et boissons.
+            </p>
+            <a className="fixed-price-cta" href="#formulaire-brunch">
               Demander un devis brunch <ArrowRight size={16} />
             </a>
           </div>
