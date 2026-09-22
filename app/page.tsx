@@ -698,7 +698,8 @@ export default function Home() {
                 {offer.price} <small>{offer.suffix}</small>
               </div>
               <a
-                href="#tarifs"
+                href="#carte"
+                data-formula-target="menu"
                 data-select-formula={
                   (
                     {
@@ -718,26 +719,9 @@ export default function Home() {
         ))}
       </section>
 
-      <section className="pricing section-pad" id="tarifs">
-        <div className="pricing-heading">
-          <p className="eyebrow dark">02 — Construisez votre réception</p>
-          <h2>
-            Votre réception,
-            <br />
-            <em>chiffrée simplement.</em>
-          </h2>
-          <p>
-            Votre formule vous suit automatiquement. Ajustez les convives, le
-            service, les plats et les options sans recommencer votre choix.
-          </p>
-        </div>
-        <PricingGrids />
-        <PricingCalculator />
-      </section>
-
       <section className="catalogue section-pad" id="carte">
         <div className="catalogue-heading">
-          <p className="eyebrow dark">Menu de votre formule</p>
+          <p className="eyebrow dark">02 — Découvrez votre menu</p>
           <h2>
             Généreuse. Élégante.
             <br />
@@ -1100,10 +1084,27 @@ export default function Home() {
         />
       </section>
 
+      <section className="pricing section-pad" id="tarifs">
+        <div className="pricing-heading">
+          <p className="eyebrow dark">03 — Construisez votre réception</p>
+          <h2>
+            Votre réception,
+            <br />
+            <em>chiffrée simplement.</em>
+          </h2>
+          <p>
+            Votre formule vous suit automatiquement. Ajustez les convives, le
+            service, les plats et les options sans recommencer votre choix.
+          </p>
+        </div>
+        <PricingGrids />
+        <PricingCalculator />
+      </section>
+
       <section className="quote-path section-pad" id="devis">
         <div className="quote-heading">
           <div>
-            <p className="eyebrow">03 — Recevez votre devis</p>
+            <p className="eyebrow">04 — Recevez votre devis</p>
             <h2>
               Recevez votre
               <br />
