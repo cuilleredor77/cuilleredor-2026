@@ -862,7 +862,7 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
-                    <details className="formula-dishes">
+                    <details className="formula-dishes" open>
                       <summary>
                         Découvrir les créations <b aria-hidden="true">+</b>
                       </summary>
@@ -945,7 +945,7 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
-                    <details className="formula-dishes">
+                    <details className="formula-dishes" open>
                       <summary>
                         Découvrir les plats <b aria-hidden="true">+</b>
                       </summary>
@@ -985,7 +985,7 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
-                    <details className="formula-dishes">
+                    <details className="formula-dishes" open>
                       <summary>
                         Découvrir les plats <b aria-hidden="true">+</b>
                       </summary>
@@ -1025,7 +1025,7 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
-                    <details className="formula-dishes">
+                    <details className="formula-dishes" open>
                       <summary>
                         Découvrir les plats <b aria-hidden="true">+</b>
                       </summary>
@@ -1059,7 +1059,7 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
-                    <details className="formula-dishes">
+                    <details className="formula-dishes" open>
                       <summary>
                         Découvrir le brunch <b aria-hidden="true">+</b>
                       </summary>

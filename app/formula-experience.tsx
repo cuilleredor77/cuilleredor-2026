@@ -14,9 +14,12 @@ export default function FormulaExperience() {
           panel.open = panel.dataset.menuFormula === formula;
         });
       document
-        .querySelectorAll<HTMLDetailsElement>(
-          ".formula-dishes, .formula-menu-category",
-        )
+        .querySelectorAll<HTMLDetailsElement>(".formula-dishes")
+        .forEach((panel) => {
+          panel.open = true;
+        });
+      document
+        .querySelectorAll<HTMLDetailsElement>(".formula-menu-category")
         .forEach((panel) => {
           panel.open = false;
         });

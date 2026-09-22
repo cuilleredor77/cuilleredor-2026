@@ -4853,7 +4853,7 @@ img[width][height] {
   font-size: 1.25rem;
   font-weight: 400;
 }
-.formula-menu-list details[open] summary > b {
+.formula-menu-list details[open] > summary > b {
   transform: rotate(45deg);
 }
 .formula-menu-body {
