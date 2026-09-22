@@ -623,6 +623,7 @@ footer div {
   .mobile-menu nav a {
     padding: 13px 12px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--paper);
   }
   .offers {
     grid-template-columns: 1fr 1fr;
