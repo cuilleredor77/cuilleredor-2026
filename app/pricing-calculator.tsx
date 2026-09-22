@@ -247,6 +247,9 @@ export default function PricingCalculator() {
       const next = (event as CustomEvent<Formula>).detail;
       setFormula(next);
       setService(services[next][0].value);
+      const nextMin = MIN_GUESTS[next];
+      setGuests((current) => (current < nextMin ? nextMin : current));
+      setGuestError("");
     };
     window.addEventListener("cuillere:formula", syncFormula);
     return () => window.removeEventListener("cuillere:formula", syncFormula);
@@ -369,8 +372,8 @@ export default function PricingCalculator() {
     const nextMin = MIN_GUESTS[next];
     if (guests < nextMin) {
       setGuests(nextMin);
-      setGuestError("");
     }
+    setGuestError("");
     window.dispatchEvent(
       new CustomEvent<Formula>("cuillere:formula", { detail: next }),
     );
