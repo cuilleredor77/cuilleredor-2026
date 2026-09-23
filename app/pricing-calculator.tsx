@@ -444,90 +444,94 @@ export default function PricingCalculator() {
       <div className="calculator-body" ref={bodyRef}>
       <div className="calculator-main">
       <div className="calculator-controls">
-        <label>
-          <span>Votre formule</span>
-          <select
-            value={formula}
-            onChange={(e) => changeFormula(e.target.value as Formula)}
-          >
-            <option value="buffet">Buffet</option>
-            <option value="plateau">Plateau</option>
-            <option value="assiette">Service à l’assiette</option>
-            <option value="aperitifs">Apéritifs & vin d’honneur</option>
-            <option value="brunch">Brunch Signature</option>
-          </select>
-        </label>
-        <label>
-          <span>Adultes</span>
-          <input
-            type="number"
-            min={minGuests}
-            max="1000"
-            inputMode="numeric"
-            value={guests}
-            onChange={(e) => changeGuests(e.target.value)}
-            aria-invalid={Boolean(guestError)}
-            aria-describedby="adultes-aide"
-          />
-          <small
-            id="adultes-aide"
-            className={
-              guestError ? "calculator-field-error" : "calculator-field-help"
-            }
-          >
-            {guestError || `Entre ${minGuests} et 1 000 adultes.`}
-          </small>
-        </label>
-        <label>
-          <span>Enfants</span>
-          <input
-            type="number"
-            min="0"
-            max="1000"
-            inputMode="numeric"
-            value={children}
-            onChange={(e) =>
-              setChildren(
-                Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
-              )
-            }
-          />
-          <small className="calculator-field-help">
-            Repas adapté aux 5-12 ans · 20 €/personne.
-          </small>
-        </label>
-        <label>
-          <span>Prestataires</span>
-          <input
-            type="number"
-            min="0"
-            max="1000"
-            inputMode="numeric"
-            value={providers}
-            onChange={(e) =>
-              setProviders(
-                Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
-              )
-            }
-          />
-          <small className="calculator-field-help">
-            Photographe, DJ, vidéaste… · 20 €/personne.
-          </small>
-        </label>
-        <label>
-          <span>Niveau de service</span>
-          <select
-            value={service}
-            disabled={formula === "brunch"}
-            onChange={(e) => setService(e.target.value as Service)}
-          >
-            {services[formula].map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="calculator-group calculator-group-formula">
+          <label>
+            <span>Votre formule</span>
+            <select
+              value={formula}
+              onChange={(e) => changeFormula(e.target.value as Formula)}
+            >
+              <option value="buffet">Buffet</option>
+              <option value="plateau">Plateau</option>
+              <option value="assiette">Service à l’assiette</option>
+              <option value="aperitifs">Apéritifs & vin d’honneur</option>
+              <option value="brunch">Brunch Signature</option>
+            </select>
+          </label>
+          <label>
+            <span>Niveau de service</span>
+            <select
+              value={service}
+              disabled={formula === "brunch"}
+              onChange={(e) => setService(e.target.value as Service)}
+            >
+              {services[formula].map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <div className="calculator-group calculator-group-guests">
+          <label>
+            <span>Adultes</span>
+            <input
+              type="number"
+              min={minGuests}
+              max="1000"
+              inputMode="numeric"
+              value={guests}
+              onChange={(e) => changeGuests(e.target.value)}
+              aria-invalid={Boolean(guestError)}
+              aria-describedby="adultes-aide"
+            />
+            <small
+              id="adultes-aide"
+              className={
+                guestError ? "calculator-field-error" : "calculator-field-help"
+              }
+            >
+              {guestError || `Entre ${minGuests} et 1 000 adultes.`}
+            </small>
+          </label>
+          <label>
+            <span>Enfants</span>
+            <input
+              type="number"
+              min="0"
+              max="1000"
+              inputMode="numeric"
+              value={children}
+              onChange={(e) =>
+                setChildren(
+                  Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
+                )
+              }
+            />
+            <small className="calculator-field-help">
+              Repas adapté aux 5-12 ans · 20 €/personne.
+            </small>
+          </label>
+          <label>
+            <span>Prestataires</span>
+            <input
+              type="number"
+              min="0"
+              max="1000"
+              inputMode="numeric"
+              value={providers}
+              onChange={(e) =>
+                setProviders(
+                  Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
+                )
+              }
+            />
+            <small className="calculator-field-help">
+              Photographe, DJ, vidéaste… · 20 €/personne.
+            </small>
+          </label>
+        </div>
         <div className="calculator-guest-total">
           <span>Total des convives</span>
           <strong>{totalGuests}</strong>
