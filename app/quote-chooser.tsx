@@ -61,12 +61,12 @@ function buildFormUrl(baseUrl: string, choice: Choice, estimate: Estimate | null
     if (estimate.formulaId === "brunch") {
       params.set(`entry.${ENTRY.brunchGuests}`, guestsLine(estimate));
       params.set(`entry.${ENTRY.brunchOptions}`, optionsLine(estimate));
-      params.set(`entry.${ENTRY.brunchTotal}`, totalValue(estimate));
+      // Le champ "Enveloppe budgétaire" (ex "Estimation totale") est rempli
+      // par le client lui-même, pas pré-rempli avec le calcul du site.
     } else {
       params.set(`entry.${ENTRY.eventGuests}`, guestsLine(estimate));
       params.set(`entry.${ENTRY.eventService}`, estimate.service);
       params.set(`entry.${ENTRY.eventOptions}`, optionsLine(estimate));
-      params.set(`entry.${ENTRY.eventTotal}`, totalValue(estimate));
     }
   } else if (choice === "brunch") {
     params.set("usp", "pp_url");
@@ -132,7 +132,7 @@ export default function QuoteChooser({
 
   return (
     <div className="quote-chooser">
-      {estimate ? (
+      {estimate && (
         <div className="quote-estimate-summary">
           <span>Votre réception</span>
           <div>
@@ -146,34 +146,6 @@ export default function QuoteChooser({
           </div>
           <a href="#tarifs">Modifier mon estimation</a>
         </div>
-      ) : (
-        <fieldset className="quote-simple-choice">
-          <legend>Vous arrivez directement ici ?</legend>
-          <label className={isEvent ? "active" : ""}>
-            <input
-              type="radio"
-              name="quote-choice"
-              checked={isEvent}
-              onChange={() => choose("event")}
-            />
-            <span>
-              <strong>Un événement</strong>
-              <small>Mariage, anniversaire, entreprise ou vin d’honneur</small>
-            </span>
-          </label>
-          <label className={!isEvent ? "active" : ""}>
-            <input
-              type="radio"
-              name="quote-choice"
-              checked={!isEvent}
-              onChange={() => choose("brunch")}
-            />
-            <span>
-              <strong>Un brunch</strong>
-              <small>Brunch Signature et lendemain de mariage</small>
-            </span>
-          </label>
-        </fieldset>
       )}
 
       <div className="quote-help">

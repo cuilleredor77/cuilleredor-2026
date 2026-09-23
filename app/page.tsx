@@ -1076,8 +1076,9 @@ export default function Home() {
             </h2>
           </div>
           <p>
-            Si vous avez utilisé la calculette, votre formule est déjà reconnue.
-            Sinon, choisissez simplement Événement ou Brunch.
+            Indiquez votre enveloppe budgétaire : nous ajustons la
+            proposition avec vous. La sélection des pièces (apéritifs,
+            brunch) n&apos;est pas obligatoire pour recevoir un premier devis.
           </p>
         </div>
         <QuoteChooser formUrl={QUOTE_FORM} whatsapp={WHATSAPP} />

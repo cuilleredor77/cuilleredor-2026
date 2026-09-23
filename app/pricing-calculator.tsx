@@ -79,7 +79,7 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
     options: [
       {
         id: "cheese",
-        label: "Assiette de fromages avant le dessert",
+        label: "Assiette d'assortiment de 3 fromages",
         unit: 9,
         unitLabel: "9 €/pers.",
         kind: "toggle",
@@ -98,17 +98,9 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
         label: "Service des boissons toute la soirée",
         unit: 160,
         unitLabel: "160 €/serveur",
-        kind: "qty",
-        qtyLabel: "serveur(s)",
-        help: "1 serveur recommandé pour 50 convives.",
-      },
-      {
-        id: "cakeParts",
-        label: "Wedding cake",
-        unit: 6.5,
-        unitLabel: "dès 6,50 €/part",
-        kind: "qty",
-        qtyLabel: "part(s)",
+        kind: "toggle",
+        basis: (_guests, totalGuests) => Math.max(1, Math.ceil(totalGuests / 50)),
+        help: "1 serveur par tranche de 50 convives, calculé automatiquement.",
       },
       {
         id: "cakeService",
@@ -237,8 +229,9 @@ export default function PricingCalculator() {
   const [service, setService] = useState<Service>("avec-vin");
   const [children, setChildren] = useState(0);
   const [providers, setProviders] = useState(0);
+  const [extraPieces, setExtraPieces] = useState(0);
   const [optionValues, setOptionValues] = useState<Record<string, number>>(
-    {},
+    { waste: 1 },
   );
   const [dishKit, setDishKit] = useState<DishKit>("none");
   const [guestError, setGuestError] = useState("");
@@ -249,6 +242,7 @@ export default function PricingCalculator() {
       setService(services[next][0].value);
       const nextMin = MIN_GUESTS[next];
       setGuests((current) => (current < nextMin ? nextMin : current));
+      if (next !== "brunch" && next !== "aperitifs") setExtraPieces(0);
       setGuestError("");
     };
     window.addEventListener("cuillere:formula", syncFormula);
@@ -339,6 +333,12 @@ export default function PricingCalculator() {
       label: `${providers} repas prestataire${providers > 1 ? "s" : ""} (20 €/pers.)`,
       amount: providers * 20,
     });
+  if ((formula === "brunch" || formula === "aperitifs") && extraPieces)
+    optionLines.push({
+      id: "extraPieces",
+      label: `${extraPieces} pièce${extraPieces > 1 ? "s" : ""} supplémentaire${extraPieces > 1 ? "s" : ""} au-delà des 10 incluses (2,50 €/pièce)`,
+      amount: extraPieces * 2.5,
+    });
   for (const category of OPTION_CATEGORIES) {
     for (const def of category.options) {
       const value = optionValues[def.id] || 0;
@@ -373,6 +373,7 @@ export default function PricingCalculator() {
     if (guests < nextMin) {
       setGuests(nextMin);
     }
+    if (next !== "brunch" && next !== "aperitifs") setExtraPieces(0);
     setGuestError("");
     window.dispatchEvent(
       new CustomEvent<Formula>("cuillere:formula", { detail: next }),
@@ -444,90 +445,115 @@ export default function PricingCalculator() {
       <div className="calculator-body" ref={bodyRef}>
       <div className="calculator-main">
       <div className="calculator-controls">
-        <label>
-          <span>Votre formule</span>
-          <select
-            value={formula}
-            onChange={(e) => changeFormula(e.target.value as Formula)}
-          >
-            <option value="buffet">Buffet</option>
-            <option value="plateau">Plateau</option>
-            <option value="assiette">Service à l’assiette</option>
-            <option value="aperitifs">Apéritifs & vin d’honneur</option>
-            <option value="brunch">Brunch Signature</option>
-          </select>
-        </label>
-        <label>
-          <span>Adultes</span>
-          <input
-            type="number"
-            min={minGuests}
-            max="1000"
-            inputMode="numeric"
-            value={guests}
-            onChange={(e) => changeGuests(e.target.value)}
-            aria-invalid={Boolean(guestError)}
-            aria-describedby="adultes-aide"
-          />
-          <small
-            id="adultes-aide"
-            className={
-              guestError ? "calculator-field-error" : "calculator-field-help"
-            }
-          >
-            {guestError || `Entre ${minGuests} et 1 000 adultes.`}
-          </small>
-        </label>
-        <label>
-          <span>Enfants</span>
-          <input
-            type="number"
-            min="0"
-            max="1000"
-            inputMode="numeric"
-            value={children}
-            onChange={(e) =>
-              setChildren(
-                Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
-              )
-            }
-          />
-          <small className="calculator-field-help">
-            Repas adapté aux 5-12 ans · 20 €/personne.
-          </small>
-        </label>
-        <label>
-          <span>Prestataires</span>
-          <input
-            type="number"
-            min="0"
-            max="1000"
-            inputMode="numeric"
-            value={providers}
-            onChange={(e) =>
-              setProviders(
-                Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
-              )
-            }
-          />
-          <small className="calculator-field-help">
-            Photographe, DJ, vidéaste… · 20 €/personne.
-          </small>
-        </label>
-        <label>
-          <span>Niveau de service</span>
-          <select
-            value={service}
-            disabled={formula === "brunch"}
-            onChange={(e) => setService(e.target.value as Service)}
-          >
-            {services[formula].map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="calculator-controls-row">
+          <label>
+            <span>Votre formule</span>
+            <select
+              value={formula}
+              onChange={(e) => changeFormula(e.target.value as Formula)}
+            >
+              <option value="buffet">Buffet</option>
+              <option value="plateau">Plateau</option>
+              <option value="assiette">Service à l’assiette</option>
+              <option value="aperitifs">Apéritifs & vin d’honneur</option>
+              <option value="brunch">Brunch Signature</option>
+            </select>
+          </label>
+          <label>
+            <span>Niveau de service</span>
+            <select
+              value={service}
+              disabled={formula === "brunch"}
+              onChange={(e) => setService(e.target.value as Service)}
+            >
+              {services[formula].map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          {(formula === "brunch" || formula === "aperitifs") && (
+            <label>
+              <span>Pièces supplémentaires</span>
+              <input
+                type="number"
+                min="0"
+                max="1000"
+                inputMode="numeric"
+                value={extraPieces}
+                onChange={(e) =>
+                  setExtraPieces(
+                    Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
+                  )
+                }
+              />
+              <small className="calculator-field-help">
+                10 pièces incluses par personne, réparties comme vous voulez
+                entre salé et sucré · 2,50 €/pièce au-delà.
+              </small>
+            </label>
+          )}
+        </div>
+        <div className="calculator-controls-row calculator-controls-row--people">
+          <label>
+            <span>Adultes</span>
+            <input
+              type="number"
+              min={minGuests}
+              max="1000"
+              inputMode="numeric"
+              value={guests}
+              onChange={(e) => changeGuests(e.target.value)}
+              aria-invalid={Boolean(guestError)}
+              aria-describedby="adultes-aide"
+            />
+            <small
+              id="adultes-aide"
+              className={
+                guestError ? "calculator-field-error" : "calculator-field-help"
+              }
+            >
+              {guestError || `Entre ${minGuests} et 1 000 adultes.`}
+            </small>
+          </label>
+          <label>
+            <span>Enfants</span>
+            <input
+              type="number"
+              min="0"
+              max="1000"
+              inputMode="numeric"
+              value={children}
+              onChange={(e) =>
+                setChildren(
+                  Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
+                )
+              }
+            />
+            <small className="calculator-field-help">
+              Repas adapté aux 5-12 ans · 20 €/personne.
+            </small>
+          </label>
+          <label>
+            <span>Prestataires</span>
+            <input
+              type="number"
+              min="0"
+              max="1000"
+              inputMode="numeric"
+              value={providers}
+              onChange={(e) =>
+                setProviders(
+                  Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
+                )
+              }
+            />
+            <small className="calculator-field-help">
+              Photographe, DJ, vidéaste… · 20 €/personne.
+            </small>
+          </label>
+        </div>
         <div className="calculator-guest-total">
           <span>Total des convives</span>
           <strong>{totalGuests}</strong>
@@ -543,9 +569,11 @@ export default function PricingCalculator() {
         <summary>
           <span>Ajouter des options</span>
           <small>
-            {optionLines.length > 0
-              ? `${optionLines.length} option${optionLines.length > 1 ? "s" : ""} sélectionnée${optionLines.length > 1 ? "s" : ""} · ${optionsTotal.toLocaleString("fr-FR", { minimumFractionDigits: optionsTotal % 1 ? 2 : 0 })} €`
-              : "Fromages, boissons, vaisselle, mobilier…"}
+            {optionLines.length === 0
+              ? "Fromages, boissons, vaisselle, mobilier…"
+              : optionLines.length === 1
+                ? `${optionLines[0].label.replace(/ \([^)]*\)\s*$/, "")}${optionLines[0].id === "waste" ? " — sélectionné par défaut" : ""} · ${optionLines[0].amount.toLocaleString("fr-FR", { minimumFractionDigits: optionLines[0].amount % 1 ? 2 : 0 })} €`
+                : `${optionLines.length} options sélectionnées · ${optionsTotal.toLocaleString("fr-FR", { minimumFractionDigits: optionsTotal % 1 ? 2 : 0 })} €`}
           </small>
           <b aria-hidden="true">+</b>
         </summary>
@@ -588,7 +616,16 @@ export default function PricingCalculator() {
                       }
                     />
                     <span>
-                      {def.label} <small>({def.unitLabel})</small>
+                      {def.label}{" "}
+                      <small>
+                        ({def.unitLabel}
+                        {def.id === "waste" ? " · sélectionné par défaut" : ""})
+                      </small>
+                      {def.help && (
+                        <small className="calculator-field-help">
+                          {def.help}
+                        </small>
+                      )}
                     </span>
                   </label>
                 ) : (
