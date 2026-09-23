@@ -16,10 +16,8 @@ import QuoteChooser from "./quote-chooser";
 import CatalogueTabs from "./catalogue-tabs";
 import FormulaExperience from "./formula-experience";
 
-const EVENT_FORM =
-  "https://docs.google.com/forms/d/1Z0JZAdGsovsO-Ux-S9DRxzcB8zNu3-YRSP8rqteL5FI/viewform?embedded=true";
-const BRUNCH_FORM =
-  "https://docs.google.com/forms/d/1UcUomzQNyGkJEVV_CL7N7LJY6K5L1Nx7mIusVdl1uKQ/viewform?embedded=true";
+const QUOTE_FORM =
+  "https://docs.google.com/forms/d/e/1FAIpQLSdgBezVdjmGFxCTjhBvonBf870csBIy79wLWkPZPq_03I7YUQ/viewform";
 const WHATSAPP =
   "https://wa.me/33783748971?text=Bonjour%20Cuill%C3%A8re%20d%27Or%2C%20je%20souhaite%20%C3%A9changer%20au%20sujet%20d%27une%20r%C3%A9ception.";
 
@@ -139,7 +137,7 @@ const offers = [
     secondValue: "Tarifs dégressifs pour les grandes réceptions",
     price: "à partir de 35 €",
     suffix: "/ personne · 10 à 199 convives",
-    cta: "Choisir Buffet",
+    cta: "Choisir le buffet",
   },
   {
     number: "02",
@@ -148,14 +146,14 @@ const offers = [
     image: "/realisation",
     imageAlt: "Sélection de plats Cuillère d’Or présentée sur plateaux",
     description:
-      "Un menu généreux apporté à table, sans interrompre les échanges entre vos invités.",
+      "Le menu du buffet, présenté sur plateaux et apporté à table, sans interrompre les échanges entre convives.",
     firstLabel: "Composition",
     firstValue: "2 viandes · 2 poissons · 4 accompagnements · 1 légume",
     secondLabel: "Idéal pour",
     secondValue: "Réception élégante avec un service fluide",
     price: "35 à 50 €",
     suffix: "/ personne",
-    cta: "Choisir Plateau",
+    cta: "Choisir le plateau",
   },
   {
     number: "03",
@@ -166,12 +164,12 @@ const offers = [
     description:
       "Chaque assiette est dressée et servie individuellement, au rythme de votre réception.",
     firstLabel: "Composition",
-    firstValue: "Entrée · plat · accompagnement · légume · dessert",
+    firstValue: "Entrée · plat · garniture · dessert",
     secondLabel: "Idéal pour",
     secondValue: "Mariage, dîner de gala et réception formelle",
     price: "60 à 70 €",
     suffix: "/ personne",
-    cta: "Choisir À l’assiette",
+    cta: "Choisir le service à l’assiette",
   },
   {
     number: "04",
@@ -186,8 +184,8 @@ const offers = [
     secondLabel: "Idéal pour",
     secondValue: "Vin d’honneur, cocktail et événement d’entreprise",
     price: "25 €",
-    suffix: "/ personne",
-    cta: "Choisir Apéritifs",
+    suffix: "/ personne · dès 30 convives",
+    cta: "Choisir les apéritifs",
   },
   {
     number: "05",
@@ -202,9 +200,9 @@ const offers = [
       "Viennoiseries · pièces salées et sucrées · œufs · fruits · boissons",
     secondLabel: "Idéal pour",
     secondValue: "Lendemains de mariage et réceptions familiales en journée",
-    price: "25 à 30 €",
-    suffix: "/ personne · dès 10 convives",
-    cta: "Choisir Brunch Signature",
+    price: "30 €",
+    suffix: "/ personne · dès 30 convives",
+    cta: "Choisir le brunch",
     href: "#formulaire-brunch",
   },
 ];
@@ -428,7 +426,7 @@ const faqItems = [
   {
     question: "À partir de combien de convives intervenez-vous ?",
     answer:
-      "Nos prestations sont accessibles à partir de 10 participants, adultes, enfants et prestataires compris.",
+      "Nos prestations sont accessibles à partir de 10 participants, adultes, enfants et prestataires compris (30 convives minimum pour le vin d’honneur et le Brunch Signature).",
   },
   {
     question: "Comment réserver une date ?",
@@ -484,7 +482,7 @@ const faqItems = [
   {
     question: "Comment se déroule une dégustation ?",
     answer:
-      "La dégustation se réserve sur rendez-vous, désormais au restaurant Chez Lina à Brunoy, et permet de goûter une sélection représentative, d’affiner le menu et d’échanger avec la cheffe. Elle est proposée à 70 € par personne, non déductible du devis final.",
+      "La dégustation se réserve sur rendez-vous au restaurant Chez Lina, à Brunoy, et permet de goûter une sélection représentative, d’affiner le menu et d’échanger avec la cheffe. Elle est proposée à 70 € par personne, non déductible du devis final.",
   },
   {
     question: "Que comprend le menu enfant et le repas prestataire ?",
@@ -577,8 +575,8 @@ export default function Home() {
             moment vraiment à part.
           </p>
           <div className="hero-actions">
-            <a className="button button-gold" href="#devis">
-              Demander un devis <ArrowRight size={17} />
+            <a className="button button-gold" href="#calculateur">
+              Estimer mon événement <ArrowRight size={17} />
             </a>
             <a
               className="button button-ghost"
@@ -598,7 +596,7 @@ export default function Home() {
               sur devis
             </span>
             <span>
-              <Clock3 size={20} aria-hidden="true" /> Proposition sous 48 h
+              <Clock3 size={20} aria-hidden="true" /> Devis sous 48 à 72 h
             </span>
           </div>
         </div>
@@ -670,15 +668,18 @@ export default function Home() {
             Choisissez d’abord le style de réception. Vous estimerez le budget
             avant de composer le menu.
           </p>
-          <ol className="journey-steps journey-three">
+          <ol className="journey-steps">
             <li className="active">
               <span>01</span>Choisir
             </li>
             <li>
-              <span>02</span>Construire
+              <span>02</span>Découvrir
             </li>
             <li>
-              <span>03</span>Devis
+              <span>03</span>Construire
+            </li>
+            <li>
+              <span>04</span>Devis
             </li>
           </ol>
         </div>
@@ -721,7 +722,8 @@ export default function Home() {
                 {offer.price} <small>{offer.suffix}</small>
               </div>
               <a
-                href="#tarifs"
+                href="#carte"
+                data-formula-target="menu"
                 data-select-formula={
                   (
                     {
@@ -741,26 +743,9 @@ export default function Home() {
         ))}
       </section>
 
-      <section className="pricing section-pad" id="tarifs">
-        <div className="pricing-heading">
-          <p className="eyebrow dark">02 — Construisez votre réception</p>
-          <h2>
-            Votre réception,
-            <br />
-            <em>chiffrée simplement.</em>
-          </h2>
-          <p>
-            Votre formule vous suit automatiquement. Ajustez les convives, le
-            service, les plats et les options sans recommencer votre choix.
-          </p>
-        </div>
-        <PricingGrids />
-        <PricingCalculator />
-      </section>
-
       <section className="catalogue section-pad" id="carte">
         <div className="catalogue-heading">
-          <p className="eyebrow dark">Menu de votre formule</p>
+          <p className="eyebrow dark">02 — Découvrez votre menu</p>
           <h2>
             Généreuse. Élégante.
             <br />
@@ -772,45 +757,6 @@ export default function Home() {
           </p>
         </div>
         <CatalogueTabs
-          aperitifs={
-            <div className="signature">
-              <div className="signature-photo">
-                <ResponsiveImage
-                  base="/plantains"
-                  sizes="(max-width: 720px) 100vw, 42vw"
-                  width={900}
-                  height={600}
-                  alt="Assiette de bananes plantains dressée par Cuillère d'Or"
-                />
-                <div className="photo-caption">
-                  <span>Vin d’honneur</span>
-                  <strong>30 créations au choix</strong>
-                </div>
-              </div>
-              <div className="signature-content">
-                <h3>Composez votre vin d’honneur</h3>
-                <p>
-                  Choisissez 10 pièces parmi nos créations salées et sucrées. 4
-                  cocktails signature complètent la formule.
-                </p>
-                <div className="aperitif-price">
-                  <strong>25 €</strong>
-                  <span>par personne · tarif unique</span>
-                </div>
-                <a
-                  className="signature-menu-link"
-                  href="#menu-aperitifs"
-                  data-catalogue-tab="plats"
-                >
-                  Découvrir les 30 créations <ArrowRight size={16} />
-                </a>
-                <p className="season-note">
-                  Toutes les pièces sont proposées au même tarif. La sphère de
-                  foie gras est disponible de décembre à mars, sans supplément.
-                </p>
-              </div>
-            </div>
-          }
           plats={
             <div className="menu-showcase">
               <div className="section-heading">
@@ -885,7 +831,7 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
-                    <details className="formula-dishes">
+                    <details className="formula-dishes" open>
                       <summary>
                         Découvrir les créations <b aria-hidden="true">+</b>
                       </summary>
@@ -939,8 +885,8 @@ export default function Home() {
                       </div>
                     </details>
                     <p className="formula-menu-note menu-season-note">
-                      La sphère de foie gras est disponible de décembre à mars,
-                      sans supplément.
+                      La sphère de foie gras est disponible de décembre à
+                      mars.
                     </p>
                   </div>
                 </details>
@@ -970,7 +916,7 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
-                    <details className="formula-dishes">
+                    <details className="formula-dishes" open>
                       <summary>
                         Découvrir les plats <b aria-hidden="true">+</b>
                       </summary>
@@ -992,7 +938,7 @@ export default function Home() {
                     <div>
                       <strong>Service à l’assiette</strong>
                       <small>
-                        Entrée · plat · garniture · légume · dessert
+                        Entrée · plat · garniture · dessert
                       </small>
                     </div>
                     <b aria-hidden="true">+</b>
@@ -1010,7 +956,7 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
-                    <details className="formula-dishes">
+                    <details className="formula-dishes" open>
                       <summary>
                         Découvrir les plats <b aria-hidden="true">+</b>
                       </summary>
@@ -1052,7 +998,7 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
-                    <details className="formula-dishes">
+                    <details className="formula-dishes" open>
                       <summary>
                         Découvrir les plats <b aria-hidden="true">+</b>
                       </summary>
@@ -1086,7 +1032,7 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
-                    <details className="formula-dishes">
+                    <details className="formula-dishes" open>
                       <summary>
                         Découvrir le brunch <b aria-hidden="true">+</b>
                       </summary>
@@ -1127,26 +1073,27 @@ export default function Home() {
         />
       </section>
 
-      <section className="personalisation section-pad" id="personnaliser">
+      <section className="pricing section-pad" id="tarifs">
         <div className="pricing-heading">
-          <p className="eyebrow dark">Options et déplacement</p>
+          <p className="eyebrow dark">03 — Construisez votre réception</p>
           <h2>
-            Les détails qui font
+            Votre réception,
             <br />
-            <em>la différence.</em>
+            <em>chiffrée simplement.</em>
           </h2>
           <p>
-            Ajoutez les options, le matériel et le déplacement séparément du
-            prix de la formule.
+            Votre formule vous suit automatiquement. Ajustez les convives, le
+            service, les plats et les options sans recommencer votre choix.
           </p>
         </div>
-        <div id="personalisation-calculateur" />
+        <PricingGrids />
+        <PricingCalculator />
       </section>
 
       <section className="quote-path section-pad" id="devis">
         <div className="quote-heading">
           <div>
-            <p className="eyebrow">03 — Recevez votre devis</p>
+            <p className="eyebrow">04 — Recevez votre devis</p>
             <h2>
               Recevez votre
               <br />
@@ -1158,11 +1105,7 @@ export default function Home() {
             Sinon, choisissez simplement Événement ou Brunch.
           </p>
         </div>
-        <QuoteChooser
-          eventForm={EVENT_FORM}
-          brunchForm={BRUNCH_FORM}
-          whatsapp={WHATSAPP}
-        />
+        <QuoteChooser formUrl={QUOTE_FORM} whatsapp={WHATSAPP} />
       </section>
 
       <section className="faq section-pad" id="faq" aria-labelledby="faq-title">
@@ -1249,7 +1192,7 @@ export default function Home() {
           </p>
           <div className="contact-actions">
             <a className="button button-gold" href="#devis">
-              Demander un devis <ArrowRight size={17} />
+              Demander mon devis personnalisé <ArrowRight size={17} />
             </a>
             <a
               className="button button-dark"
@@ -1265,8 +1208,8 @@ export default function Home() {
           <a href="tel:+33783748971">
             <Phone size={19} /> 07 83 74 89 71
           </a>
-          <a href="mailto:cuilleredor4@gmail.com">
-            <Mail size={19} /> cuilleredor4@gmail.com
+          <a href="mailto:contact@cuilleredor.fr">
+            <Mail size={19} /> contact@cuilleredor.fr
           </a>
           <span>
             <MapPin size={19} />

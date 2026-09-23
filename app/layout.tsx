@@ -43,7 +43,7 @@ const LOCAL_BUSINESS_JSON_LD = {
   image: `${SITE_URL}/logo-cuillere-dor.png`,
   url: SITE_URL,
   telephone: "+33783748971",
-  email: "cuilleredor4@gmail.com",
+  email: "contact@cuilleredor.fr",
   founder: {
     "@type": "Person",
     name: "Huguette MVUNDA-KILOLA",
