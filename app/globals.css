@@ -3735,10 +3735,18 @@ iframe {
   line-height: 1.65;
 }
 .calculator-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px 0;
+}
+.calculator-controls-row {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr 1.2fr;
   gap: 18px;
-  padding: 28px 0;
+}
+.calculator-controls-row--people {
+  grid-template-columns: repeat(3, 1fr);
 }
 .calculator-controls label {
   min-width: 0;
@@ -3765,7 +3773,7 @@ iframe {
 }
 @media (max-width: 900px) {
   .calculator-heading,
-  .calculator-controls {
+  .calculator-controls-row:not(.calculator-controls-row--people) {
     grid-template-columns: 1fr;
   }
 }
@@ -3782,6 +3790,19 @@ iframe {
   .calculator-controls {
     gap: 14px;
     padding: 22px 0;
+  }
+  .calculator-controls-row--people {
+    gap: 8px;
+  }
+  .calculator-controls-row--people select,
+  .calculator-controls-row--people input {
+    height: 46px;
+    padding: 0 8px;
+    font-size: 0.85rem;
+  }
+  .calculator-controls-row--people label > span {
+    font-size: 0.58rem;
+    letter-spacing: 0.02em;
   }
 }
 
@@ -4240,7 +4261,7 @@ details[id] {
   line-height: 1.4;
 }
 /* Simulateur : lisibilité, validation et transparence du chiffrage */
-.pricing-calculator .calculator-controls > label > span{
+.pricing-calculator .calculator-controls label > span{
   font-size: 0.82rem;
   line-height: 1.35;
 }
