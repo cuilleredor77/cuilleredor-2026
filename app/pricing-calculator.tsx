@@ -234,6 +234,7 @@ export default function PricingCalculator() {
   const [mobileBarVisible, setMobileBarVisible] = useState(false);
   const [formula, setFormula] = useState<Formula>("buffet");
   const [guests, setGuests] = useState(MIN_GUESTS.buffet);
+  const [guestsInput, setGuestsInput] = useState(String(MIN_GUESTS.buffet));
   const [service, setService] = useState<Service>("avec-vin");
   const [children, setChildren] = useState(0);
   const [providers, setProviders] = useState(0);
@@ -248,7 +249,11 @@ export default function PricingCalculator() {
       setFormula(next);
       setService(services[next][0].value);
       const nextMin = MIN_GUESTS[next];
-      setGuests((current) => (current < nextMin ? nextMin : current));
+      setGuests((current) => {
+        const clamped = current < nextMin ? nextMin : current;
+        setGuestsInput(String(clamped));
+        return clamped;
+      });
       setGuestError("");
     };
     window.addEventListener("cuillere:formula", syncFormula);
@@ -372,6 +377,7 @@ export default function PricingCalculator() {
     const nextMin = MIN_GUESTS[next];
     if (guests < nextMin) {
       setGuests(nextMin);
+      setGuestsInput(String(nextMin));
     }
     setGuestError("");
     window.dispatchEvent(
@@ -379,19 +385,34 @@ export default function PricingCalculator() {
     );
   }
   function changeGuests(rawValue: string) {
+    // Let the user type/clear freely; only reflect valid numbers into the
+    // calculation state so the estimate keeps updating as they type.
+    setGuestsInput(rawValue);
+    if (rawValue.trim() === "") {
+      setGuestError("");
+      return;
+    }
     const value = Number(rawValue);
-    if (!Number.isFinite(value) || value < minGuests) {
-      setGuests(minGuests);
-      setGuestError(`Le minimum est de ${minGuests} adultes.`);
-    } else if (value > 1000) {
+    if (!Number.isFinite(value)) return;
+    if (value > 1000) {
       setGuests(1000);
       setGuestError(
         "Le maximum du simulateur est de 1 000 adultes. Au-delà, contactez-nous.",
       );
-    } else {
-      setGuests(Math.floor(value));
-      setGuestError("");
+      return;
     }
+    setGuests(Math.max(0, Math.floor(value)));
+    setGuestError(
+      value < minGuests ? `Le minimum est de ${minGuests} adultes.` : "",
+    );
+  }
+  function commitGuests() {
+    // On leaving the field, snap back to a valid value so calculations and
+    // the displayed number always agree.
+    const clamped = Math.min(1000, Math.max(minGuests, guests));
+    setGuests(clamped);
+    setGuestsInput(String(clamped));
+    setGuestError("");
   }
   function requestQuote(event: React.MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
@@ -464,8 +485,9 @@ export default function PricingCalculator() {
             min={minGuests}
             max="1000"
             inputMode="numeric"
-            value={guests}
+            value={guestsInput}
             onChange={(e) => changeGuests(e.target.value)}
+            onBlur={commitGuests}
             aria-invalid={Boolean(guestError)}
             aria-describedby="adultes-aide"
           />
