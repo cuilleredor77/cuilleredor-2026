@@ -168,19 +168,13 @@ export default function QuoteChooser({
         id={isEvent ? "formulaire-evenement" : "formulaire-brunch"}
       >
         <div className="selected-form-heading">
-          <span>{isEvent ? "Formulaire événement" : "Formulaire brunch"}</span>
+          <span>Formulaire</span>
           <div>
-            <h3>
-              {isEvent
-                ? "Votre demande de devis"
-                : "Votre demande Brunch Signature"}
-            </h3>
+            <h3>Votre demande de devis</h3>
             <p>
               {estimate
                 ? `Votre estimation ${estimate.formula} est conservée pendant votre demande.`
-                : isEvent
-                  ? "Indiquez la date, le lieu, les convives et la formule envisagée."
-                  : "Indiquez la date, le lieu et le nombre de convives."}
+                : "Indiquez la date, le lieu, les convives et la formule envisagée."}
             </p>
           </div>
         </div>
