@@ -429,6 +429,17 @@ export default function PricingCalculator() {
       .getElementById("devis")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+  function resetCalculator() {
+    setFormula("buffet");
+    setGuests(MIN_GUESTS.buffet);
+    setService(services.buffet[0].value);
+    setChildren(0);
+    setProviders(0);
+    setExtraPieces(0);
+    setOptionValues({ waste: 1 });
+    setDishKit("none");
+    setGuestError("");
+  }
 
   return (
     <div
@@ -442,10 +453,19 @@ export default function PricingCalculator() {
           <span>Estimation personnalisée</span>
           <h3 id="calculator-title">Calculez votre réception</h3>
         </div>
-        <p>
-          Choisissez la formule et indiquez vos convives pour obtenir
-          immédiatement un ordre de budget.
-        </p>
+        <div className="calculator-heading-side">
+          <p>
+            Choisissez la formule et indiquez vos convives pour obtenir
+            immédiatement un ordre de budget.
+          </p>
+          <button
+            type="button"
+            className="calculator-reset"
+            onClick={resetCalculator}
+          >
+            Réinitialiser la calculette
+          </button>
+        </div>
       </div>
       <div className="calculator-body" ref={bodyRef}>
       <div className="calculator-main">
