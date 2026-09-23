@@ -6000,6 +6000,38 @@ footer {
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   white-space: nowrap;
 }
+.calculator-breakdown {
+  margin: 14px 0 0;
+  padding: 14px 18px;
+  list-style: none;
+  background: #f9f7f2;
+  border: 1px solid #e4dcc9;
+  border-radius: 6px;
+}
+.calculator-breakdown li {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 5px 0;
+  color: #3f3a30;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+.calculator-breakdown li:not(:last-child) {
+  border-bottom: 1px dashed #e4dcc9;
+}
+.calculator-breakdown li span:last-child {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.calculator-breakdown-total {
+  margin-top: 4px;
+  padding-top: 9px !important;
+  border-top: 1px solid #c5a059 !important;
+  border-bottom: none !important;
+  color: #1a1a1a !important;
+  font-weight: 700;
+}
 .calculator-disclaimer {
   margin: 12px 0 0;
   color: #777064;

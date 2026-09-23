@@ -39,12 +39,16 @@ const formulaNames: Record<Formula, string> = {
   brunch: "Brunch Signature",
 };
 
-function unitPrice(formula: Formula, guests: number, service: Service) {
+function unitPrice(
+  formula: Formula,
+  service: Service,
+  totalGuests: number,
+) {
   if (formula === "aperitifs") return 25;
   if (formula === "brunch") return 30;
   if (formula === "assiette") {
-    if (guests >= 350) return null;
-    return guests < 200
+    if (totalGuests >= 350) return null;
+    return totalGuests < 200
       ? service === "avec-vin"
         ? 70
         : 65
@@ -52,7 +56,7 @@ function unitPrice(formula: Formula, guests: number, service: Service) {
         ? 65
         : 60;
   }
-  const range = guests < 200 ? 0 : guests < 350 ? 1 : 2;
+  const range = totalGuests < 200 ? 0 : totalGuests < 350 ? 1 : 2;
   if (formula === "plateau")
     return service === "avec-vin" ? [50, 45, 40][range] : [45, 40, 35][range];
   return {
@@ -186,6 +190,7 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
         unit: 50,
         unitLabel: "50 € le forfait",
         kind: "toggle",
+        help: "Incluse par défaut. À décocher uniquement si votre lieu de réception conserve les déchets alimentaires.",
       },
     ],
   },
@@ -314,8 +319,8 @@ export default function PricingCalculator() {
 
   const totalGuests = guests + children + providers;
   const price = useMemo(
-    () => unitPrice(formula, guests, service),
-    [formula, guests, service],
+    () => unitPrice(formula, service, totalGuests),
+    [formula, service, totalGuests],
   );
   const mealTotal = price === null ? null : price * guests;
 
@@ -581,8 +586,8 @@ export default function PricingCalculator() {
           <div className="calculator-options-intro">
             <ListChecks size={18} />
             <p>
-              Rien n’est inclus par défaut : ajoutez uniquement les options
-              utiles à votre réception.
+              Seule la gestion des déchets est incluse par défaut ; ajoutez
+              uniquement les options utiles à votre réception.
             </p>
           </div>
           {OPTION_CATEGORIES.map((category) => (
@@ -703,6 +708,36 @@ export default function PricingCalculator() {
           </a>
         </div>
       </div>
+      {estimatedTotal !== null && (
+        <ul className="calculator-breakdown">
+          <li>
+            <span>
+              {guests} adulte{guests > 1 ? "s" : ""} × {price} €/pers. (
+              {selectedService})
+            </span>
+            <span>
+              {mealTotal!.toLocaleString("fr-FR", { minimumFractionDigits: mealTotal! % 1 ? 2 : 0 })}{" "}
+              €
+            </span>
+          </li>
+          {optionLines.map((line) => (
+            <li key={line.id}>
+              <span>{line.label}</span>
+              <span>
+                {line.amount.toLocaleString("fr-FR", { minimumFractionDigits: line.amount % 1 ? 2 : 0 })}{" "}
+                €
+              </span>
+            </li>
+          ))}
+          <li className="calculator-breakdown-total">
+            <span>Estimation</span>
+            <span>
+              {estimatedTotal.toLocaleString("fr-FR", { minimumFractionDigits: estimatedTotal % 1 ? 2 : 0 })}{" "}
+              €
+            </span>
+          </li>
+        </ul>
+      )}
       <p className="calculator-disclaimer">
         Estimation non contractuelle. Le déplacement et le détail du devis
         sont calculés avec vous à partir de votre demande.
