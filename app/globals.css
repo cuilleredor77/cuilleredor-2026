@@ -4750,6 +4750,9 @@ details[id] {
   text-transform: none;
   letter-spacing: 0;
 }
+.calculator-sur-devis {
+  margin: 14px 0 0;
+}
 .calculator-options[id] {
   scroll-margin-top: 94px;
 }

@@ -6,6 +6,7 @@ import { ArrowRight, ExternalLink, MapPin } from "lucide-react";
 
 type Formula = "buffet" | "plateau" | "assiette" | "aperitifs" | "brunch";
 type Service = "avec-vin" | "sans-vin" | "sans-service";
+type Dishware = "none" | "essentiel" | "complet" | "prestige";
 const services: Record<Formula, Array<{ value: Service; label: string }>> = {
   buffet: [
     { value: "avec-vin", label: "Avec vin d’honneur" },
@@ -33,9 +34,12 @@ const formulaNames: Record<Formula, string> = {
 
 function unitPrice(formula: Formula, guests: number, service: Service) {
   if (formula === "aperitifs") return 25;
-  if (formula === "brunch") return 30;
+  if (formula === "brunch") {
+    if (guests >= 350) return null;
+    return guests < 200 ? 30 : 25;
+  }
   if (formula === "assiette") {
-    if (guests > 350) return null;
+    if (guests >= 350) return null;
     return guests < 200
       ? service === "avec-vin"
         ? 70
@@ -54,12 +58,62 @@ function unitPrice(formula: Formula, guests: number, service: Service) {
   }[service][range];
 }
 
+function Quantity({
+  label,
+  price,
+  note,
+  value,
+  onChange,
+}: {
+  label: string;
+  price: string;
+  note?: string;
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <label className="calculator-quantity">
+      <span>
+        <strong>{label}</strong>
+        <small>{price}</small>
+        {note && <small className="calculator-option-help">{note}</small>}
+      </span>
+      <input
+        type="number"
+        min="0"
+        max="1000"
+        inputMode="numeric"
+        value={value}
+        onChange={(event) =>
+          onChange(Math.min(1000, Math.max(0, Number(event.target.value) || 0)))
+        }
+        aria-label={`${label}, quantité`}
+      />
+    </label>
+  );
+}
+
 export default function PricingCalculator() {
   const [personalisationTarget, setPersonalisationTarget] =
     useState<HTMLElement | null>(null);
   const [formula, setFormula] = useState<Formula>("buffet");
   const [guests, setGuests] = useState(100);
   const [service, setService] = useState<Service>("avec-vin");
+  const [dishware, setDishware] = useState<Dishware>("none");
+  const [wasteManagement, setWasteManagement] = useState(true);
+  const [drinksPackage, setDrinksPackage] = useState(false);
+  const [linenNapkins, setLinenNapkins] = useState(false);
+  const [cheesePlate, setCheesePlate] = useState(false);
+  const [oven, setOven] = useState(false);
+  const [setup, setSetup] = useState(false);
+  const [dressing, setDressing] = useState(false);
+  const [cakeService, setCakeService] = useState(false);
+  const [cakeParts, setCakeParts] = useState(0);
+  const [standingTables, setStandingTables] = useState(0);
+  const [tablecloths, setTablecloths] = useState(0);
+  const [chargers, setChargers] = useState(0);
+  const [chafing, setChafing] = useState(0);
+  const [drinkServers, setDrinkServers] = useState(0);
   const [children, setChildren] = useState(0);
   const [providers, setProviders] = useState(0);
   const [eventAddress, setEventAddress] = useState("");
@@ -88,21 +142,108 @@ export default function PricingCalculator() {
     [formula, totalGuests, service],
   );
   const mealTotal = price === null ? null : price * guests;
-  const optionsTotal = 50 + children * 20 + providers * 20;
+  const dishwarePrice = { none: 0, essentiel: 7, complet: 10, prestige: 13 }[
+    dishware
+  ];
+  const dishwareTotal = guests * dishwarePrice;
+  const optionsTotal =
+    (wasteManagement ? 50 : 0) +
+    dishwareTotal +
+    (drinksPackage ? guests * 3.8 : 0) +
+    (linenNapkins ? guests * 2 : 0) +
+    (cheesePlate ? guests * 9 : 0) +
+    (oven ? 150 : 0) +
+    (setup ? 150 : 0) +
+    (dressing ? 250 : 0) +
+    (cakeService ? 150 : 0) +
+    cakeParts * 6.5 +
+    standingTables * 15 +
+    tablecloths * 15 +
+    chargers * 3 +
+    chafing * 25 +
+    drinkServers * 160 +
+    children * 20 +
+    providers * 20;
   const travelTotal = roundTripKm * 1.7;
   const estimatedTotal =
     mealTotal === null ? null : mealTotal + optionsTotal + travelTotal;
   const firstEstimate =
-    mealTotal === null ? null : mealTotal + children * 20 + providers * 20 + 50;
+    mealTotal === null
+      ? null
+      : mealTotal +
+        children * 20 +
+        providers * 20 +
+        (wasteManagement ? 50 : 0);
   const selectedService =
     services[formula].find((item) => item.value === service)?.label || "";
   const origin = "8 Allée des Bois, 77240 Vert-Saint-Denis, France";
   const mapsUrl = eventAddress.trim()
     ? `https://www.google.com/maps/dir/${encodeURIComponent(origin)}/${encodeURIComponent(eventAddress.trim())}/${encodeURIComponent(origin)}/`
     : `https://www.google.com/maps/dir/${encodeURIComponent(origin)}/`;
-  const optionLines: Array<{ label: string; amount: number }> = [
-    { label: "Gestion des déchets", amount: 50 },
-  ];
+  const optionLines: Array<{ label: string; amount: number }> = [];
+  if (wasteManagement)
+    optionLines.push({
+      label: "Gestion des déchets alimentaires",
+      amount: 50,
+    });
+  if (dishwareTotal)
+    optionLines.push({
+      label:
+        dishware === "essentiel"
+          ? "Vaisselle · Kit Essentiel"
+          : dishware === "complet"
+            ? "Vaisselle · Kit Complet"
+            : "Vaisselle · Kit Prestige",
+      amount: dishwareTotal,
+    });
+  if (drinksPackage)
+    optionLines.push({ label: "Forfait boissons", amount: guests * 3.8 });
+  if (linenNapkins)
+    optionLines.push({ label: "Serviettes en tissu", amount: guests * 2 });
+  if (cheesePlate)
+    optionLines.push({ label: "Assiette de fromages", amount: guests * 9 });
+  if (oven) optionLines.push({ label: "Location d’étuve", amount: 150 });
+  if (setup)
+    optionLines.push({
+      label: "Installation et désinstallation",
+      amount: 150,
+    });
+  if (dressing) optionLines.push({ label: "Dressage", amount: 250 });
+  if (cakeService)
+    optionLines.push({
+      label: "Présentation et service du wedding cake",
+      amount: 150,
+    });
+  if (cakeParts)
+    optionLines.push({
+      label: `${cakeParts} part${cakeParts > 1 ? "s" : ""} de wedding cake`,
+      amount: cakeParts * 6.5,
+    });
+  if (standingTables)
+    optionLines.push({
+      label: `${standingTables} mange-debout`,
+      amount: standingTables * 15,
+    });
+  if (tablecloths)
+    optionLines.push({
+      label: `${tablecloths} nappe${tablecloths > 1 ? "s" : ""}`,
+      amount: tablecloths * 15,
+    });
+  if (chargers)
+    optionLines.push({
+      label: `${chargers} sous-plat${chargers > 1 ? "s" : ""} perlé${chargers > 1 ? "s" : ""}`,
+      amount: chargers * 3,
+    });
+  if (chafing)
+    optionLines.push({
+      label: `${chafing} chafing dish${chafing > 1 ? "es" : ""}`,
+      amount: chafing * 25,
+    });
+  if (drinkServers)
+    optionLines.push({
+      label: `${drinkServers} serveur${drinkServers > 1 ? "s" : ""} boissons`,
+      amount: drinkServers * 160,
+    });
   if (children)
     optionLines.push({
       label: `${children} repas enfant${children > 1 ? "s" : ""}`,
@@ -164,6 +305,205 @@ export default function PricingCalculator() {
 
   const personalisationPanel = (
     <div className="pricing-calculator personalization-calculator">
+      <div className="calculator-heading">
+        <div>
+          <span>Options & services complémentaires</span>
+          <h3>Affinez votre estimation</h3>
+        </div>
+        <p>
+          Ajoutez uniquement ce dont votre réception a besoin. Chaque choix met
+          à jour le total.
+        </p>
+      </div>
+      <details className="calculator-advanced">
+        <summary>
+          <span>Ajouter des options</span>
+          <small>Vaisselle, boissons, wedding cake, matériel et serveurs</small>
+          <b aria-hidden="true">+</b>
+        </summary>
+        <div className="calculator-options">
+          <div className="calculator-options-heading">
+            <span>Options complémentaires</span>
+            <p>
+              Seule la gestion des déchets est incluse par défaut ; ajoutez
+              uniquement les options utiles à votre réception.
+            </p>
+          </div>
+          <div className="calculator-option-grid">
+            <label>
+              <span>Vaisselle</span>
+              <select
+                value={dishware}
+                onChange={(event) =>
+                  setDishware(event.target.value as Dishware)
+                }
+              >
+                <option value="none">Aucune</option>
+                <option value="essentiel">Kit Essentiel · 7 €/pers.</option>
+                <option value="complet">Kit Complet · 10 €/pers.</option>
+                <option value="prestige">Kit Prestige · 13 €/pers.</option>
+              </select>
+              {dishware !== "none" && (
+                <small className="calculator-option-help">
+                  {dishware === "essentiel"
+                    ? "2 assiettes, 1 verre à eau, 1 verre à vin, couverts complets."
+                    : dishware === "complet"
+                      ? "3 assiettes, 1 verre à eau, 1 verre à vin, 1 verre à champagne, couverts complets."
+                      : "3 assiettes, 1 sous-plat perlé, 1 verre à eau, 1 verre à vin, 1 verre à champagne, couverts complets."}
+                </small>
+              )}
+            </label>
+            <label className="calculator-check">
+              <input
+                type="checkbox"
+                checked={drinksPackage}
+                onChange={(e) => setDrinksPackage(e.target.checked)}
+              />
+              <span>
+                <strong>Forfait boissons</strong>
+                <small>3,80 € / personne</small>
+                <small className="calculator-option-help">
+                  Coca-Cola, Fanta, Oasis Tropical, eau plate et gazeuse.
+                </small>
+              </span>
+            </label>
+            <label className="calculator-check">
+              <input
+                type="checkbox"
+                checked={linenNapkins}
+                onChange={(e) => setLinenNapkins(e.target.checked)}
+              />
+              <span>
+                <strong>Serviettes en tissu</strong>
+                <small>2 € / personne</small>
+              </span>
+            </label>
+            <label className="calculator-check">
+              <input
+                type="checkbox"
+                checked={cheesePlate}
+                onChange={(e) => setCheesePlate(e.target.checked)}
+              />
+              <span>
+                <strong>Assiette de fromages</strong>
+                <small>9 € / personne</small>
+                <small className="calculator-option-help">
+                  Servie avant le dessert.
+                </small>
+              </span>
+            </label>
+            <label className="calculator-check">
+              <input
+                type="checkbox"
+                checked={oven}
+                onChange={(e) => setOven(e.target.checked)}
+              />
+              <span>
+                <strong>Location d’étuve</strong>
+                <small>150 €</small>
+              </span>
+            </label>
+            <label className="calculator-check">
+              <input
+                type="checkbox"
+                checked={setup}
+                onChange={(e) => setSetup(e.target.checked)}
+              />
+              <span>
+                <strong>Installation et désinstallation</strong>
+                <small>150 €</small>
+              </span>
+            </label>
+            <label className="calculator-check">
+              <input
+                type="checkbox"
+                checked={dressing}
+                onChange={(e) => setDressing(e.target.checked)}
+              />
+              <span>
+                <strong>Dressage</strong>
+                <small>250 €</small>
+              </span>
+            </label>
+            <label className="calculator-check">
+              <input
+                type="checkbox"
+                checked={cakeService}
+                onChange={(e) => setCakeService(e.target.checked)}
+              />
+              <span>
+                <strong>Présentation et service du wedding cake</strong>
+                <small>150 €</small>
+              </span>
+            </label>
+            <label className="calculator-check">
+              <input
+                type="checkbox"
+                checked={wasteManagement}
+                onChange={(e) => setWasteManagement(e.target.checked)}
+              />
+              <span>
+                <strong>Gestion des déchets alimentaires</strong>
+                <small>50 € (hors verre) · incluse par défaut</small>
+                <small className="calculator-option-help">
+                  À décocher uniquement si votre lieu de réception conserve
+                  les déchets alimentaires.
+                </small>
+              </span>
+            </label>
+          </div>
+          <details className="calculator-more">
+            <summary>
+              Ajouter du wedding cake, du matériel ou des serveurs
+            </summary>
+            <div className="calculator-quantities">
+              <Quantity
+                label="Parts de wedding cake"
+                price="6,50 € / part"
+                note="Réalisé par notre partenaire pâtissier Love Lo Cake."
+                value={cakeParts}
+                onChange={setCakeParts}
+              />
+              <Quantity
+                label="Mange-debout"
+                price="15 € / unité"
+                note="Housse et nappe comprises."
+                value={standingTables}
+                onChange={setStandingTables}
+              />
+              <Quantity
+                label="Nappe"
+                price="15 € / unité"
+                value={tablecloths}
+                onChange={setTablecloths}
+              />
+              <Quantity
+                label="Sous-plat perlé"
+                price="3 € / unité"
+                value={chargers}
+                onChange={setChargers}
+              />
+              <Quantity
+                label="Chafing dish"
+                price="25 € / unité"
+                value={chafing}
+                onChange={setChafing}
+              />
+              <Quantity
+                label="Serveur boissons"
+                price="160 € / serveur"
+                note="1 serveur conseillé pour 50 convives."
+                value={drinkServers}
+                onChange={setDrinkServers}
+              />
+            </div>
+          </details>
+          <p className="calculator-option-help calculator-sur-devis">
+            Sur devis, nous consulter : camion frigorifique, photographe,
+            vidéaste, DJ, décorateur, wedding planner.
+          </p>
+        </div>
+      </details>
       <div className="calculator-travel">
         <div className="calculator-travel-heading">
           <MapPin size={20} />
@@ -230,7 +570,7 @@ export default function PricingCalculator() {
           <small>
             {formulaNames[formula]} ·{" "}
             {price === null
-              ? "plus de 350 convives"
+              ? "à partir de 350 convives"
               : `${price} € × ${guests} adulte${guests > 1 ? "s" : ""}`}
           </small>
         </div>
@@ -368,7 +708,7 @@ export default function PricingCalculator() {
               }
             />
             <small className="calculator-field-help">
-              Repas adapté aux 5-12 ans.
+              Menu enfant adapté aux 3-12 ans.
             </small>
           </label>
           <label>
@@ -429,7 +769,8 @@ export default function PricingCalculator() {
                 : `${firstEstimate.toLocaleString("fr-FR", { minimumFractionDigits: firstEstimate % 1 ? 2 : 0 })} €`}
             </strong>
             <small>
-              Repas spécifiques et déchets inclus · hors options et déplacement
+              Repas spécifiques et déchets inclus par défaut · hors options et
+              déplacement
             </small>
           </div>
           <a href="#carte">
