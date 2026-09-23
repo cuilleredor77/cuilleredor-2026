@@ -9,7 +9,7 @@ export default function LegalShell({ eyebrow, title, updated, children }: { eyeb
     </header>
     <div className="legal-hero"><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>Dernière mise à jour : {updated}</p></div>
     <article className="legal-content">{children}</article>
-    <aside className="legal-contact"><strong>Une question sur ces informations ?</strong><a href="mailto:contact@cuilleredor.fr"><Mail size={17} /> contact@cuilleredor.fr</a><a href="tel:+33783748971"><Phone size={17} /> 07 83 74 89 71</a></aside>
+    <aside className="legal-contact"><strong>Une question sur ces informations ?</strong><a href="mailto:cuilleredor4@gmail.com"><Mail size={17} /> cuilleredor4@gmail.com</a><a href="tel:+33783748971"><Phone size={17} /> 07 83 74 89 71</a></aside>
     <footer className="legal-footer"><span>© 2026 Cuillère d’Or</span><nav><a href="/mentions-legales">Mentions légales</a><a href="/politique-confidentialite">Confidentialité</a></nav></footer>
   </main>;
 }
