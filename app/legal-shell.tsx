@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 export default function LegalShell({ eyebrow, title, updated, children }: { eyebrow: string; title: string; updated: string; children: ReactNode }) {
   return <main className="legal-page">
     <header className="legal-header">
-      <a href="/" aria-label="Retour à l’accueil Cuillère d’Or"><img src="/logo-cuillere-dor.png" width="1781" height="406" alt="Cuillère d’Or" /></a>
+      <a href="/" aria-label="Retour à l’accueil Cuillère d’Or"><img src="/logo-cuillere-dor.png" width="739" height="209" alt="Cuillère d’Or" /></a>
       <a className="legal-back" href="/"><ArrowLeft size={16} /> Retour au catalogue</a>
     </header>
     <div className="legal-hero"><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>Dernière mise à jour : {updated}</p></div>

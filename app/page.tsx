@@ -202,7 +202,7 @@ const offers = [
       "Viennoiseries · pièces salées et sucrées · œufs · fruits · boissons",
     secondLabel: "Idéal pour",
     secondValue: "Lendemains de mariage et réceptions familiales en journée",
-    price: "25 à 30 €",
+    price: "30 €",
     suffix: "/ personne · dès 10 convives",
     cta: "Choisir Brunch Signature",
     href: "#formulaire-brunch",
@@ -442,8 +442,7 @@ const faqItems = [
       "Acompte : 30 % à la signature",
       "Solde : 70 % deux mois avant l’événement",
       "Événement dans moins de 60 jours : règlement intégral à la signature",
-      "Virement bancaire ou espèces",
-      "Une caution de 250 € peut être demandée avec le solde, restituée en l’absence de retard, dommage, casse ou perte de matériel",
+      "Espèces, virement bancaire, PayPal et Wero acceptés",
     ],
   },
   {
@@ -484,27 +483,7 @@ const faqItems = [
   {
     question: "Comment se déroule une dégustation ?",
     answer:
-      "La dégustation se réserve sur rendez-vous, désormais au restaurant Chez Lina à Brunoy, et permet de goûter une sélection représentative, d’affiner le menu et d’échanger avec la cheffe. Elle est proposée à 70 € par personne, non déductible du devis final.",
-  },
-  {
-    question: "Que comprend le menu enfant et le repas prestataire ?",
-    answer:
-      "Le menu enfant (3 à 12 ans) et le repas prestataire sont proposés à 20 € par personne, au choix parmi poulet braisé et riz rouge, tenders de poulet et pommes de terre sautées, ou lasagnes. Nous recommandons de prévoir un repas pour chaque prestataire présent (photographe, vidéaste, DJ, musiciens, wedding planner, décorateur…). Une assiette de fromages avant le dessert est disponible en supplément à 9 € par personne.",
-  },
-  {
-    question: "Puis-je ajouter vaisselle, boissons ou wedding cake à mon devis ?",
-    answer:
-      "Oui. La calculette propose ces options en supplément : forfait boissons à 3,80 € par personne, service des boissons à 160 € par serveur, kits de vaisselle de 7 à 13 € par personne, linge de table, mobilier (mange-debout, chafing dish, étuve) et wedding cake réalisé par notre partenaire Love Lo Cake. Camion frigorifique, photographe, vidéaste, DJ, décorateur et wedding planner restent sur devis.",
-  },
-  {
-    question: "Une caution est-elle demandée ?",
-    answer:
-      "Une caution de 250 € peut être demandée avec le règlement du solde. Elle est restituée en l’absence de retard, dommage, casse ou perte de matériel. Les conditions exactes figurent dans le devis et le contrat.",
-  },
-  {
-    question: "Comment faire une réclamation ?",
-    answer:
-      "Toute réclamation doit être adressée par écrit au plus tard deux jours ouvrés après la prestation. Une réclamation formulée oralement doit être confirmée par écrit dans ce même délai.",
+      "La dégustation se réserve sur rendez-vous et permet de goûter une sélection représentative, d’affiner le menu et d’échanger avec la cheffe. Elle est proposée à 70 € par personne, non déductibles du devis final. Une box à domicile peut également être étudiée sur demande.",
   },
 ];
 const FAQ_VISIBLE_COUNT = 5;
@@ -522,8 +501,8 @@ export default function Home() {
         >
           <img
             src="/logo-cuillere-dor.png"
-            width="1781"
-            height="406"
+            width="739"
+            height="209"
             alt="Cuillère d'Or - Le paradis du goût"
           />
         </a>
@@ -958,9 +937,7 @@ export default function Home() {
                   <div className="formula-menu-body">
                     <p className="formula-menu-note">
                       Le menu du buffet, présenté sur plateaux et apporté à
-                      table. Composition standard : 2 viandes, 2 poissons, 4
-                      accompagnements et 1 légume. Tout supplément est
-                      facturé 5 €.
+                      table.
                     </p>
                     <a
                       className="formula-choose-cta"
@@ -1040,9 +1017,7 @@ export default function Home() {
                   <div className="formula-menu-body">
                     <p className="formula-menu-note">
                       Choisissez dans chaque catégorie pour composer votre
-                      buffet. Composition standard : 2 viandes, 2 poissons, 4
-                      accompagnements et 1 légume. Tout supplément est
-                      facturé 5 €.
+                      buffet.
                     </p>
                     <a
                       className="formula-choose-cta"
@@ -1129,16 +1104,13 @@ export default function Home() {
 
       <section className="personalisation section-pad" id="personnaliser">
         <div className="pricing-heading">
-          <p className="eyebrow dark">Options et déplacement</p>
+          <p className="eyebrow dark">Déplacement</p>
           <h2>
             Les détails qui font
             <br />
             <em>la différence.</em>
           </h2>
-          <p>
-            Ajoutez les options, le matériel et le déplacement séparément du
-            prix de la formule.
-          </p>
+          <p>Ajoutez le déplacement séparément du prix de la formule.</p>
         </div>
         <div id="personalisation-calculateur" />
       </section>
