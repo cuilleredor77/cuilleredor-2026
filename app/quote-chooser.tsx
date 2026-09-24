@@ -4,7 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, MessageCircle } from "lucide-react";
 
 type Choice = "event" | "brunch";
-type FormulaId = "buffet" | "plateau" | "assiette" | "aperitifs" | "brunch";
+type FormulaId =
+  | "buffet"
+  | "plateau"
+  | "assiette"
+  | "aperitifs"
+  | "brunch"
+  | "barbecue"
+  | "chef";
 type EstimateOption = { id: string; label: string; amount: number };
 type Estimate = {
   formulaId: FormulaId;
@@ -34,6 +41,8 @@ const FORMULA_FORM_VALUE: Record<FormulaId, string> = {
   assiette: "Service à l'assiette",
   aperitifs: "Apéritifs & vin d'honneur",
   brunch: "Brunch Signature",
+  barbecue: "Barbecue Party",
+  chef: "Chef à domicile",
 };
 
 function guestsLine(estimate: Estimate) {

@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 
-type Formula = "buffet" | "plateau" | "assiette" | "aperitifs" | "brunch";
+type Formula =
+  | "buffet"
+  | "plateau"
+  | "assiette"
+  | "aperitifs"
+  | "brunch"
+  | "barbecue"
+  | "chef";
 
 export default function PricingGrids() {
   const [openFormula, setOpenFormula] = useState<Formula | null>("buffet");
@@ -211,6 +218,50 @@ export default function PricingGrids() {
             <a href="#formulaire-brunch">
               Demander un devis brunch <ArrowRight size={16} />
             </a>
+          </div>
+        </details>
+        <details data-formule="barbecue" open={openFormula === "barbecue"}>
+          <summary
+            onClick={(event) => {
+              event.preventDefault();
+              toggle("barbecue");
+            }}
+          >
+            {summary("06", "Barbecue Party", "60 € par personne · dès 30 convives")}
+          </summary>
+          <div className="fixed-price-detail">
+            <div>
+              <span>Comprend</span>
+              <p>
+                5 pièces à grignoter · salades · grillades · accompagnements.
+                Le lieu doit autoriser les barbecues.
+              </p>
+            </div>
+            <strong>
+              60 € <small>par personne</small>
+            </strong>
+          </div>
+        </details>
+        <details data-formule="chef" open={openFormula === "chef"}>
+          <summary
+            onClick={(event) => {
+              event.preventDefault();
+              toggle("chef");
+            }}
+          >
+            {summary("07", "Chef à domicile", "Dès 95 € par personne · dès 20 couverts")}
+          </summary>
+          <div className="fixed-price-detail">
+            <div>
+              <span>Comprend</span>
+              <p>
+                Amuse-bouche, entrée, plat, dessert, vaisselle, nappage et
+                service inclus. Hors frais de déplacement.
+              </p>
+            </div>
+            <strong>
+              dès 95 € <small>par personne</small>
+            </strong>
           </div>
         </details>
       </div>
