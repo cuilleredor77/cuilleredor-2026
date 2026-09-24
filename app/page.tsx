@@ -1,6 +1,7 @@
 import {
   ArrowRight,
   ArrowUp,
+  ChevronDown,
   Clock3,
   ExternalLink,
   Mail,
@@ -100,7 +101,9 @@ function MenuCategory({
     <details className="formula-menu-category">
       <summary>
         <span>{category.title}</span>
-        <b aria-hidden="true">+</b>
+        <b aria-hidden="true">
+          <ChevronDown size={16} />
+        </b>
       </summary>
       <div className="formula-category-content">
         <img
@@ -812,7 +815,10 @@ export default function Home() {
                     </a>
                     <details className="formula-dishes" open>
                       <summary>
-                        Découvrir les créations <b aria-hidden="true">+</b>
+                        Découvrir les créations{" "}
+                        <b aria-hidden="true">
+                          <ChevronDown size={18} />
+                        </b>
                       </summary>
                       <div className="formula-menu-categories aperitif-menu-categories">
                         <details className="formula-menu-category">
@@ -820,7 +826,9 @@ export default function Home() {
                             <span>
                               Créations salées · {savoury.length} choix
                             </span>
-                            <b aria-hidden="true">+</b>
+                            <b aria-hidden="true">
+                              <ChevronDown size={16} />
+                            </b>
                           </summary>
                           <div className="formula-category-content">
                             <ul>
@@ -842,7 +850,9 @@ export default function Home() {
                         <details className="formula-menu-category">
                           <summary>
                             <span>Douceurs sucrées · {sweet.length} choix</span>
-                            <b aria-hidden="true">+</b>
+                            <b aria-hidden="true">
+                              <ChevronDown size={16} />
+                            </b>
                           </summary>
                           <div className="formula-category-content">
                             <ul>
@@ -895,7 +905,10 @@ export default function Home() {
                     </a>
                     <details className="formula-dishes" open>
                       <summary>
-                        Découvrir les plats <b aria-hidden="true">+</b>
+                        Découvrir les plats{" "}
+                        <b aria-hidden="true">
+                          <ChevronDown size={18} />
+                        </b>
                       </summary>
                       <div className="formula-menu-categories">
                         {buffetCategories.map((category) => (
@@ -935,7 +948,10 @@ export default function Home() {
                     </a>
                     <details className="formula-dishes" open>
                       <summary>
-                        Découvrir les plats <b aria-hidden="true">+</b>
+                        Découvrir les plats{" "}
+                        <b aria-hidden="true">
+                          <ChevronDown size={18} />
+                        </b>
                       </summary>
                       <div className="formula-menu-categories">
                         {platedCategories.map((category) => (
@@ -975,7 +991,10 @@ export default function Home() {
                     </a>
                     <details className="formula-dishes" open>
                       <summary>
-                        Découvrir les plats <b aria-hidden="true">+</b>
+                        Découvrir les plats{" "}
+                        <b aria-hidden="true">
+                          <ChevronDown size={18} />
+                        </b>
                       </summary>
                       <div className="formula-menu-categories">
                         {buffetCategories.map((category) => (
@@ -1009,13 +1028,18 @@ export default function Home() {
                     </a>
                     <details className="formula-dishes" open>
                       <summary>
-                        Découvrir le brunch <b aria-hidden="true">+</b>
+                        Découvrir le brunch{" "}
+                        <b aria-hidden="true">
+                          <ChevronDown size={18} />
+                        </b>
                       </summary>
                       <div className="formula-menu-categories brunch-menu">
                         <details className="formula-menu-category">
                           <summary>
                             <span>La formule comprend</span>
-                            <b aria-hidden="true">+</b>
+                            <b aria-hidden="true">
+                              <ChevronDown size={16} />
+                            </b>
                           </summary>
                           <div className="formula-category-content">
                             <img
