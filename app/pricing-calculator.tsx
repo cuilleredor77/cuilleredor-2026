@@ -4,14 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, ListChecks } from "lucide-react";
 
 type Formula = "buffet" | "plateau" | "assiette" | "aperitifs" | "brunch";
-type Service = "avec-vin" | "sans-vin" | "sans-service";
+type Service = "avec-vin" | "sans-vin";
 type DishKit = "none" | "essentiel" | "complet" | "prestige";
 
 const services: Record<Formula, Array<{ value: Service; label: string }>> = {
   buffet: [
     { value: "avec-vin", label: "Avec vin d’honneur" },
     { value: "sans-vin", label: "Sans vin d’honneur" },
-    { value: "sans-service", label: "Sans service" },
   ],
   plateau: [
     { value: "avec-vin", label: "Avec vin d’honneur" },
@@ -25,12 +24,15 @@ const services: Record<Formula, Array<{ value: Service; label: string }>> = {
   brunch: [{ value: "sans-vin", label: "Brunch Signature" }],
 };
 const MIN_GUESTS: Record<Formula, number> = {
-  buffet: 10,
-  plateau: 10,
-  assiette: 10,
-  aperitifs: 30,
-  brunch: 30,
+  buffet: 30,
+  plateau: 30,
+  assiette: 30,
+  aperitifs: 50,
+  brunch: 50,
 };
+const CHILD_PRICE = 25;
+const PROVIDER_PRICE = 30;
+const HONOR_WINE_SUPPLEMENT = 5;
 const formulaNames: Record<Formula, string> = {
   buffet: "Buffet",
   plateau: "Plateau",
@@ -45,25 +47,14 @@ function unitPrice(
   totalGuests: number,
 ) {
   if (formula === "aperitifs") return 25;
-  if (formula === "brunch") return 30;
-  if (formula === "assiette") {
-    if (totalGuests >= 350) return null;
-    return totalGuests < 200
-      ? service === "avec-vin"
-        ? 70
-        : 65
-      : service === "avec-vin"
-        ? 65
-        : 60;
-  }
+  if (formula === "brunch") return 35;
   const range = totalGuests < 200 ? 0 : totalGuests < 350 ? 1 : 2;
-  if (formula === "plateau")
-    return service === "avec-vin" ? [50, 45, 40][range] : [45, 40, 35][range];
-  return {
-    "avec-vin": [45, 40, 35],
-    "sans-vin": [40, 35, 30],
-    "sans-service": [35, 30, 25],
-  }[service][range];
+  const base = {
+    buffet: [45, 40, 35],
+    plateau: [50, 45, 40],
+    assiette: [70, 65, 60],
+  }[formula][range];
+  return service === "avec-vin" ? base + HONOR_WINE_SUPPLEMENT : base;
 }
 
 type OptionDef = {
@@ -92,8 +83,8 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
       {
         id: "drinks",
         label: "Forfait boissons sans alcool (colas, sodas, eaux)",
-        unit: 3.8,
-        unitLabel: "3,80 €/pers.",
+        unit: 5,
+        unitLabel: "5 €/pers.",
         kind: "toggle",
         basis: (_guests, totalGuests) => totalGuests,
       },
@@ -105,6 +96,14 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
         kind: "toggle",
         basis: (_guests, totalGuests) => Math.max(1, Math.ceil(totalGuests / 50)),
         help: "1 serveur par tranche de 50 convives, calculé automatiquement.",
+      },
+      {
+        id: "cocktails",
+        label: "Cocktails (1 litre pour environ 4 convives)",
+        unit: 10,
+        unitLabel: "10 €/litre",
+        kind: "qty",
+        qtyLabel: "litre(s)",
       },
       {
         id: "cakeService",
@@ -169,6 +168,14 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
         unit: 150,
         unitLabel: "150 € le forfait",
         kind: "toggle",
+      },
+      {
+        id: "maitreHotel",
+        label: "Maître d’hôtel",
+        unit: 160,
+        unitLabel: "160 €",
+        kind: "toggle",
+        help: "Coordonne l’équipe et le lieu jusqu’à la fin de soirée.",
       },
       {
         id: "setup",
@@ -329,14 +336,14 @@ export default function PricingCalculator() {
   if (children)
     optionLines.push({
       id: "children",
-      label: `${children} repas enfant${children > 1 ? "s" : ""} (20 €/pers.)`,
-      amount: children * 20,
+      label: `${children} repas enfant${children > 1 ? "s" : ""} (${CHILD_PRICE} €/pers.)`,
+      amount: children * CHILD_PRICE,
     });
   if (providers)
     optionLines.push({
       id: "providers",
-      label: `${providers} repas prestataire${providers > 1 ? "s" : ""} (20 €/pers.)`,
-      amount: providers * 20,
+      label: `${providers} repas prestataire${providers > 1 ? "s" : ""} (${PROVIDER_PRICE} €/pers.)`,
+      amount: providers * PROVIDER_PRICE,
     });
   if ((formula === "brunch" || formula === "aperitifs") && extraPieces)
     optionLines.push({
@@ -557,7 +564,7 @@ export default function PricingCalculator() {
               }
             />
             <small className="calculator-field-help">
-              Repas adapté aux 5-12 ans · 20 €/personne.
+              Repas adapté aux 5-12 ans · 25 €/personne.
             </small>
           </label>
           <label>
@@ -575,7 +582,7 @@ export default function PricingCalculator() {
               }
             />
             <small className="calculator-field-help">
-              Photographe, DJ, vidéaste… · 20 €/personne.
+              Photographe, DJ, vidéaste… · 30 €/personne.
             </small>
           </label>
         </div>
