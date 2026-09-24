@@ -3,12 +3,13 @@
   "configurations": [
     {
       "name": "dev",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "sh",
       "runtimeArgs": [
-        "run",
-        "dev"
+        "-c",
+        "WRANGLER_LOG_PATH=.wrangler/wrangler.log npx vite --port ${PORT:-5173}"
       ],
-      "port": 5173
+      "port": 5173,
+      "autoPort": true
     }
   ]
 }
