@@ -36,8 +36,8 @@ const ENTRY = {
 };
 
 const FORMULA_FORM_VALUE: Record<FormulaId, string> = {
-  buffet: "Buffet",
-  plateau: "Plateau",
+  buffet: "Service Buffet",
+  plateau: "Service Plateau",
   assiette: "Service à l'assiette",
   aperitifs: "Apéritifs & vin d'honneur",
   brunch: "Brunch Signature",
