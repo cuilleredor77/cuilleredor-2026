@@ -138,8 +138,8 @@ const offers = [
     firstValue: "2 viandes · 2 poissons · 4 accompagnements · 1 légume",
     secondLabel: "Tarifs",
     secondValue: "Tarifs dégressifs pour les grandes réceptions",
-    price: "à partir de 35 €",
-    suffix: "/ personne · 10 à 199 convives",
+    price: "35 à 45 €",
+    suffix: "/ personne · dès 30 convives",
     cta: "Choisir le buffet",
   },
   {
@@ -154,8 +154,8 @@ const offers = [
     firstValue: "2 viandes · 2 poissons · 4 accompagnements · 1 légume",
     secondLabel: "Idéal pour",
     secondValue: "Réception élégante avec un service fluide",
-    price: "35 à 50 €",
-    suffix: "/ personne",
+    price: "40 à 50 €",
+    suffix: "/ personne · dès 30 convives",
     cta: "Choisir le plateau",
   },
   {
@@ -171,7 +171,7 @@ const offers = [
     secondLabel: "Idéal pour",
     secondValue: "Mariage, dîner de gala et réception formelle",
     price: "60 à 70 €",
-    suffix: "/ personne",
+    suffix: "/ personne · dès 30 convives",
     cta: "Choisir le service à l’assiette",
   },
   {
@@ -181,13 +181,13 @@ const offers = [
     image: "/hero-bouchee",
     imageAlt: "Création apéritive Cuillère d’Or",
     description:
-      "Dix pièces salées et sucrées et quatre cocktails signature pour ouvrir votre réception.",
+      "Dix pièces salées ou sucrées au choix pour ouvrir votre réception. Cocktails en option.",
     firstLabel: "Comprend",
-    firstValue: "10 pièces individuelles · 4 cocktails",
+    firstValue: "10 pièces salées ou sucrées au choix",
     secondLabel: "Idéal pour",
     secondValue: "Vin d’honneur, cocktail et événement d’entreprise",
     price: "25 €",
-    suffix: "/ personne · dès 30 convives",
+    suffix: "/ personne · dès 50 convives",
     cta: "Choisir les apéritifs",
   },
   {
@@ -203,8 +203,8 @@ const offers = [
       "Viennoiseries · pièces salées et sucrées · œufs · fruits · boissons",
     secondLabel: "Idéal pour",
     secondValue: "Lendemains de mariage et réceptions familiales en journée",
-    price: "30 €",
-    suffix: "/ personne · dès 30 convives",
+    price: "35 €",
+    suffix: "/ personne · dès 50 convives",
     cta: "Choisir le brunch",
     href: "#formulaire-brunch",
   },
@@ -429,7 +429,7 @@ const faqItems = [
   {
     question: "À partir de combien de convives intervenez-vous ?",
     answer:
-      "Nos prestations sont accessibles à partir de 10 participants, adultes, enfants et prestataires compris (30 convives minimum pour le vin d’honneur et le Brunch Signature).",
+      "Nos prestations sont accessibles à partir de 30 convives, adultes, enfants et prestataires compris (50 convives minimum pour le vin d’honneur et le Brunch Signature seuls).",
   },
   {
     question: "Comment réserver une date ?",
@@ -454,7 +454,7 @@ const faqItems = [
   {
     question: "Que comprend le vin d’honneur ?",
     answer:
-      "Le vin d’honneur comprend 10 pièces cocktail salées et sucrées, 4 cocktails signature au choix et le service pendant toute sa durée.",
+      "Le vin d’honneur comprend 10 pièces cocktail salées ou sucrées au choix et le service pendant toute sa durée. Les cocktails sont en option (10 € le litre, environ 4 convives par litre).",
   },
   {
     question: "Le menu peut-il être personnalisé ?",
@@ -480,6 +480,16 @@ const faqItems = [
     question: "Comment sont calculés les frais de déplacement ?",
     answer:
       "Ils sont calculés au départ de Vert-Saint-Denis, sur la base de 1,70 € par kilomètre aller-retour, puis présentés sur une ligne distincte du devis. Les prestations hors Île-de-France et à l’international sont étudiées sur demande.",
+  },
+  {
+    question: "Proposez-vous d’autres formules (Barbecue Party, Chef à domicile) ?",
+    answer:
+      "Oui. Barbecue Party : 60 € par personne, grillades cuites en direct, à condition que le lieu autorise les barbecues. Chef à domicile : dès 95 € par personne, dès 20 couverts, amuse-bouche, entrée, plat, dessert, vaisselle, nappage et service inclus. Frais de déplacement en sus. Demandez votre devis pour ces formules.",
+  },
+  {
+    question: "Y a-t-il une caution et des frais de dépassement ?",
+    answer:
+      "Une caution de 250 € est versée avec le solde, puis restituée après l’événement, sauf dommage, casse ou perte de matériel. Au-delà de 30 minutes de dépassement, 80 € par heure entamée et par serveur. Le nombre de convives est figé 60 jours avant l’événement : il ne peut ensuite qu’augmenter.",
   },
   {
     question: "Comment se déroule une dégustation ?",
@@ -571,7 +581,7 @@ export default function Home() {
           </div>
           <div className="hero-facts">
             <span>
-              <Users size={20} aria-hidden="true" /> Dès 10 convives
+              <Users size={20} aria-hidden="true" /> Dès 30 convives
             </span>
             <span>
               <MapPin size={20} aria-hidden="true" /> Île-de-France · ailleurs
@@ -794,8 +804,8 @@ export default function Home() {
                     <div>
                       <strong>Apéritifs & vin d’honneur</strong>
                       <small>
-                        10 pièces au choix · salées ou sucrées · 4 cocktails
-                        signature
+                        10 pièces au choix · salées ou sucrées ·
+                        cocktails en option
                       </small>
                     </div>
                     <b aria-hidden="true">+</b>
