@@ -3,7 +3,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, ListChecks } from "lucide-react";
 
-type Formula = "buffet" | "plateau" | "assiette" | "aperitifs" | "brunch";
+type Formula =
+  | "buffet"
+  | "plateau"
+  | "assiette"
+  | "aperitifs"
+  | "brunch"
+  | "barbecue"
+  | "chef";
 type Service = "avec-vin" | "sans-vin";
 type DishKit = "none" | "essentiel" | "complet" | "prestige";
 
@@ -22,6 +29,8 @@ const services: Record<Formula, Array<{ value: Service; label: string }>> = {
   ],
   aperitifs: [{ value: "avec-vin", label: "Vin d’honneur inclus" }],
   brunch: [{ value: "sans-vin", label: "Brunch Signature" }],
+  barbecue: [{ value: "sans-vin", label: "Barbecue Party" }],
+  chef: [{ value: "sans-vin", label: "Chef à domicile · tout compris" }],
 };
 const MIN_GUESTS: Record<Formula, number> = {
   buffet: 30,
@@ -29,6 +38,8 @@ const MIN_GUESTS: Record<Formula, number> = {
   assiette: 30,
   aperitifs: 50,
   brunch: 50,
+  barbecue: 30,
+  chef: 20,
 };
 const CHILD_PRICE = 25;
 const PROVIDER_PRICE = 30;
@@ -39,6 +50,8 @@ const formulaNames: Record<Formula, string> = {
   assiette: "Service à l’assiette",
   aperitifs: "Apéritifs & vin d’honneur",
   brunch: "Brunch Signature",
+  barbecue: "Barbecue Party",
+  chef: "Chef à domicile",
 };
 
 function unitPrice(
@@ -48,6 +61,8 @@ function unitPrice(
 ) {
   if (formula === "aperitifs") return 25;
   if (formula === "brunch") return 35;
+  if (formula === "barbecue") return 60;
+  if (formula === "chef") return 95;
   const range = totalGuests < 200 ? 0 : totalGuests < 350 ? 1 : 2;
   const base = {
     buffet: [45, 40, 35],
@@ -255,6 +270,10 @@ export default function PricingCalculator() {
       const nextMin = MIN_GUESTS[next];
       setGuests((current) => (current < nextMin ? nextMin : current));
       if (next !== "brunch" && next !== "aperitifs") setExtraPieces(0);
+      if (next === "chef") {
+        setChildren(0);
+        setProviders(0);
+      }
       setGuestError("");
     };
     window.addEventListener("cuillere:formula", syncFormula);
@@ -324,7 +343,8 @@ export default function PricingCalculator() {
     setOptionValues((current) => ({ ...current, [id]: value }));
   }
 
-  const totalGuests = guests + children + providers;
+  const isChef = formula === "chef";
+  const totalGuests = isChef ? guests : guests + children + providers;
   const price = useMemo(
     () => unitPrice(formula, service, totalGuests),
     [formula, service, totalGuests],
@@ -333,13 +353,13 @@ export default function PricingCalculator() {
 
   const optionLines: Array<{ id: string; label: string; amount: number }> =
     [];
-  if (children)
+  if (children && !isChef)
     optionLines.push({
       id: "children",
       label: `${children} repas enfant${children > 1 ? "s" : ""} (${CHILD_PRICE} €/pers.)`,
       amount: children * CHILD_PRICE,
     });
-  if (providers)
+  if (providers && !isChef)
     optionLines.push({
       id: "providers",
       label: `${providers} repas prestataire${providers > 1 ? "s" : ""} (${PROVIDER_PRICE} €/pers.)`,
@@ -351,7 +371,7 @@ export default function PricingCalculator() {
       label: `${extraPieces} pièce${extraPieces > 1 ? "s" : ""} supplémentaire${extraPieces > 1 ? "s" : ""} au-delà des 10 incluses (2,50 €/pièce)`,
       amount: extraPieces * 2.5,
     });
-  for (const category of OPTION_CATEGORIES) {
+  for (const category of isChef ? [] : OPTION_CATEGORIES) {
     for (const def of category.options) {
       const value = optionValues[def.id] || 0;
       const amount = optionAmount(def, value, guests, totalGuests);
@@ -364,7 +384,7 @@ export default function PricingCalculator() {
       });
     }
   }
-  if (dishKit !== "none")
+  if (dishKit !== "none" && !isChef)
     optionLines.push({
       id: "dishKit",
       label: `Vaisselle ${dishKit} (${totalGuests} kits × ${dishKitPrices[dishKit]} €)`,
@@ -386,6 +406,10 @@ export default function PricingCalculator() {
       setGuests(nextMin);
     }
     if (next !== "brunch" && next !== "aperitifs") setExtraPieces(0);
+    if (next === "chef") {
+      setChildren(0);
+      setProviders(0);
+    }
     setGuestError("");
     window.dispatchEvent(
       new CustomEvent<Formula>("cuillere:formula", { detail: next }),
@@ -489,13 +513,19 @@ export default function PricingCalculator() {
               <option value="assiette">Service à l’assiette</option>
               <option value="aperitifs">Apéritifs & vin d’honneur</option>
               <option value="brunch">Brunch Signature</option>
+              <option value="barbecue">Barbecue Party</option>
+              <option value="chef">Chef à domicile</option>
             </select>
           </label>
           <label>
             <span>Niveau de service</span>
             <select
               value={service}
-              disabled={formula === "brunch"}
+              disabled={
+                formula === "brunch" ||
+                formula === "barbecue" ||
+                formula === "chef"
+              }
               onChange={(e) => setService(e.target.value as Service)}
             >
               {services[formula].map((item) => (
@@ -549,6 +579,7 @@ export default function PricingCalculator() {
               {guestError || `Entre ${minGuests} et 1 000 adultes.`}
             </small>
           </label>
+          {!isChef && (
           <label>
             <span>Enfants</span>
             <input
@@ -567,6 +598,8 @@ export default function PricingCalculator() {
               Repas adapté aux 5-12 ans · 25 €/personne.
             </small>
           </label>
+          )}
+          {!isChef && (
           <label>
             <span>Prestataires</span>
             <input
@@ -585,6 +618,7 @@ export default function PricingCalculator() {
               Photographe, DJ, vidéaste… · 30 €/personne.
             </small>
           </label>
+          )}
         </div>
         <div className="calculator-guest-total">
           <span>Total des convives</span>
@@ -597,6 +631,7 @@ export default function PricingCalculator() {
         </div>
       </div>
 
+      {!isChef && (
       <details className="calculator-options-toggle">
         <summary>
           <span>Ajouter des options</span>
@@ -694,6 +729,13 @@ export default function PricingCalculator() {
           </p>
         </div>
       </details>
+      )}
+      {isChef && (
+        <p className="calculator-option-note">
+          Vaisselle, nappage et service inclus. Seuls les frais de déplacement
+          s’ajoutent.
+        </p>
+      )}
 
       </div>
       <div className="calculator-summary-sticky" ref={summaryRef}>
@@ -739,8 +781,8 @@ export default function PricingCalculator() {
         <ul className="calculator-breakdown">
           <li>
             <span>
-              {guests} adulte{guests > 1 ? "s" : ""} × {price} €/pers. (
-              {selectedService})
+              {guests} adulte{guests > 1 ? "s" : ""} × {isChef ? "dès " : ""}
+              {price} €/pers. ({selectedService})
             </span>
             <span>
               {mealTotal!.toLocaleString("fr-FR", { minimumFractionDigits: mealTotal! % 1 ? 2 : 0 })}{" "}

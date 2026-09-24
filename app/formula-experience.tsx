@@ -2,7 +2,14 @@
 
 import { useEffect } from "react";
 
-type Formula = "buffet" | "plateau" | "assiette" | "aperitifs" | "brunch";
+type Formula =
+  | "buffet"
+  | "plateau"
+  | "assiette"
+  | "aperitifs"
+  | "brunch"
+  | "barbecue"
+  | "chef";
 
 export default function FormulaExperience() {
   useEffect(() => {

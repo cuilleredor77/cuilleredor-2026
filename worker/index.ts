@@ -30,7 +30,7 @@ interface ExecutionContext {
 // without needing a nonce.
 const SECURITY_HEADERS: Record<string, string> = {
   "content-security-policy":
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-src https://docs.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://tracker.metricool.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tracker.metricool.com; font-src 'self'; frame-src https://docs.google.com; connect-src 'self' https://tracker.metricool.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'",
   "x-content-type-options": "nosniff",
   "x-frame-options": "SAMEORIGIN",
   "referrer-policy": "strict-origin-when-cross-origin",
