@@ -208,6 +208,38 @@ const offers = [
     cta: "Choisir le brunch",
     href: "#formulaire-brunch",
   },
+  {
+    number: "06",
+    title: "Barbecue Party",
+    tone: "Convivial & festif",
+    image: "/poissons-grilles",
+    imageAlt: "Grillades de barbecue Cuillère d’Or",
+    description:
+      "Des grillades généreuses cuites en direct, dans une ambiance décontractée, pour les beaux jours.",
+    firstLabel: "Comprend",
+    firstValue: "Grillades · salades · accompagnements",
+    secondLabel: "Idéal pour",
+    secondValue: "Anniversaires, fêtes de famille, repas entre amis",
+    price: "60 €",
+    suffix: "/ personne · dès 30 convives",
+    cta: "Choisir le barbecue",
+  },
+  {
+    number: "07",
+    title: "Chef à domicile",
+    tone: "Haut de gamme",
+    image: "/service",
+    imageAlt: "Service à table pour un chef à domicile Cuillère d’Or",
+    description:
+      "Une offre clé en main chez vous : la cheffe Huguette apporte la cuisine, la vaisselle et le service.",
+    firstLabel: "Comprend",
+    firstValue: "Amuse-bouche · entrée · plat · dessert · vaisselle · service",
+    secondLabel: "Idéal pour",
+    secondValue: "Réception chez vous, sans rien à organiser",
+    price: "dès 95 €",
+    suffix: "/ personne · dès 20 couverts",
+    cta: "Choisir le chef à domicile",
+  },
 ];
 
 const savoury = [
@@ -714,8 +746,8 @@ export default function Home() {
                 {offer.price} <small>{offer.suffix}</small>
               </div>
               <a
-                href="#carte"
-                data-formula-target="menu"
+                href={offer.number <= "05" ? "#carte" : "#tarifs"}
+                data-formula-target={offer.number <= "05" ? "menu" : undefined}
                 data-select-formula={
                   (
                     {
@@ -724,6 +756,8 @@ export default function Home() {
                       "03": "assiette",
                       "04": "aperitifs",
                       "05": "brunch",
+                      "06": "barbecue",
+                      "07": "chef",
                     } as Record<string, string>
                   )[offer.number]
                 }
