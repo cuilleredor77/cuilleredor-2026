@@ -1291,9 +1291,7 @@ export default function Home() {
           <strong>Cuillère d’Or</strong>
           <p>Service traiteur &amp; laboratoire à Brunoy.</p>
           <small>
-            Huguette MVUNDA-KILOLA · EI
-            <br />
-            SIREN 889 933 800
+            Huguette MVUNDA-KILOLA · EI · SIREN 889 933 800
           </small>
         </div>
         <div className="footer-action">
