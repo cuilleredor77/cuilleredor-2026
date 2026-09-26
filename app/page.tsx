@@ -200,7 +200,7 @@ const offers = [
       "Une formule complète, salée et sucrée, pour prolonger les retrouvailles en toute simplicité.",
     firstLabel: "Comprend",
     firstValue:
-      "Viennoiseries · pièces salées et sucrées · œufs · fruits · boissons",
+      "Viennoiseries · pancakes · œufs · boissons · 10 pièces au choix",
     secondLabel: "Idéal pour",
     secondValue: "Lendemains de mariage et réceptions familiales en journée",
     price: "35 €",
@@ -456,7 +456,7 @@ const faqItems = [
   {
     question: "Quelle formule choisir pour mon événement ?",
     answer:
-      "Comparez les 5 formules dans la section « Nos formules » : chacune précise son ambiance et son budget. Si vous hésitez entre deux options, écrivez-nous sur WhatsApp. Nous vous conseillerons selon le nombre de convives et le style de votre réception.",
+      "Comparez les 7 formules dans la section « Nos formules » : chacune précise son ambiance et son budget. Si vous hésitez entre deux options, écrivez-nous sur WhatsApp. Nous vous conseillerons selon le nombre de convives et le style de votre réception.",
   },
   {
     question: "À partir de combien de convives intervenez-vous ?",
@@ -584,7 +584,7 @@ export default function Home() {
           />
         </div>
         <div className="hero-content">
-          <p className="eyebrow">Service traiteur · Catalogue 2026</p>
+          <p className="eyebrow">Service traiteur · Catalogue 2027 · 2028</p>
           <h1>
             <span className="sr-only">
               Traiteur événementiel en Île-de-France —{" "}
@@ -1098,7 +1098,6 @@ export default function Home() {
                               <li>Viennoiseries et pièces sucrées</li>
                               <li>Pièces salées</li>
                               <li>Œufs</li>
-                              <li>Fruits frais de saison</li>
                               <li>Boissons chaudes et jus de fruits</li>
                             </ul>
                           </div>
@@ -1291,9 +1290,7 @@ export default function Home() {
           <strong>Cuillère d’Or</strong>
           <p>Service traiteur &amp; laboratoire à Brunoy.</p>
           <small>
-            Huguette MVUNDA-KILOLA · EI
-            <br />
-            SIREN 889 933 800
+            Huguette MVUNDA-KILOLA · EI · SIREN 889 933 800
           </small>
         </div>
         <div className="footer-action">

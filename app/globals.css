@@ -5335,15 +5335,14 @@ img[width][height] {
   }
 }
 
-/* Footer éditorial — structure de la maquette de référence */
+/* Footer compact */
 footer {
-  min-height: 500px;
-  padding: 52px clamp(28px, 4.8vw, 92px) 26px;
+  min-height: 0;
+  padding: 26px clamp(20px, 4.8vw, 92px) 18px;
   display: grid;
-  grid-template-columns: 1.1fr 0.95fr 0.62fr;
-  grid-template-rows: 1fr auto;
-  align-items: start;
-  gap: 40px 6vw;
+  grid-template-columns: 1.2fr auto auto;
+  align-items: center;
+  gap: 16px 4vw;
   background: #191919;
   color: rgba(255, 255, 255, 0.72);
 }
@@ -5354,45 +5353,42 @@ footer {
   display: block;
   color: #ddb42b;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.8rem, 2.2vw, 2.4rem);
+  font-size: 1.5rem;
   font-weight: 400;
   line-height: 1.1;
   letter-spacing: -0.02em;
 }
 .footer-brand p {
-  margin: 16px 0 4px;
+  margin: 6px 0 2px;
   color: rgba(255, 255, 255, 0.56);
-  font-size: 1rem;
-  line-height: 1.65;
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 .footer-brand small {
   margin: 0;
   color: rgba(255, 255, 255, 0.48);
-  font-size: 0.92rem;
-  line-height: 1.65;
+  font-size: 0.76rem;
+  line-height: 1.5;
 }
 .footer-action {
   display: flex !important;
   flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
+  gap: 10px;
 }
 .footer-action > span {
-  color: rgba(255, 255, 255, 0.46);
-  font-size: 0.82rem;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
+  display: none;
 }
 .footer-action > a {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: max-content;
-  padding: 12px 20px;
+  padding: 9px 16px;
   color: #171717;
   background: #ddb42b;
   border-radius: 4px;
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -5401,36 +5397,38 @@ footer {
   background: #fff;
 }
 .footer-legal {
-  display: grid !important;
-  gap: 10px !important;
-  margin-top: 4px;
+  display: flex !important;
+  gap: 16px !important;
+  margin-top: 0;
 }
 .footer-legal a {
   color: rgba(255, 255, 255, 0.5);
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   font-weight: 400;
   letter-spacing: 0.02em;
   text-decoration: none;
   text-transform: none;
+  white-space: nowrap;
 }
 .footer-legal a:hover {
   color: #ddb42b;
 }
 .footer-socials {
-  display: grid !important;
-  gap: 14px;
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 .footer-socials a {
-  min-height: 62px;
-  padding: 0 20px;
+  min-height: 38px;
+  padding: 0 12px;
   display: grid;
-  grid-template-columns: 20px 1fr 14px;
+  grid-template-columns: 16px auto;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0;
   color: rgba(255, 255, 255, 0.94);
-  font-size: 1rem;
+  font-size: 0.74rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -5440,31 +5438,26 @@ footer {
   background: rgba(255, 255, 255, 0.025);
 }
 .footer-socials svg:last-child {
-  color: rgba(255, 255, 255, 0.44);
+  display: none;
 }
 .footer-copy {
   grid-column: 1/-1;
   justify-self: stretch;
   width: 100%;
   margin: 0;
-  padding-top: 30px;
+  padding-top: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
   color: rgba(255, 255, 255, 0.46);
-  font-size: 0.78rem;
+  font-size: 0.68rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   white-space: normal;
 }
 @media (max-width: 1050px) and (min-width: 721px) {
   footer {
-    grid-template-columns: 1fr 1fr;
-    min-height: auto;
+    grid-template-columns: 1fr auto;
   }
   .footer-socials {
-    grid-column: 1/-1;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .footer-copy {
     grid-column: 1/-1;
   }
   .contact {
@@ -5476,18 +5469,10 @@ footer {
 }
 @media (max-width: 720px) {
   footer {
-    min-height: auto;
-    padding: 52px 20px 26px;
+    padding: 26px 20px 18px;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto;
-    gap: 38px;
+    gap: 18px;
     text-align: left;
-  }
-  .footer-brand strong {
-    font-size: clamp(2rem, 10vw, 2.6rem);
-  }
-  .footer-brand p {
-    margin-top: 14px;
   }
   .footer-action,
   .footer-brand {
@@ -5495,16 +5480,11 @@ footer {
   }
   .footer-socials {
     grid-column: 1;
-    grid-template-columns: minmax(0, 1fr);
     width: 100%;
-  }
-  .footer-socials a {
-    min-height: 58px;
   }
   .footer-copy {
     grid-column: 1;
-    justify-self: stretch;
-    padding-top: 24px;
+    padding-top: 14px;
     line-height: 1.7;
   }
 }

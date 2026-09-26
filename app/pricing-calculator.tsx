@@ -148,14 +148,6 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
         kind: "qty",
         qtyLabel: "unité(s)",
       },
-      {
-        id: "tablecloths",
-        label: "Nappe",
-        unit: 15,
-        unitLabel: "15 €/unité",
-        kind: "qty",
-        qtyLabel: "unité(s)",
-      },
     ],
   },
   {
@@ -256,7 +248,6 @@ export default function PricingCalculator() {
   const [service, setService] = useState<Service>("avec-vin");
   const [children, setChildren] = useState(0);
   const [providers, setProviders] = useState(0);
-  const [extraPieces, setExtraPieces] = useState(0);
   const [optionValues, setOptionValues] = useState<Record<string, number>>(
     { waste: 1 },
   );
@@ -269,7 +260,6 @@ export default function PricingCalculator() {
       setService(services[next][0].value);
       const nextMin = MIN_GUESTS[next];
       setGuests((current) => (current < nextMin ? nextMin : current));
-      if (next !== "brunch" && next !== "aperitifs") setExtraPieces(0);
       if (next === "chef") {
         setChildren(0);
         setProviders(0);
@@ -365,12 +355,6 @@ export default function PricingCalculator() {
       label: `${providers} repas prestataire${providers > 1 ? "s" : ""} (${PROVIDER_PRICE} €/pers.)`,
       amount: providers * PROVIDER_PRICE,
     });
-  if ((formula === "brunch" || formula === "aperitifs") && extraPieces)
-    optionLines.push({
-      id: "extraPieces",
-      label: `${extraPieces} pièce${extraPieces > 1 ? "s" : ""} supplémentaire${extraPieces > 1 ? "s" : ""} au-delà des 10 incluses (2,50 €/pièce)`,
-      amount: extraPieces * 2.5,
-    });
   for (const category of isChef ? [] : OPTION_CATEGORIES) {
     for (const def of category.options) {
       const value = optionValues[def.id] || 0;
@@ -405,7 +389,6 @@ export default function PricingCalculator() {
     if (guests < nextMin) {
       setGuests(nextMin);
     }
-    if (next !== "brunch" && next !== "aperitifs") setExtraPieces(0);
     if (next === "chef") {
       setChildren(0);
       setProviders(0);
@@ -466,7 +449,6 @@ export default function PricingCalculator() {
     setService(services.buffet[0].value);
     setChildren(0);
     setProviders(0);
-    setExtraPieces(0);
     setOptionValues({ waste: 1 });
     setDishKit("none");
     setGuestError("");
@@ -535,27 +517,6 @@ export default function PricingCalculator() {
               ))}
             </select>
           </label>
-          {(formula === "brunch" || formula === "aperitifs") && (
-            <label>
-              <span>Pièces supplémentaires</span>
-              <input
-                type="number"
-                min="0"
-                max="1000"
-                inputMode="numeric"
-                value={extraPieces}
-                onChange={(e) =>
-                  setExtraPieces(
-                    Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
-                  )
-                }
-              />
-              <small className="calculator-field-help">
-                10 pièces incluses par personne, réparties comme vous voulez
-                entre salé et sucré · 2,50 €/pièce au-delà.
-              </small>
-            </label>
-          )}
         </div>
         <div className="calculator-controls-row calculator-controls-row--people">
           <label>
