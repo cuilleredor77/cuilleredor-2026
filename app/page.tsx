@@ -1315,7 +1315,7 @@ export default function Home() {
             <ExternalLink size={14} />
           </a>
           <a
-            href="https://www.tiktok.com/@cuilleredorr"
+            href="https://www.tiktok.com/@cuillere.dor"
             target="_blank"
             rel="noreferrer"
             aria-label="Suivre Cuillère d'Or sur TikTok, ouverture dans un nouvel onglet"

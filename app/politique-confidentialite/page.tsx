@@ -4,6 +4,9 @@ import LegalShell from "../legal-shell";
 export const metadata: Metadata = {
   title: "Politique de confidentialité | Cuillère d’Or",
   description: "Traitement des données personnelles et exercice de vos droits auprès de Cuillère d’Or.",
+  alternates: {
+    canonical: "/politique-confidentialite",
+  },
 };
 
 export default function PolitiqueConfidentialite() {

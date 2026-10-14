@@ -4,6 +4,9 @@ import LegalShell from "../legal-shell";
 export const metadata: Metadata = {
   title: "Mentions légales | Cuillère d’Or",
   description: "Informations légales et coordonnées de Cuillère d’Or, service traiteur événementiel.",
+  alternates: {
+    canonical: "/mentions-legales",
+  },
 };
 
 export default function MentionsLegales() {
