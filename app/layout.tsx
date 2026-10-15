@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 const SITE_URL = import.meta.env.PROD
-  ? "https://cuilleredor-2026.cuilleredor4.workers.dev"
+  ? "https://cuilleredor.fr"
   : "http://localhost:5173";
 const TITLE = "Cuillère d’Or | Traiteur événementiel - Catalogue 2026";
 const DESCRIPTION =

@@ -26,6 +26,6 @@ Les tarifs et frais de déplacement complets sont détaillés sur la page tarifs
 
 ## Pages
 
-- [Accueil](https://cuilleredor-2026.cuilleredor4.workers.dev/) : formules, tarifs, carte, FAQ, devis
-- [Mentions légales](https://cuilleredor-2026.cuilleredor4.workers.dev/mentions-legales)
-- [Politique de confidentialité](https://cuilleredor-2026.cuilleredor4.workers.dev/politique-confidentialite)
+- [Accueil](https://cuilleredor.fr/) : formules, tarifs, carte, FAQ, devis
+- [Mentions légales](https://cuilleredor.fr/mentions-legales)
+- [Politique de confidentialité](https://cuilleredor.fr/politique-confidentialite)

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cuilleredor-2026.cuilleredor4.workers.dev/sitemap.xml
+Sitemap: https://cuilleredor.fr/sitemap.xml
