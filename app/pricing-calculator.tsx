@@ -231,6 +231,7 @@ export default function PricingCalculator() {
   const [mobileBarVisible, setMobileBarVisible] = useState(false);
   const [formula, setFormula] = useState<Formula>("buffet");
   const [guests, setGuests] = useState(MIN_GUESTS.buffet);
+  const [guestsText, setGuestsText] = useState<string | null>(null);
   const [service, setService] = useState<Service>("avec-vin");
   const [children, setChildren] = useState(0);
   const [providers, setProviders] = useState(0);
@@ -385,19 +386,29 @@ export default function PricingCalculator() {
     );
   }
   function changeGuests(rawValue: string) {
+    setGuestsText(rawValue);
+    if (rawValue.trim() === "") {
+      setGuestError("");
+      return;
+    }
     const value = Number(rawValue);
-    if (!Number.isFinite(value) || value < minGuests) {
-      setGuests(minGuests);
-      setGuestError(`Le minimum est de ${minGuests} adultes.`);
-    } else if (value > 1000) {
+    if (!Number.isFinite(value)) return;
+    if (value > 1000) {
       setGuests(1000);
       setGuestError(
         "Le maximum du simulateur est de 1 000 adultes. Au-delà, contactez-nous.",
       );
-    } else {
-      setGuests(Math.floor(value));
-      setGuestError("");
+      return;
     }
+    setGuests(Math.max(0, Math.floor(value)));
+    setGuestError(
+      value < minGuests ? `Le minimum est de ${minGuests} adultes.` : "",
+    );
+  }
+  function commitGuests() {
+    setGuests((current) => Math.min(1000, Math.max(minGuests, current)));
+    setGuestsText(null);
+    setGuestError("");
   }
   function requestQuote(event: React.MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
@@ -432,6 +443,7 @@ export default function PricingCalculator() {
   function resetCalculator() {
     setFormula("buffet");
     setGuests(MIN_GUESTS.buffet);
+    setGuestsText(null);
     setService(services.buffet[0].value);
     setChildren(0);
     setProviders(0);
@@ -528,8 +540,9 @@ export default function PricingCalculator() {
               min={minGuests}
               max="1000"
               inputMode="numeric"
-              value={guests}
+              value={guestsText ?? guests}
               onChange={(e) => changeGuests(e.target.value)}
+              onBlur={commitGuests}
               aria-invalid={Boolean(guestError)}
               aria-describedby="adultes-aide"
             />
