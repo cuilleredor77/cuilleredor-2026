@@ -104,7 +104,7 @@ async function notifyReviewer(row: RequestRow, origin: string): Promise<void> {
     quote.summary,
     `Prestation : ${serviceModeLabel(row.service_mode)}`,
     row.budget ? `Budget indiqué : ${row.budget}` : "",
-    `Wedding planner : ${weddingPlannerLabel(row.wedding_planner)}${row.vendors_found ? ` · Prestataires déjà trouvés : ${row.vendors_found}` : ""}`,
+    row.wedding_planner ? `Wedding planner : ${weddingPlannerLabel(row.wedding_planner)}` : "",
     `Total ${formatEUR(totals.total)}${row.km ? ` (dont ${row.km} km AR)` : ""}`,
     row.selection_text ? `Plats choisis : ${row.selection_text}` : "",
     row.message ? `Message : ${row.message}` : "",

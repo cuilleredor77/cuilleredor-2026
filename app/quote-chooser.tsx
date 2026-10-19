@@ -125,9 +125,6 @@ type Fields = {
   providers: string;
   honorWine: boolean;
   serviceMode: ServiceMode;
-  budget: string;
-  weddingPlanner: string;
-  selection: string;
   message: string;
   website: string;
 };
@@ -146,9 +143,6 @@ function fieldsFrom(choice: Choice, estimate: Estimate | null, previous?: Fields
     providers: "0",
     honorWine: true,
     serviceMode: "service",
-    budget: "",
-    weddingPlanner: "",
-    selection: "",
     message: "",
     website: "",
   };
@@ -316,35 +310,14 @@ function NativeForm({
             </label>
           ))}
         </div>
-        <label>
-          Enveloppe budgétaire
-          <input placeholder="ex. 6 000 €" value={fields.budget} onChange={(e) => set("budget", e.target.value)} />
-        </label>
-        <label>
-          Wedding planner
-          <select value={fields.weddingPlanner} onChange={(e) => set("weddingPlanner", e.target.value)}>
-            <option value="">—</option>
-            <option value="oui">Oui, déjà trouvé</option>
-            <option value="recherche">En recherche</option>
-            <option value="non">Non, pas prévu</option>
-          </select>
-        </label>
-      </fieldset>
-
-      <fieldset>
-        <legend>Vos envies</legend>
         <label className="native-form-wide">
-          Plats choisis dans le catalogue
+          Précisions (facultatif)
           <textarea
-            rows={4}
-            placeholder="Collez ici la liste reçue avec « Envoyer ma sélection », ou indiquez vos plats préférés."
-            value={fields.selection}
-            onChange={(e) => set("selection", e.target.value)}
+            rows={3}
+            placeholder="Allergies, contraintes du lieu, horaires…"
+            value={fields.message}
+            onChange={(e) => set("message", e.target.value)}
           />
-        </label>
-        <label className="native-form-wide">
-          Message
-          <textarea rows={4} value={fields.message} onChange={(e) => set("message", e.target.value)} />
         </label>
       </fieldset>
 
@@ -364,7 +337,7 @@ function NativeForm({
       )}
 
       <button className="native-form-submit" type="submit" disabled={status === "sending"}>
-        {status === "sending" ? "Envoi en cours…" : "Recevoir mon devis par e-mail"}
+        {status === "sending" ? "Envoi en cours…" : "Enregistrer et recevoir mon devis par e-mail"}
         <ArrowRight size={16} />
       </button>
     </form>
@@ -437,14 +410,15 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
       {!open && (
         <div className="quote-option">
           <div>
-            <strong>Recevoir mon devis personnalisé par e-mail</strong>
+            <strong>Enregistrer mon estimation et recevoir mon devis personnalisé par e-mail</strong>
             <p>
-              Il reprend votre estimation ci-dessus, avec le contrat prêt à
-              signer. Facultatif et sans engagement.
+              Quelques informations suffisent pour chiffrer votre devis : il
+              reprend l’estimation ci-dessus, avec le contrat prêt à signer.
+              Sans engagement.
             </p>
           </div>
           <button type="button" onClick={() => setOpen(true)}>
-            Recevoir mon devis par e-mail <ArrowRight size={16} />
+            Enregistrer et recevoir mon devis <ArrowRight size={16} />
           </button>
         </div>
       )}
@@ -457,15 +431,15 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
         <div className="selected-form-heading">
           <span>Devis par e-mail</span>
           <div>
-            <h3>Recevoir mon devis personnalisé</h3>
+            <h3>Enregistrer mon estimation</h3>
             <p>
               {estimate
                 ? `Il reprend votre estimation ${estimate.formula} (${guestsLine(estimate)}).`
                 : "Indiquez la date, le lieu, les convives et la formule envisagée."}
             </p>
             <p className="quote-required">
-              Vous recevez votre devis par e-mail, puis nous vous contactons :
-              c’est cette demande qui démarre les échanges.
+              Il ne manque que ce qui sert à chiffrer votre devis. Vous le
+              recevez par e-mail, puis nous vous contactons.
             </p>
           </div>
         </div>
