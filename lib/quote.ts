@@ -85,7 +85,7 @@ export const FORMULAS: Record<FormulaKey, FormulaMeta> = {
     title: "Chef à domicile — prestation clé en main",
     detail:
       "Amuse-bouche, entrée, plat et dessert à l’assiette, vaisselle, nappage et service inclus",
-    min: 20,
+    min: 12,
     flat: 95,
     honorWine: false,
   },

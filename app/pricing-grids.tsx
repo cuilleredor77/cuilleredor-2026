@@ -249,7 +249,7 @@ export default function PricingGrids() {
               toggle("chef");
             }}
           >
-            {summary("07", "Chef à domicile", "Dès 95 € par personne · dès 20 couverts")}
+            {summary("07", "Chef à domicile", "Dès 95 € par personne · dès 12 couverts")}
           </summary>
           <div className="fixed-price-detail">
             <div>

@@ -39,7 +39,7 @@ const MIN_GUESTS: Record<Formula, number> = {
   aperitifs: 50,
   brunch: 50,
   barbecue: 30,
-  chef: 20,
+  chef: 12,
 };
 const BELOW_MIN_WHATSAPP =
   "https://wa.me/33783748971?text=Bonjour%20Cuill%C3%A8re%20d%27Or%2C%20mon%20%C3%A9v%C3%A9nement%20compte%20moins%20d%27invit%C3%A9s%20que%20le%20minimum%20du%20catalogue.%20Est-ce%20possible%20%3F";

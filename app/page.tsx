@@ -224,7 +224,7 @@ const offers = [
     secondLabel: "Idéal pour",
     secondValue: "Réception chez vous, sans rien à organiser",
     price: "dès 95 €",
-    suffix: "/ personne · dès 20 couverts",
+    suffix: "/ personne · dès 12 couverts",
     cta: "Choisir le chef à domicile",
   },
 ];
@@ -516,7 +516,7 @@ const faqItems = [
   {
     question: "Proposez-vous d’autres formules (Barbecue Party, Chef à domicile) ?",
     answer:
-      "Oui. Barbecue Party : 60 € par personne, grillades cuites en direct, à condition que le lieu autorise les barbecues. Chef à domicile : dès 95 € par personne, dès 20 couverts, amuse-bouche, entrée, plat, dessert, vaisselle, nappage et service inclus. Frais de déplacement en sus. Demandez votre devis pour ces formules.",
+      "Oui. Barbecue Party : 60 € par personne, grillades cuites en direct, à condition que le lieu autorise les barbecues. Chef à domicile : dès 95 € par personne, dès 12 couverts, amuse-bouche, entrée, plat, dessert, vaisselle, nappage et service inclus. Frais de déplacement en sus. Demandez votre devis pour ces formules.",
   },
   {
     question: "Y a-t-il une caution et des frais de dépassement ?",
