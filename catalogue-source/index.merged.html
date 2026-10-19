@@ -2395,7 +2395,7 @@
     <p class="note" style="margin-top:1cqi;">Live stations included in the price. Venue must allow barbecues.</p>
   </div>
   <div class="cta-abs"><span>A brunch for the next day?</span><a href="https://www.cuilleredor.fr/#calculateur" target="_blank" rel="noreferrer">Simulate my reception</a><a class="solid" href="https://www.cuilleredor.fr/#formulaire-evenement" target="_blank" rel="noreferrer">Request my quote →</a></div>
-  <div class="running-footer"><img class="rf-logo" src="images/logo.png" alt="Cuillère d’Or"/><span>Signature Brunch · Pieces of your choice</span><span class="rf-nav"><a href="#brunch" aria-label="Previous page">&#8249;</a><b>13</b><a href="#barbecue" aria-label="Next page">&#8250;</a></span></div>
+  <div class="running-footer"><img class="rf-logo" src="images/logo.png" alt="Cuillère d’Or"/><span>Signature Brunch · Your pieces</span><span class="rf-nav"><a href="#brunch" aria-label="Previous page">&#8249;</a><b>13</b><a href="#barbecue" aria-label="Next page">&#8250;</a></span></div>
 </section>
 
 <section class="sheet cream" aria-label="Barbecue Party" id="barbecue">
@@ -3724,3 +3724,8 @@
     box.querySelector('.cv-out').textContent = any ? sum : '…';
   });
 </script>
+
+<style>
+  /* mobile / tablette : le logo centré du pied de page chevauche le texte de rubrique -> on le masque */
+  @media screen and (max-width:1100px){ .running-footer .rf-logo{ display:none; } }
+</style>
