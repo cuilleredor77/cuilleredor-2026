@@ -7051,3 +7051,35 @@ body:has(.calculator-mobile-bar.is-visible) .back-to-top {
 }
 .pricing-heading .pricing-help svg { flex: none; color: #775a19; }
 .pricing-heading .pricing-help a { color: #775a19; font-weight: 700; white-space: nowrap; }
+
+/* « Estimer » arrive directement sur la calculette ; en-tête de section réduit */
+#calculateur { scroll-margin-top: 92px; }
+@media (max-width: 720px) { #calculateur { scroll-margin-top: 80px; } }
+.pricing .pricing-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-bottom: 18px; }
+.pricing .pricing-heading .eyebrow { margin: 0; }
+.pricing .pricing-heading .pricing-help { margin-top: 0; }
+
+/* Formule et convives déjà choisis dans la calculette : rappel au lieu de champs en double */
+.native-form-recap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  padding: 14px 16px;
+  background: rgba(212, 174, 42, 0.1);
+  border: 1px solid rgba(197, 160, 89, 0.5);
+  border-radius: 8px;
+}
+.native-form-recap span {
+  width: 100%;
+  color: #775a19;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.native-form-recap strong { font-size: 1.05rem; }
+.native-form-recap small { color: #5e5e5e; font-size: 0.9rem; }
+.native-form-recap a { margin-left: auto; color: #775a19; font-weight: 700; text-decoration: underline; }
+.calculator-controls-row:has(> label:only-child) { grid-template-columns: 1fr; }
+.native-form-hint { color: #6b6b6b; font-size: 0.8rem; line-height: 1.4; }

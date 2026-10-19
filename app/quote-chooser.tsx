@@ -127,7 +127,6 @@ type Fields = {
   serviceMode: ServiceMode;
   budget: string;
   weddingPlanner: string;
-  vendorsFound: string;
   selection: string;
   message: string;
   website: string;
@@ -149,7 +148,6 @@ function fieldsFrom(choice: Choice, estimate: Estimate | null, previous?: Fields
     serviceMode: "service",
     budget: "",
     weddingPlanner: "",
-    vendorsFound: "",
     selection: "",
     message: "",
     website: "",
@@ -270,9 +268,16 @@ function NativeForm({
           <input required type="date" min={today} value={fields.eventDate} onChange={(e) => set("eventDate", e.target.value)} />
         </label>
         <label className="native-form-wide">
-          Lieu de réception (adresse ou ville)
-          <input autoComplete="street-address" value={fields.place} onChange={(e) => set("place", e.target.value)} />
+          Adresse complète du lieu de réception
+          <input autoComplete="street-address" placeholder="ex. 12 rue des Lilas, 77240 Vert-Saint-Denis" value={fields.place} onChange={(e) => set("place", e.target.value)} />
+          <small className="native-form-hint">
+            Avec l’adresse complète, le déplacement est chiffré au plus juste. Avec la ville seule, il est
+            estimé ; avec le département seul, il sera chiffré ensuite.
+          </small>
         </label>
+        {/* Déjà choisis dans la calculette : rappelés dans le bandeau doré au-dessus du formulaire */}
+        {!estimate && (
+          <>
         <label className="native-form-wide">
           Formule envisagée *
           <select required value={fields.formula} onChange={(e) => set("formula", e.target.value as FormulaId)}>
@@ -289,14 +294,6 @@ function NativeForm({
             Avec vin d’honneur
           </label>
         )}
-        <div className="native-form-wide native-form-radios" role="radiogroup" aria-label="Type de prestation">
-          {SERVICE_MODES.map(([value, label]) => (
-            <label key={value} className="native-form-check">
-              <input type="radio" name="serviceMode" value={value} checked={fields.serviceMode === value} onChange={() => set("serviceMode", value)} />
-              {label}
-            </label>
-          ))}
-        </div>
         <label>
           Adultes *
           <input required type="number" min={1} max={5000} inputMode="numeric" value={fields.adults} onChange={(e) => set("adults", e.target.value)} />
@@ -309,6 +306,16 @@ function NativeForm({
           Prestataires (DJ, photographe…)
           <input type="number" min={0} max={5000} inputMode="numeric" value={fields.providers} onChange={(e) => set("providers", e.target.value)} />
         </label>
+          </>
+        )}
+        <div className="native-form-wide native-form-radios" role="radiogroup" aria-label="Type de prestation">
+          {SERVICE_MODES.map(([value, label]) => (
+            <label key={value} className="native-form-check">
+              <input type="radio" name="serviceMode" value={value} checked={fields.serviceMode === value} onChange={() => set("serviceMode", value)} />
+              {label}
+            </label>
+          ))}
+        </div>
         <label>
           Enveloppe budgétaire
           <input placeholder="ex. 6 000 €" value={fields.budget} onChange={(e) => set("budget", e.target.value)} />
@@ -321,10 +328,6 @@ function NativeForm({
             <option value="recherche">En recherche</option>
             <option value="non">Non, pas prévu</option>
           </select>
-        </label>
-        <label>
-          Autres prestataires déjà trouvés
-          <input placeholder="ex. lieu, DJ, photographe" value={fields.vendorsFound} onChange={(e) => set("vendorsFound", e.target.value)} />
         </label>
       </fieldset>
 
@@ -439,7 +442,7 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
             <strong>{totalValue(estimate)}</strong>
             <p>Déplacement calculé avec vous · estimation non contractuelle</p>
           </div>
-          <a href="#tarifs">Modifier mon estimation</a>
+          <a href="#calculateur">Modifier mon estimation</a>
         </div>
       )}
 

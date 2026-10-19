@@ -43,7 +43,7 @@ export default function FormulaExperience() {
         .closest<HTMLDetailsElement>(".formula-switcher")
         ?.removeAttribute("open");
       const target = document.getElementById(
-        link.dataset.formulaTarget === "menu" ? "carte" : "tarifs",
+        link.dataset.formulaTarget === "menu" ? "carte" : "calculateur",
       );
       if (target && target.getBoundingClientRect().top > 80) {
         target.scrollIntoView({ behavior: "smooth", block: "start" });

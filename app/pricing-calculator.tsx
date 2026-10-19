@@ -543,24 +543,22 @@ export default function PricingCalculator() {
               <option value="chef">Chef à domicile</option>
             </select>
           </label>
-          <label>
-            <span>Niveau de service</span>
-            <select
-              value={service}
-              disabled={
-                formula === "brunch" ||
-                formula === "barbecue" ||
-                formula === "chef"
-              }
-              onChange={(e) => setService(e.target.value as Service)}
-            >
-              {services[formula].map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          {/* Choix utile seulement pour buffet, plateau et assiette (avec ou sans vin d'honneur) */}
+          {services[formula].length > 1 ? (
+            <label>
+              <span>Vin d’honneur</span>
+              <select
+                value={service}
+                onChange={(e) => setService(e.target.value as Service)}
+              >
+                {services[formula].map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
         </div>
         <div className="calculator-controls-row calculator-controls-row--people">
           <label>

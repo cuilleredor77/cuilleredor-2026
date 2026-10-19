@@ -15,6 +15,8 @@ import {
 } from "./quote";
 
 const REPLY_TO = "cuilleredor4@gmail.com";
+export const TRAVEL_FROM_TOWN = "Estimation depuis la commune : montant ajusté avec l’adresse exacte du lieu";
+export const TRAVEL_TO_QUOTE = "Frais de déplacement : à chiffrer selon l’adresse exacte du lieu de réception.";
 const AVAILABILITY = "Avant d’envoyer : vérifie que la date est libre (l’e-mail au client dit « Nous sommes disponibles à cette date »).";
 
 type Mail = { to: string; subject: string; text: string; html?: string; bcc?: string; replyTo?: string };
@@ -60,11 +62,16 @@ export async function prepareAndNotify(id: number, origin: string): Promise<void
     let row = await getRequestById(id);
     if (!row) return;
     let km = row.km;
+    let precision = km ? "adresse" : "";
     if (!km && row.event_place.length >= 4) {
       const distance = await roundTripKm(row.event_place);
       if (!("error" in distance)) km = distance.km;
+      precision = distance.precision || "";
     }
     const quote = buildDefaultQuote({ ...row, km, quote_json: "" });
+    const travel = quote.lines.find((line) => line.id === "deplacement");
+    if (travel && precision === "ville") travel.detail = TRAVEL_FROM_TOWN;
+    if (!km && precision === "departement") quote.note = TRAVEL_TO_QUOTE;
     await db()
       .prepare(
         `UPDATE requests SET updated_at = ?, km = ?, quote_json = ?, quote_version = quote_version + 1, status = 'devis_pret'

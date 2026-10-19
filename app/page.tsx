@@ -561,12 +561,12 @@ export default function Home() {
         </a>
         <nav className="desktop-nav" aria-label="Navigation principale">
           <a href="#formules">1. Formules & menus</a>
-          <a href="#tarifs">2. Estimer</a>
+          <a href="#calculateur">2. Estimer</a>
           <a href="#devis">3. Devis</a>
           <a href="#feuilleter">Catalogue</a>
         </nav>
         <a className="header-cta" href="#calculateur">
-          <span className="header-cta-long">Estimer ma réception</span>
+          <span className="header-cta-long">Estimer mon événement</span>
           <span className="header-cta-short">Estimer</span>
         </a>
         <details className="mobile-menu">
@@ -577,7 +577,7 @@ export default function Home() {
           </summary>
           <nav>
             <a href="#formules">1. Formules & menus</a>
-            <a href="#tarifs">2. Estimer ma réception</a>
+            <a href="#calculateur">2. Estimer mon événement</a>
             <a href="#devis">3. Recevoir mon devis</a>
             <a href="#feuilleter">Feuilleter le catalogue</a>
           </nav>
@@ -612,7 +612,7 @@ export default function Home() {
           </p>
           <div className="hero-actions">
             <a className="button button-gold" href="#calculateur">
-              Estimer ma réception <ArrowRight size={17} />
+              Estimer mon événement <ArrowRight size={17} />
             </a>
           </div>
           <div className="hero-facts">
@@ -780,7 +780,7 @@ export default function Home() {
                 <p className="offer-wine-note">{offer.wineNote}</p>
               ) : null}
               <a
-                href={offer.number <= "05" ? "#carte" : "#tarifs"}
+                href={offer.number <= "05" ? "#carte" : "#calculateur"}
                 data-formula-target={offer.number <= "05" ? "menu" : undefined}
                 data-select-formula={
                   (
@@ -900,10 +900,10 @@ export default function Home() {
                     </p>
                     <a
                       className="formula-choose-cta"
-                      href="#tarifs"
+                      href="#calculateur"
                       data-select-formula="aperitifs"
                     >
-                      Estimer ma réception{" "}
+                      Estimer mon événement{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
@@ -960,10 +960,10 @@ export default function Home() {
                     </p>
                     <a
                       className="formula-choose-cta"
-                      href="#tarifs"
+                      href="#calculateur"
                       data-select-formula="plateau"
                     >
-                      Estimer ma réception{" "}
+                      Estimer mon événement{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
@@ -1005,10 +1005,10 @@ export default function Home() {
                     </p>
                     <a
                       className="formula-choose-cta"
-                      href="#tarifs"
+                      href="#calculateur"
                       data-select-formula="assiette"
                     >
-                      Estimer ma réception{" "}
+                      Estimer mon événement{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
@@ -1050,10 +1050,10 @@ export default function Home() {
                     </p>
                     <a
                       className="formula-choose-cta"
-                      href="#tarifs"
+                      href="#calculateur"
                       data-select-formula="buffet"
                     >
-                      Estimer ma réception{" "}
+                      Estimer mon événement{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
@@ -1089,10 +1089,10 @@ export default function Home() {
                   <div className="formula-menu-body">
                     <a
                       className="formula-choose-cta"
-                      href="#tarifs"
+                      href="#calculateur"
                       data-select-formula="brunch"
                     >
-                      Estimer ma réception{" "}
+                      Estimer mon événement{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
@@ -1141,10 +1141,10 @@ export default function Home() {
                     </p>
                     <a
                       className="formula-choose-cta"
-                      href="#tarifs"
+                      href="#calculateur"
                       data-select-formula="barbecue"
                     >
-                      Estimer ma réception{" "}
+                      Estimer mon événement{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
@@ -1186,10 +1186,10 @@ export default function Home() {
                     </p>
                     <a
                       className="formula-choose-cta"
-                      href="#tarifs"
+                      href="#calculateur"
                       data-select-formula="chef"
                     >
-                      Estimer ma réception{" "}
+                      Estimer mon événement{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
@@ -1221,16 +1221,7 @@ export default function Home() {
 
       <section className="pricing section-pad" id="tarifs">
         <div className="pricing-heading">
-          <p className="eyebrow dark">02 — Estimez votre réception</p>
-          <h2>
-            Votre réception,
-            <br />
-            <em>chiffrée simplement.</em>
-          </h2>
-          <p>
-            Votre formule vous suit automatiquement. Ajustez les convives, le
-            service, les plats et les options sans recommencer votre choix.
-          </p>
+          <p className="eyebrow dark">02 — Estimez votre événement</p>
           <p className="pricing-help">
             <Phone size={17} aria-hidden="true" />
             <span>

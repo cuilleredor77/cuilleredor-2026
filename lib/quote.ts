@@ -532,7 +532,10 @@ export function quoteAlerts(req: RequestRow, quote: Quote, totals: Totals): stri
   else if (totals.fullAtSignature) out.push("Événement dans moins de 2 mois : règlement intégral à la signature.");
   if (req.adults < FORMULAS[key].min) out.push(`Moins que le minimum de la formule (${FORMULAS[key].min} convives) : à valider avant d’envoyer.`);
   if (!req.event_place) out.push("Lieu de l’événement manquant.");
+  else if (!req.km && quote.note.includes("à chiffrer")) out.push("Seul le département est indiqué : déplacement à chiffrer.");
   else if (!req.km) out.push("Frais de déplacement non calculés (adresse introuvable) : à compléter dans l’éditeur.");
+  else if (quote.lines.some((l) => l.id === "deplacement" && (l.detail || "").startsWith("Estimation depuis la commune")))
+    out.push("Déplacement estimé depuis la ville seule : à confirmer avec l’adresse exacte.");
   if (key === "chef") out.push("Chef à domicile : tarif à confirmer.");
   if (req.service_mode && req.service_mode !== "service") out.push(`${serviceModeLabel(req.service_mode)} : le tarif de la formule inclut le service, à adapter.`);
   if (quote.lines.some((l) => !(l.price > 0) || !(l.qty > 0))) out.push("Une ligne a une quantité ou un prix à zéro.");
