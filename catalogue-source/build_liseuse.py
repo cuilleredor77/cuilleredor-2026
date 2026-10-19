@@ -30,7 +30,9 @@ def build():
     assert s.count('__MANIFEST__')==1
     open(OUT+'/index.html','w',encoding='utf8').write(s.replace('__MANIFEST__',json.dumps(m)))
     for f in ['page-flip.browser.js','LICENSE-page-flip.txt']: shutil.copy('liseuse/'+f,OUT+'/'+f)
-    shutil.copy('images/logo-site.png',OUT+'/logo.png')
+    # logo du catalogue publié s'il existe (build_site.py l'y a déjà copié), sinon celui des sources
+    logo=next(f for f in [OUT+'/../images/logo-site.png','images/logo-site.png','images/logo.png'] if os.path.isfile(f))
+    shutil.copy(logo,OUT+'/logo.png')
     kb=sum(os.path.getsize(os.path.join(r,f)) for r,_,fs in os.walk(OUT) for f in fs)//1024
     print('liseuse :',', '.join('%s %d pages'%(k,v['n']) for k,v in m.items()),'·',kb,'Ko')
 
