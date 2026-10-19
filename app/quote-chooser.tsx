@@ -448,8 +448,9 @@ export default function QuoteChooser({
                 : "Indiquez la date, le lieu, les convives et la formule envisagée."}
             </p>
             <p className="quote-required">
-              Cette demande est indispensable pour démarrer les échanges : elle nous
-              donne vos coordonnées et tout ce qu’il faut pour préparer votre devis.
+              Cette demande est indispensable pour démarrer les échanges : vous
+              recevrez votre devis personnalisé par e-mail, puis nous vous
+              contacterons.
             </p>
           </div>
         </div>
