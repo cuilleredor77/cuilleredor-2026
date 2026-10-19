@@ -551,8 +551,8 @@ export default function Home() {
           aria-label="Cuillère d'Or - accueil"
         >
           <img
-            src="/logo-cuillere-dor.png"
-            width="739"
+            src="/logo-cuillere-dor.png?v=2"
+            width="711"
             height="209"
             alt="Cuillère d'Or - Le paradis du goût"
           />
