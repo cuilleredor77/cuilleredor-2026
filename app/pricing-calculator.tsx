@@ -743,7 +743,7 @@ export default function PricingCalculator() {
           <li>
             <span>
               {guests} adulte{guests > 1 ? "s" : ""} × {isChef ? "dès " : ""}
-              {price} €/pers. ({selectedService})
+              {price} €/pers. · {selectedService}
             </span>
             <span>
               {mealTotal!.toLocaleString("fr-FR", { minimumFractionDigits: mealTotal! % 1 ? 2 : 0 })}{" "}
