@@ -16,15 +16,15 @@ type DishKit = "none" | "essentiel" | "complet" | "prestige";
 
 const services: Record<Formula, Array<{ value: Service; label: string }>> = {
   buffet: [
-    { value: "avec-vin", label: "Avec vin d’honneur (+ 5 €)" },
+    { value: "avec-vin", label: "Avec vin d’honneur" },
     { value: "sans-vin", label: "Sans vin d’honneur" },
   ],
   plateau: [
-    { value: "avec-vin", label: "Avec vin d’honneur (+ 5 €)" },
+    { value: "avec-vin", label: "Avec vin d’honneur" },
     { value: "sans-vin", label: "Sans vin d’honneur" },
   ],
   assiette: [
-    { value: "avec-vin", label: "Avec vin d’honneur (+ 5 €)" },
+    { value: "avec-vin", label: "Avec vin d’honneur" },
     { value: "sans-vin", label: "Sans vin d’honneur" },
   ],
   aperitifs: [{ value: "avec-vin", label: "Vin d’honneur inclus" }],
@@ -73,7 +73,7 @@ function unitPrice(
     plateau: [50, 45, 40],
     assiette: [70, 65, 60],
   }[formula][range];
-  return service === "avec-vin" ? base + HONOR_WINE_SUPPLEMENT : base;
+  return base;
 }
 
 type OptionDef = {
@@ -349,6 +349,15 @@ export default function PricingCalculator() {
 
   const optionLines: Array<{ id: string; label: string; amount: number }> =
     [];
+  if (
+    service === "avec-vin" &&
+    (formula === "buffet" || formula === "plateau" || formula === "assiette")
+  )
+    optionLines.push({
+      id: "honorWine",
+      label: `Vin d’honneur, 10 pièces au choix (${HONOR_WINE_SUPPLEMENT} €/pers.)`,
+      amount: guests * HONOR_WINE_SUPPLEMENT,
+    });
   if (children && !isChef)
     optionLines.push({
       id: "children",
