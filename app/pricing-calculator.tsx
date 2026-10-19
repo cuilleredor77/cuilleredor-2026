@@ -407,6 +407,7 @@ export default function PricingCalculator() {
   function changeGuests(rawValue: string) {
     setGuestsText(rawValue);
     if (rawValue.trim() === "") {
+      setGuests(0);
       setGuestError("");
       return;
     }
