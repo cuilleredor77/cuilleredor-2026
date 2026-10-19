@@ -1231,6 +1231,13 @@ export default function Home() {
             Votre formule vous suit automatiquement. Ajustez les convives, le
             service, les plats et les options sans recommencer votre choix.
           </p>
+          <p className="pricing-help">
+            <Phone size={17} aria-hidden="true" />
+            <span>
+              Vous hésitez entre deux formules ? Appelez-nous au{" "}
+              <a href="tel:+33783748971">07 83 74 89 71</a>.
+            </span>
+          </p>
         </div>
         <PricingGrids />
         <PricingCalculator />

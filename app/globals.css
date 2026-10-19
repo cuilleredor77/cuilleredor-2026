@@ -7035,3 +7035,19 @@ body:has(.calculator-mobile-bar.is-visible) .back-to-top {
   background: var(--gold);
   border-radius: 6px;
 }
+
+/* Aide à l'étape « Estimer » (et non au moment de la demande de devis) */
+.pricing-heading .pricing-help {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  color: #3a3a3a;
+  font-size: 0.92rem;
+  background: rgba(212, 174, 42, 0.12);
+  border: 1px solid rgba(197, 160, 89, 0.45);
+  border-radius: 8px;
+}
+.pricing-heading .pricing-help svg { flex: none; color: #775a19; }
+.pricing-heading .pricing-help a { color: #775a19; font-weight: 700; white-space: nowrap; }
