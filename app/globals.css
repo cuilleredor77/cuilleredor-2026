@@ -6464,3 +6464,151 @@ html[data-commercial-formula="buffet"] .formula-menu-list>[data-menu-formula="bu
 
 .calculator-field-warning{display:block;margin-top:6px;font-size:.78rem;line-height:1.45;color:#7a5200;background:#fff6dc;border-left:3px solid #d4ae2a;padding:6px 8px}
 .calculator-field-warning a{color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+
+/* ===== Carte à onglets : une formule à la fois, plats visibles sans clic ===== */
+#carte .catalogue-heading h2 {
+  font-size: clamp(2.3rem, 4.2vw, 3.8rem);
+  line-height: 1.02;
+}
+.carte-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 22px;
+}
+.carte-tabs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  border-radius: 999px;
+  color: #d4af37;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s, color 0.15s;
+}
+.carte-tabs a:hover {
+  background: rgba(212, 175, 55, 0.16);
+}
+html[data-selected-formula="buffet"] .carte-tabs [data-select-formula="buffet"],
+html[data-selected-formula="plateau"] .carte-tabs [data-select-formula="plateau"],
+html[data-selected-formula="assiette"] .carte-tabs [data-select-formula="assiette"],
+html[data-selected-formula="aperitifs"] .carte-tabs [data-select-formula="aperitifs"],
+html[data-selected-formula="brunch"] .carte-tabs [data-select-formula="brunch"],
+html[data-selected-formula="barbecue"] .carte-tabs [data-select-formula="barbecue"],
+html[data-selected-formula="chef"] .carte-tabs [data-select-formula="chef"] {
+  background: #d4af37;
+  color: #171717;
+}
+html[data-selected-formula="barbecue"]
+  .formula-menu-list
+  > [data-menu-formula="barbecue"],
+html[data-selected-formula="chef"]
+  .formula-menu-list
+  > [data-menu-formula="chef"] {
+  display: block;
+}
+#carte .formula-menu-list summary strong {
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
+}
+#carte .formula-menu-body {
+  padding-left: 0;
+}
+.formula-dishes-flat {
+  max-width: 980px;
+}
+.formula-dishes-flat .formula-menu-categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  padding: 0;
+  background: transparent;
+}
+.formula-menu-category-flat {
+  background: #fff;
+  color: #1a1a1a;
+  border-radius: 6px;
+  padding: 16px 18px 8px;
+}
+.formula-menu-category-flat h4 {
+  margin: 0 0 8px;
+  color: #8a6d12;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.formula-menu-category-flat ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.formula-menu-category-flat li {
+  padding: 9px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.09);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.formula-menu-category-flat li:first-child {
+  border-top: 0;
+}
+.formula-menu-category-flat .lexique,
+.formula-menu-category-flat p {
+  font-size: 0.85rem;
+}
+@media (max-width: 720px) {
+  .carte-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-right: -4px;
+    padding-bottom: 6px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+  .carte-tabs a {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
+  .formula-dishes-flat .formula-menu-categories {
+    grid-template-columns: 1fr;
+  }
+}
+.formula-menu-category-flat ul { columns: 1 !important; }
+.formula-menu-category-flat li {
+  display: block !important;
+  grid-template-columns: none !important;
+}
+.formula-menu-category-flat li span {
+  display: inline;
+}
+@media (min-width: 721px) {
+  .aperitif-menu-categories .formula-menu-category-flat:first-child {
+    grid-column: 1 / -1;
+  }
+  .aperitif-menu-categories .formula-menu-category-flat:first-child ul {
+    columns: 2 !important;
+    column-gap: 32px;
+  }
+  .aperitif-menu-categories .formula-menu-category-flat li {
+    break-inside: avoid;
+  }
+}
+.formula-menu-category-flat li {
+  min-height: 0 !important;
+  padding: 9px 0 !important;
+  line-height: 1.4;
+}
+@media (min-width: 721px) {
+  .aperitif-menu-categories .formula-menu-category-flat {
+    grid-column: 1 / -1;
+  }
+  .aperitif-menu-categories .formula-menu-category-flat ul {
+    columns: 2 !important;
+    column-gap: 32px;
+  }
+}

@@ -20,16 +20,6 @@ export default function FormulaExperience() {
         .forEach((panel) => {
           panel.open = panel.dataset.menuFormula === formula;
         });
-      document
-        .querySelectorAll<HTMLDetailsElement>(".formula-dishes")
-        .forEach((panel) => {
-          panel.open = true;
-        });
-      document
-        .querySelectorAll<HTMLDetailsElement>(".formula-menu-category")
-        .forEach((panel) => {
-          panel.open = false;
-        });
     };
 
     const onFormula = (event: Event) => {
@@ -59,30 +49,13 @@ export default function FormulaExperience() {
         target.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     };
-    const onToggle = (event: Event) => {
-      const opened = event.target;
-      if (
-        !(opened instanceof HTMLDetailsElement) ||
-        !opened.open ||
-        !opened.classList.contains("formula-menu-category")
-      )
-        return;
-      opened.parentElement
-        ?.querySelectorAll<HTMLDetailsElement>(".formula-menu-category[open]")
-        .forEach((panel) => {
-          if (panel !== opened) panel.open = false;
-        });
-    };
-
     document.documentElement.dataset.commercialFormula = "buffet";
     showMenu("buffet");
     window.addEventListener("cuillere:formula", onFormula);
     document.addEventListener("click", onClick);
-    document.addEventListener("toggle", onToggle, true);
     return () => {
       window.removeEventListener("cuillere:formula", onFormula);
       document.removeEventListener("click", onClick);
-      document.removeEventListener("toggle", onToggle, true);
     };
   }, []);
 

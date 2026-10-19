@@ -1,7 +1,6 @@
 import {
   ArrowRight,
   ArrowUp,
-  ChevronDown,
   Clock3,
   ExternalLink,
   Mail,
@@ -94,25 +93,18 @@ function MenuCategory({
   category,
   keyPrefix,
 }: {
-  category: { title: string; image: string; alt: string; items: string[] };
+  category: { title: string; image?: string; alt?: string; items: string[] };
   keyPrefix: string;
 }) {
   return (
-    <details className="formula-menu-category">
-      <summary>
-        <span>{category.title}</span>
-        <b aria-hidden="true">
-          <ChevronDown size={16} />
-        </b>
-      </summary>
-      <div className="formula-category-content">
-        <ul>
-          {category.items.map((item) => (
-            <li key={`${keyPrefix}-${item}`}>{item}</li>
-          ))}
-        </ul>
-      </div>
-    </details>
+    <div className="formula-menu-category-flat">
+      <h4>{category.title}</h4>
+      <ul>
+        {category.items.map((item) => (
+          <li key={`${keyPrefix}-${item}`}>{item}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -487,6 +479,36 @@ const MENU_JSON_LD = {
     ]),
   ],
 };
+
+const barbecueCategories = [
+  {
+    title: "Au programme",
+    items: ["Viande braisée", "Animation beignets", "5 pièces salées ou sucrées à grignoter au choix"],
+  },
+  { title: "Salades", items: ["Pickles", "Tomate-mozzarella"] },
+  {
+    title: "Grillades",
+    items: [
+      "Brochette de bœuf",
+      "Brochette de poulet",
+      "Bar braisé",
+      "Merguez ou chipolata",
+    ],
+  },
+  { title: "Accompagnements", items: ["Riz", "Banane plantain", "Pain"] },
+];
+
+const chefCategories = [
+  {
+    title: "Tout est compris",
+    items: [
+      "Amuse-bouche à l’arrivée de vos invités",
+      "Entrée, plat et dessert dressés et servis à l’assiette",
+      "Art de la table : vaisselle, couverts et nappage fournis, table dressée par nos soins",
+      "Service inclus : une équipe en salle comme en cuisine",
+    ],
+  },
+];
 
 const faqItems = [
   {
@@ -905,9 +927,9 @@ export default function Home() {
           </h2>
           <p>
             La carte de notre traiteur à Brunoy, formule par formule : buffet,
-            plateau, service à l’assiette, cocktail dînatoire et brunch. Seule
-            la formule sélectionnée est ouverte ; modifiez votre choix depuis la
-            calculette. Les photos de chaque plat sont dans le{" "}
+            plateau, service à l’assiette, cocktail dînatoire et brunch. Choisissez
+            une formule avec les onglets ci-dessous. Les photos de chaque plat
+            sont dans le{" "}
             <a
               href="https://catalogue.cuilleredor.fr"
               target="_blank"
@@ -921,52 +943,61 @@ export default function Home() {
         <CatalogueTabs
           plats={
             <div className="menu-showcase">
-              <div className="section-heading">
-                <p className="eyebrow">Votre formule</p>
-                <h3>Découvrez uniquement les choix qui vous concernent.</h3>
+              <div
+                className="carte-tabs"
+                role="group"
+                aria-label="Choisir une formule"
+              >
+                <a
+                  href="#carte"
+                  data-select-formula="buffet"
+                  data-formula-target="menu"
+                >
+                  Buffet
+                </a>
+                <a
+                  href="#carte"
+                  data-select-formula="plateau"
+                  data-formula-target="menu"
+                >
+                  Plateau
+                </a>
+                <a
+                  href="#carte"
+                  data-select-formula="assiette"
+                  data-formula-target="menu"
+                >
+                  À l’assiette
+                </a>
+                <a
+                  href="#carte"
+                  data-select-formula="aperitifs"
+                  data-formula-target="menu"
+                >
+                  Cocktail & vin d’honneur
+                </a>
+                <a
+                  href="#carte"
+                  data-select-formula="brunch"
+                  data-formula-target="menu"
+                >
+                  Brunch
+                </a>
+                <a
+                  href="#carte"
+                  data-select-formula="barbecue"
+                  data-formula-target="menu"
+                >
+                  Barbecue Party
+                </a>
+                <a
+                  href="#carte"
+                  data-select-formula="chef"
+                  data-formula-target="menu"
+                >
+                  Chef à domicile
+                </a>
               </div>
-              <details className="formula-switcher">
-                <summary>
-                  Changer de formule <b aria-hidden="true">+</b>
-                </summary>
-                <div>
-                  <a
-                    href="#carte"
-                    data-select-formula="buffet"
-                    data-formula-target="menu"
-                  >
-                    01 Buffet
-                  </a>
-                  <a
-                    href="#carte"
-                    data-select-formula="plateau"
-                    data-formula-target="menu"
-                  >
-                    02 Plateau
-                  </a>
-                  <a
-                    href="#carte"
-                    data-select-formula="assiette"
-                    data-formula-target="menu"
-                  >
-                    03 Service à l’assiette
-                  </a>
-                  <a
-                    href="#carte"
-                    data-select-formula="aperitifs"
-                    data-formula-target="menu"
-                  >
-                    04 Apéritifs & vin d’honneur
-                  </a>
-                  <a
-                    href="#carte"
-                    data-select-formula="brunch"
-                    data-formula-target="menu"
-                  >
-                    05 Brunch Signature
-                  </a>
-                </div>
-              </details>
               <div className="formula-menu-list">
                 <details id="menu-aperitifs" data-menu-formula="aperitifs">
                   <summary>
@@ -1002,24 +1033,9 @@ export default function Home() {
                       Voir les photos de ce menu dans le catalogue{" "}
                       <ArrowRight size={14} />
                     </a>
-                    <details className="formula-dishes" open>
-                      <summary>
-                        Découvrir les créations{" "}
-                        <b aria-hidden="true">
-                          <ChevronDown size={18} />
-                        </b>
-                      </summary>
+                    <div className="formula-dishes-flat">
                       <div className="formula-menu-categories aperitif-menu-categories">
-                        <details className="formula-menu-category">
-                          <summary>
-                            <span>
-                              Créations salées · {savoury.length} choix
-                            </span>
-                            <b aria-hidden="true">
-                              <ChevronDown size={16} />
-                            </b>
-                          </summary>
-                          <div className="formula-category-content">
+                        <div className="formula-menu-category-flat"><h4>Créations salées · {savoury.length} choix</h4>
                             <ul>
                               {savoury.map((item) => (
                                 <li key={`menu-${item.name}`}>
@@ -1028,15 +1044,7 @@ export default function Home() {
                               ))}
                             </ul>
                           </div>
-                        </details>
-                        <details className="formula-menu-category">
-                          <summary>
-                            <span>Douceurs sucrées · {sweet.length} choix</span>
-                            <b aria-hidden="true">
-                              <ChevronDown size={16} />
-                            </b>
-                          </summary>
-                          <div className="formula-category-content">
+                        <div className="formula-menu-category-flat"><h4>Douceurs sucrées · {sweet.length} choix</h4>
                             <ul>
                               {sweet.map((item) => (
                                 <li key={`menu-${item.name}`}>
@@ -1045,9 +1053,8 @@ export default function Home() {
                               ))}
                             </ul>
                           </div>
-                        </details>
                       </div>
-                    </details>
+                    </div>
                     <p className="formula-menu-note menu-season-note">
                       La sphère de foie gras est disponible de décembre à
                       mars.
@@ -1087,13 +1094,7 @@ export default function Home() {
                       Voir les photos de ce menu dans le catalogue{" "}
                       <ArrowRight size={14} />
                     </a>
-                    <details className="formula-dishes" open>
-                      <summary>
-                        Découvrir les plats{" "}
-                        <b aria-hidden="true">
-                          <ChevronDown size={18} />
-                        </b>
-                      </summary>
+                    <div className="formula-dishes-flat">
                       <div className="formula-menu-categories">
                         {buffetCategories.map((category) => (
                           <MenuCategory
@@ -1103,7 +1104,7 @@ export default function Home() {
                           />
                         ))}
                       </div>
-                    </details>
+                    </div>
                   </div>
                 </details>
                 <details data-menu-formula="assiette">
@@ -1139,13 +1140,7 @@ export default function Home() {
                       Voir les photos de ce menu dans le catalogue{" "}
                       <ArrowRight size={14} />
                     </a>
-                    <details className="formula-dishes" open>
-                      <summary>
-                        Découvrir les plats{" "}
-                        <b aria-hidden="true">
-                          <ChevronDown size={18} />
-                        </b>
-                      </summary>
+                    <div className="formula-dishes-flat">
                       <div className="formula-menu-categories">
                         {platedCategories.map((category) => (
                           <MenuCategory
@@ -1155,7 +1150,7 @@ export default function Home() {
                           />
                         ))}
                       </div>
-                    </details>
+                    </div>
                   </div>
                 </details>
                 <details data-menu-formula="buffet">
@@ -1191,13 +1186,7 @@ export default function Home() {
                       Voir les photos de ce menu dans le catalogue{" "}
                       <ArrowRight size={14} />
                     </a>
-                    <details className="formula-dishes" open>
-                      <summary>
-                        Découvrir les plats{" "}
-                        <b aria-hidden="true">
-                          <ChevronDown size={18} />
-                        </b>
-                      </summary>
+                    <div className="formula-dishes-flat">
                       <div className="formula-menu-categories">
                         {buffetCategories.map((category) => (
                           <MenuCategory
@@ -1207,7 +1196,7 @@ export default function Home() {
                           />
                         ))}
                       </div>
-                    </details>
+                    </div>
                   </div>
                 </details>
                 <details data-menu-formula="brunch">
@@ -1215,7 +1204,7 @@ export default function Home() {
                     <span>05</span>
                     <div>
                       <strong>Brunch Signature</strong>
-                      <small>Une formule complète, salée et sucrée</small>
+                      <small>Une base généreuse et 10 pièces au choix</small>
                     </div>
                     <b aria-hidden="true">+</b>
                   </summary>
@@ -1237,35 +1226,116 @@ export default function Home() {
                       Voir les photos de ce menu dans le catalogue{" "}
                       <ArrowRight size={14} />
                     </a>
-                    <details className="formula-dishes" open>
-                      <summary>
-                        Découvrir le brunch{" "}
-                        <b aria-hidden="true">
-                          <ChevronDown size={18} />
-                        </b>
-                      </summary>
+                    <div className="formula-dishes-flat">
                       <div className="formula-menu-categories brunch-menu">
-                        <details className="formula-menu-category">
-                          <summary>
-                            <span>La formule comprend</span>
-                            <b aria-hidden="true">
-                              <ChevronDown size={16} />
-                            </b>
-                          </summary>
-                          <div className="formula-category-content">
+                        <div className="formula-menu-category-flat"><h4>Base commune, incluse pour tous les convives</h4>
                             <ul>
-                              <li>Viennoiseries et pièces sucrées</li>
-                              <li>Pièces salées</li>
-                              <li>Œufs</li>
-                              <li>Boissons chaudes et jus de fruits</li>
+                              <li>Pain, beurre et confitures</li>
+                              <li>Mini viennoiseries (croissants, pains au chocolat)</li>
+                              <li>Pancakes, toppings au choix (Nutella, confiture, caramel)</li>
+                              <li>Œufs brouillés ou au plat</li>
+                              <li>Thé, café, chocolat chaud, eaux, jus d’orange et de pomme</li>
+                              <li>Puis 10 pièces au choix, salées ou sucrées</li>
                             </ul>
                           </div>
-                        </details>
                       </div>
-                    </details>
+                    </div>
                     <a className="formula-menu-cta" href="#formulaire-brunch">
                       Demander un devis brunch <ArrowRight size={16} />
                     </a>
+                  </div>
+                </details>
+                <details data-menu-formula="barbecue">
+                  <summary>
+                    <span>06</span>
+                    <div>
+                      <strong>Barbecue Party</strong>
+                      <small>
+                        Grillades cuites en direct · 60 € par personne
+                      </small>
+                    </div>
+                    <b aria-hidden="true">+</b>
+                  </summary>
+                  <div className="formula-menu-body">
+                    <p className="formula-menu-note">
+                      Une prestation conviviale et festive pour les beaux jours.
+                      Les grillades cuisent en direct, les invités se servent.
+                      Le lieu de réception doit autoriser les barbecues.
+                    </p>
+                    <a
+                      className="formula-choose-cta"
+                      href="#tarifs"
+                      data-select-formula="barbecue"
+                    >
+                      Choisir cette formule pour mon estimation{" "}
+                      <ArrowRight size={16} />
+                    </a>
+                    <a
+                      className="formula-catalogue-link"
+                      href="https://catalogue.cuilleredor.fr/#barbecue"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Voir les photos de ce menu dans le catalogue{" "}
+                      <ArrowRight size={14} />
+                    </a>
+                    <div className="formula-dishes-flat">
+                      <div className="formula-menu-categories">
+                        {barbecueCategories.map((category) => (
+                          <MenuCategory
+                            key={`bbq-${category.title}`}
+                            category={category}
+                            keyPrefix="bbq"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </details>
+                <details data-menu-formula="chef">
+                  <summary>
+                    <span>07</span>
+                    <div>
+                      <strong>Chef à domicile</strong>
+                      <small>Clé en main chez vous · dès 95 € par personne</small>
+                    </div>
+                    <b aria-hidden="true">+</b>
+                  </summary>
+                  <div className="formula-menu-body">
+                    <p className="formula-menu-note">
+                      La cheffe Huguette et son équipe apportent la cuisine, la
+                      vaisselle, le nappage et le service, avec l’exigence d’une
+                      belle table d’hôtel ou de restaurant haut de gamme. Dès 20
+                      couverts, hors frais de déplacement.
+                    </p>
+                    <a
+                      className="formula-choose-cta"
+                      href="#tarifs"
+                      data-select-formula="chef"
+                    >
+                      Choisir cette formule pour mon estimation{" "}
+                      <ArrowRight size={16} />
+                    </a>
+                    <a
+                      className="formula-catalogue-link"
+                      href="https://catalogue.cuilleredor.fr/#chef-domicile"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Voir les photos de ce menu dans le catalogue{" "}
+                      <ArrowRight size={14} />
+                    </a>
+                    <div className="formula-dishes-flat">
+                      <div className="formula-menu-categories">
+                        {chefCategories.map((category) => (
+                          <MenuCategory
+                            key={`chef-${category.title}`}
+                            category={category}
+                            keyPrefix="chef"
+                          />
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </details>
               </div>
