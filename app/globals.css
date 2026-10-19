@@ -2979,6 +2979,37 @@ iframe {
   font-size: 0.76rem;
   line-height: 1.45;
 }
+.maison-awards {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 0 0 25px;
+}
+.maison-awards-badges {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+}
+.maison-awards-badges img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+}
+.maison-awards-badges img.round {
+  border-radius: 50%;
+}
+.maison-awards p {
+  margin: 0;
+  color: #5e5e5e;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.maison-awards a {
+  color: #775a19;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .maison-bottom {
   display: flex;
   align-items: center;

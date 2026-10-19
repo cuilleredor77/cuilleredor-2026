@@ -5,8 +5,8 @@ OUT='../catalogue-site'
 s=open('index.merged.html',encoding='utf8').read()
 btn=r'''<div class="pdf-menu" id="pdf-menu">
   <div class="pdf-panel" id="pdf-panel" hidden>
-    <a id="pdf-dl" href="pdf/Catalogue-Cuillere-dOr-2027-2028-FR.pdf?v=5" download><b id="pdf-full-t">Catalogue complet</b><small id="pdf-full-s">PDF vierge</small></a>
-    <a id="pdf-hd" href="pdf/Catalogue-Cuillere-dOr-2027-2028-FR-HD-impression.pdf?v=5" download><b id="pdf-hd-t">Version impression (HD)</b><small id="pdf-hd-s">PDF haute d&eacute;finition, 18 Mo</small></a>
+    <a id="pdf-dl" href="pdf/Catalogue-Cuillere-dOr-2027-2028-FR.pdf?v=6" download><b id="pdf-full-t">Catalogue complet</b><small id="pdf-full-s">PDF vierge</small></a>
+    <a id="pdf-hd" href="pdf/Catalogue-Cuillere-dOr-2027-2028-FR-HD-impression.pdf?v=6" download><b id="pdf-hd-t">Version impression (HD)</b><small id="pdf-hd-s">PDF haute d&eacute;finition, 18 Mo</small></a>
     <button type="button" id="pdf-sel"><b id="pdf-sel-t">Ma s&eacute;lection</b><small id="pdf-sel-s">PDF avec mes cases coch&eacute;es</small></button>
     <button type="button" id="pdf-mail"><b id="pdf-mail-t">Envoyer ma s&eacute;lection</b><small id="pdf-mail-s">Par e-mail &agrave; Cuill&egrave;re d&rsquo;Or, pour un devis</small></button>
   </div>
@@ -114,7 +114,7 @@ assert s.count(a)==1
 s=s.replace(a,btn+a,1)
 old="      var bk=document.getElementById('cdo-book'); if(bk) bk.setAttribute('data-style',style);\n"
 assert s.count(old)==1
-new=old+"""      var d=document.getElementById('pdf-dl'); if(d){ d.href='pdf/Catalogue-Cuillere-dOr-2027-2028-'+(lang==='en'?'EN':'FR')+'.pdf?v=5'; var h=document.getElementById('pdf-hd'); if(h){ h.href='pdf/Catalogue-Cuillere-dOr-2027-2028-'+(lang==='en'?'EN-HD-print':'FR-HD-impression')+'.pdf?v=5'; } }
+new=old+"""      var d=document.getElementById('pdf-dl'); if(d){ d.href='pdf/Catalogue-Cuillere-dOr-2027-2028-'+(lang==='en'?'EN':'FR')+'.pdf?v=6'; var h=document.getElementById('pdf-hd'); if(h){ h.href='pdf/Catalogue-Cuillere-dOr-2027-2028-'+(lang==='en'?'EN-HD-print':'FR-HD-impression')+'.pdf?v=6'; } }
       if(window.__cdoUi) window.__cdoUi(lang,style);
 """
 s=s.replace(old,new,1)
@@ -155,6 +155,9 @@ s=_re.sub(r"      document\.querySelectorAll\('\.style-switcher button'\)\.forEa
 s=s.replace(", .style-switcher button:hover","").replace(", .style-switcher button[aria-pressed=\"true\"]","").replace(".lang-switcher button, .style-switcher button{",".lang-switcher button{")
 s=_re.sub(r"\n  \.style-switcher(?:-label)?\{[^}]*\}","",s)
 s=s.replace("  @media print{ .style-switcher{ display:none !important; } }\n","").replace("  @media (max-width: 480px){ .style-switcher{ right:10px; bottom:10px; } }\n","")
+# police des titres = celle du site (Georgia, police système) : les polices Google ne servent plus au site public
+s,n=re.subn(r'<link[^>]*fonts\.(?:googleapis|gstatic)\.com[^>]*>\n?','',s)
+assert n==3, n
 # lisibilité sur téléphone : les tailles du catalogue suivent la largeur de page (cqi) et tombaient sous 9 px ;
 # plancher de 12,5 px sur écran étroit uniquement (--minfs vaut 0 ailleurs, donc ni l'ordinateur ni les PDF ne changent)
 s,n=re.subn(r'font-size:calc\(([0-9.]+cqi\*var\(--fs,1\))\)',r'font-size:max(var(--minfs,0px),calc(\1))',s)
@@ -189,7 +192,7 @@ open(OUT+'/404.html','w',encoding='utf8').write("""<!doctype html>
   body{ margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#f7f4ec; color:#1a1a1a; font:17px/1.6 Arial,Helvetica,sans-serif; }
   main{ max-width:520px; padding:32px 20px; text-align:center; }
   img{ width:min(260px,70vw); height:auto; }
-  h1{ font-family:Georgia,serif; font-weight:400; font-size:2rem; margin:24px 0 8px; }
+  h1{ font-family:Georgia,"Times New Roman",serif; font-weight:400; font-size:2rem; margin:24px 0 8px; }
   p{ margin:0 0 24px; color:#555; }
   nav{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
   a.btn{ display:inline-flex; align-items:center; min-height:44px; padding:0 20px; border-radius:999px; border:1px solid #9a7b11; color:#1a1a1a; text-decoration:none; font-weight:700; }
@@ -198,7 +201,7 @@ open(OUT+'/404.html','w',encoding='utf8').write("""<!doctype html>
 </head>
 <body>
 <main>
-  <img src="/images/logo.png" alt="Cuillère d’Or" width="1781" height="406"/>
+  <img src="/images/logo.png" alt="Cuillère d’Or" width="800" height="226"/>
   <h1>Page introuvable</h1>
   <p>Cette adresse n’existe pas ou plus. / This page does not exist.</p>
   <nav><a class="btn solid" href="/">Voir le catalogue</a><a class="btn" href="https://cuilleredor.fr/">Retour au site</a></nav>

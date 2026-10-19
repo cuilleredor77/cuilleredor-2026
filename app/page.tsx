@@ -677,6 +677,36 @@ export default function Home() {
               <span>Un seul fil conducteur, du devis au service</span>
             </div>
           </div>
+          <div className="maison-awards">
+            <div className="maison-awards-badges">
+              <img
+                src="/awards/mariages-net-wedding-awards-2025.jpg"
+                width={447}
+                height={447}
+                loading="lazy"
+                alt="Mariages.net Wedding Awards 2025"
+              />
+              <img
+                className="round"
+                src="/awards/mariages-net-wedding-awards-2026.png"
+                width={223}
+                height={223}
+                loading="lazy"
+                alt="Mariages.net Wedding Awards 2026"
+              />
+            </div>
+            <p>
+              Lauréate Mariages.net deux années de suite, aux Wedding Awards
+              2025 et 2026.{" "}
+              <a
+                href="https://www.mariages.net/traiteur-mariage/cuillere-dor--e310106"
+                target="_blank"
+                rel="noopener"
+              >
+                Lire les avis de nos mariés sur Mariages.net
+              </a>
+            </p>
+          </div>
           <div className="maison-bottom">
             <p className="maison-address">
               <MapPin size={16} /> Laboratoire · 29 rue de Montgeron, Brunoy
@@ -806,7 +836,7 @@ export default function Home() {
             </a>
             <a
               className="button button-dark"
-              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf"
+              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf?v=6"
               download
             >
               Télécharger le PDF
@@ -815,20 +845,20 @@ export default function Home() {
           <p className="catalogue-preview-note">
             Disponible en français et en anglais (bouton FR / EN dans le
             catalogue en ligne) ·{" "}
-            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf" download>
+            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf?v=6" download>
               PDF English
             </a>
             <br />
             Pour imprimer :{" "}
             <a
-              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR-HD-impression.pdf"
+              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR-HD-impression.pdf?v=6"
               download
             >
               PDF haute définition (18 Mo)
             </a>{" "}
             ·{" "}
             <a
-              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN-HD-print.pdf"
+              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN-HD-print.pdf?v=6"
               download
             >
               English HD
@@ -1471,7 +1501,7 @@ export default function Home() {
             Demander un devis <ArrowRight size={16} />
           </a>
           <nav className="footer-legal" aria-label="Informations légales">
-            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf">Catalogue PDF</a>
+            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf?v=6">Catalogue PDF</a>
             <a href="/mentions-legales">Mentions légales</a>
             <a href="/politique-confidentialite">Confidentialité</a>
           </nav>
