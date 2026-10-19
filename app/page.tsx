@@ -614,7 +614,7 @@ export default function Home() {
         </a>
         <nav className="desktop-nav" aria-label="Navigation principale">
           <a href="#formules">1. Formules & menus</a>
-          <a href="#calculateur">2. Estimer & devis</a>
+          <a href="#calculateur">2. Estimation & devis</a>
           <a href="#feuilleter">Catalogue</a>
         </nav>
         <a className="header-cta" href="#calculateur">
@@ -629,7 +629,7 @@ export default function Home() {
           </summary>
           <nav>
             <a href="#formules">1. Formules & menus</a>
-            <a href="#calculateur">2. Estimer et recevoir mon devis</a>
+            <a href="#calculateur">2. Estimation & devis</a>
             <a href="#feuilleter">Feuilleter le catalogue</a>
           </nav>
         </details>
