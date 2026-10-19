@@ -1314,12 +1314,12 @@
   .dom-cta{ margin-top:4cqi; }
   .cl-quote{ margin:3cqi 0; } .cl-roots{ margin-bottom:3cqi; }
   #contact{ background:#12141c; }
-  .ct-top{ position:absolute; top:0; left:0; right:0; height:24%; display:flex; justify-content:space-between; align-items:flex-start; padding:4.2cqi 7.4cqi 0; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.2cqi*var(--fs,1)); letter-spacing:.18em; text-transform:uppercase; color:var(--gold-bright); }
-  .ct-photo{ position:absolute; top:24%; left:0; right:0; height:50%; }
-  .ct-photo > img:first-child{ width:100%; height:100%; object-fit:cover; object-position:50% 35%; display:block; }
-  .ct-veil{ position:absolute; inset:0; background:linear-gradient(to bottom, rgba(10,10,8,.1) 0%, rgba(10,10,8,0) 40%, rgba(10,10,8,.8) 100%); }
-  .ct-logo{ position:absolute; left:50%; bottom:3.4cqi; transform:translateX(-50%); width:30cqi; height:auto; filter:drop-shadow(0 .4cqi 1.4cqi rgba(0,0,0,.6)); }
-  .ct-bottom{ position:absolute; top:74%; left:0; right:0; bottom:0; padding:0 7.4cqi; display:grid; grid-template-columns:1fr 1fr; gap:4cqi; align-items:center; color:var(--ink-contrast); }
+  .ct-top{ position:absolute; z-index:3; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:flex-start; padding:4.2cqi 7.4cqi 0; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.2cqi*var(--fs,1)); letter-spacing:.18em; text-transform:uppercase; color:var(--gold-bright); }
+  .ct-photo{ position:absolute; top:0; left:0; right:0; height:79%; }
+  .ct-photo > img:first-child{ width:100%; height:100%; object-fit:cover; object-position:58% 40%; display:block; }
+  .ct-veil{ position:absolute; inset:0; background:linear-gradient(to bottom, rgba(18,20,28,.78) 0%, rgba(18,20,28,0) 24%, rgba(18,20,28,0) 58%, #12141c 100%); }
+  .ct-logo{ position:absolute; left:50%; bottom:5cqi; transform:translateX(-50%); width:30cqi; height:auto; filter:drop-shadow(0 .4cqi 1.4cqi rgba(0,0,0,.6)); }
+  .ct-bottom{ position:absolute; top:80%; left:0; right:0; bottom:0; padding:0 7.4cqi; display:grid; grid-template-columns:1fr 1fr; gap:4cqi; align-items:center; color:var(--ink-contrast); }
   .ct-left{ display:flex; gap:2cqi; align-items:center; }
   .ct-left img{ width:12cqi; height:12cqi; background:#fff; padding:.6cqi; flex:0 0 auto; }
   .ct-left b{ display:block; font-family:var(--heading-font); font-weight:400; font-size:calc(2.6cqi*var(--fs,1)); line-height:1.15; color:var(--gold-bright); margin-bottom:.7cqi; }
@@ -1927,8 +1927,8 @@
     #portrait .pt-awards{ flex-wrap:wrap; }
     #portrait .pt-awards p{ max-width:none; }
     /* contact */
-    #contact .ct-top{ position:relative; height:auto; padding:5cqi 5cqi 4cqi; }
-    #contact .ct-photo{ position:relative; top:auto; height:80cqi; flex:none; }
+    #contact{ position:relative; } #contact .ct-top{ position:absolute; padding:5cqi 5cqi 0; }
+    #contact .ct-photo{ position:relative; top:auto; height:104cqi; flex:none; } #contact .ct-photo > img:first-child{ object-position:66% 40%; }
     #contact .ct-bottom{ position:relative; top:auto; bottom:auto; padding:6cqi 5cqi 4cqi; grid-template-columns:1fr; gap:6cqi; }
     #contact .ct-right{ text-align:left; }
     .sheet{ display:flex; flex-direction:column; overflow:visible; }
@@ -2972,12 +2972,12 @@
   .dom-cta{ margin-top:4cqi; }
   .cl-quote{ margin:3cqi 0; } .cl-roots{ margin-bottom:3cqi; }
   #contact{ background:#12141c; }
-  .ct-top{ position:absolute; top:0; left:0; right:0; height:24%; display:flex; justify-content:space-between; align-items:flex-start; padding:4.2cqi 7.4cqi 0; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.2cqi*var(--fs,1)); letter-spacing:.18em; text-transform:uppercase; color:var(--gold-bright); }
-  .ct-photo{ position:absolute; top:24%; left:0; right:0; height:50%; }
-  .ct-photo > img:first-child{ width:100%; height:100%; object-fit:cover; object-position:50% 35%; display:block; }
-  .ct-veil{ position:absolute; inset:0; background:linear-gradient(to bottom, rgba(10,10,8,.1) 0%, rgba(10,10,8,0) 40%, rgba(10,10,8,.8) 100%); }
-  .ct-logo{ position:absolute; left:50%; bottom:3.4cqi; transform:translateX(-50%); width:30cqi; height:auto; filter:drop-shadow(0 .4cqi 1.4cqi rgba(0,0,0,.6)); }
-  .ct-bottom{ position:absolute; top:74%; left:0; right:0; bottom:0; padding:0 7.4cqi; display:grid; grid-template-columns:1fr 1fr; gap:4cqi; align-items:center; color:var(--ink-contrast); }
+  .ct-top{ position:absolute; z-index:3; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:flex-start; padding:4.2cqi 7.4cqi 0; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.2cqi*var(--fs,1)); letter-spacing:.18em; text-transform:uppercase; color:var(--gold-bright); }
+  .ct-photo{ position:absolute; top:0; left:0; right:0; height:79%; }
+  .ct-photo > img:first-child{ width:100%; height:100%; object-fit:cover; object-position:58% 40%; display:block; }
+  .ct-veil{ position:absolute; inset:0; background:linear-gradient(to bottom, rgba(18,20,28,.78) 0%, rgba(18,20,28,0) 24%, rgba(18,20,28,0) 58%, #12141c 100%); }
+  .ct-logo{ position:absolute; left:50%; bottom:5cqi; transform:translateX(-50%); width:30cqi; height:auto; filter:drop-shadow(0 .4cqi 1.4cqi rgba(0,0,0,.6)); }
+  .ct-bottom{ position:absolute; top:80%; left:0; right:0; bottom:0; padding:0 7.4cqi; display:grid; grid-template-columns:1fr 1fr; gap:4cqi; align-items:center; color:var(--ink-contrast); }
   .ct-left{ display:flex; gap:2cqi; align-items:center; }
   .ct-left img{ width:12cqi; height:12cqi; background:#fff; padding:.6cqi; flex:0 0 auto; }
   .ct-left b{ display:block; font-family:var(--heading-font); font-weight:400; font-size:calc(2.6cqi*var(--fs,1)); line-height:1.15; color:var(--gold-bright); margin-bottom:.7cqi; }
@@ -3585,8 +3585,8 @@
     #portrait .pt-awards{ flex-wrap:wrap; }
     #portrait .pt-awards p{ max-width:none; }
     /* contact */
-    #contact .ct-top{ position:relative; height:auto; padding:5cqi 5cqi 4cqi; }
-    #contact .ct-photo{ position:relative; top:auto; height:80cqi; flex:none; }
+    #contact{ position:relative; } #contact .ct-top{ position:absolute; padding:5cqi 5cqi 0; }
+    #contact .ct-photo{ position:relative; top:auto; height:104cqi; flex:none; } #contact .ct-photo > img:first-child{ object-position:66% 40%; }
     #contact .ct-bottom{ position:relative; top:auto; bottom:auto; padding:6cqi 5cqi 4cqi; grid-template-columns:1fr; gap:6cqi; }
     #contact .ct-right{ text-align:left; }
     .sheet{ display:flex; flex-direction:column; overflow:visible; }
