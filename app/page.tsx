@@ -229,6 +229,59 @@ const offers = [
   },
 ];
 
+const offerFormula: Record<string, string> = {
+  "01": "buffet",
+  "02": "plateau",
+  "03": "assiette",
+  "04": "aperitifs",
+  "05": "brunch",
+  "06": "barbecue",
+  "07": "chef",
+};
+
+// En tête du menu ouvert : la présentation de la formule (autrefois sur la carte)
+function OfferRecap({ formula }: { formula: string }) {
+  const offer = offers.find((o) => offerFormula[o.number] === formula);
+  if (!offer) return null;
+  // « Tarifs » rejoint le tarif plutôt que de faire doublon
+  const tarifs = offer.secondLabel === "Tarifs";
+  return (
+    <div className="offer-recap">
+      <p>{offer.description}</p>
+      <dl>
+        <div>
+          <dt>{offer.firstLabel}</dt>
+          <dd>{offer.firstValue}</dd>
+        </div>
+        {tarifs ? null : (
+          <div>
+            <dt>{offer.secondLabel}</dt>
+            <dd>{offer.secondValue}</dd>
+          </div>
+        )}
+        <div>
+          <dt>Tarif</dt>
+          <dd>
+            {offer.price} {offer.suffix}
+            {tarifs ? (
+              <>
+                <br />
+                {offer.secondValue}
+              </>
+            ) : null}
+            {"wineNote" in offer && offer.wineNote ? (
+              <>
+                <br />
+                {offer.wineNote}
+              </>
+            ) : null}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  );
+}
+
 // Noms repris du catalogue 2027-2028 (même ordre, même orthographe).
 const savoury = [
   { name: "Plantain frit", image: "/plantains-480.webp" },
@@ -736,17 +789,25 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="offers" id="formules">
+      <section className="offers offers-picker" id="formules">
+        <p className="offers-picker-hint">
+          La carte de notre traiteur à Brunoy, formule par formule. Cliquez sur
+          une formule&nbsp;: son menu s’ouvre juste en dessous.
+        </p>
         {offers.map((offer) => (
-          <article
+          <a
             className="offer-card"
+            href="#carte"
             id={offer.number === "05" ? "brunch" : undefined}
             key={offer.number}
+            data-select-formula={offerFormula[offer.number]}
+            data-formula-target="menu"
+            aria-controls="carte"
           >
             <div className="offer-visual">
               <ResponsiveImage
                 base={offer.image}
-                sizes="(max-width: 720px) 100vw, (max-width: 1050px) 50vw, 33vw"
+                sizes="(max-width: 720px) 50vw, (max-width: 1050px) 25vw, 15vw"
                 width={900}
                 height={506}
                 alt={offer.imageAlt}
@@ -757,125 +818,20 @@ export default function Home() {
               <span>{offer.tone}</span>
             </div>
             <h3>{offer.title}</h3>
-            <p className="offer-description">{offer.description}</p>
-            <dl className="offer-specs">
-              <div>
-                <dt>{offer.firstLabel}</dt>
-                <dd>{offer.firstValue}</dd>
-              </div>
-              <div>
-                <dt>{offer.secondLabel}</dt>
-                <dd>{offer.secondValue}</dd>
-              </div>
-            </dl>
-            <div className="offer-bottom">
-              <div className="offer-price">
-                {offer.price} <small>{offer.suffix}</small>
-              </div>
-              {"wineNote" in offer && offer.wineNote ? (
-                <p className="offer-wine-note">{offer.wineNote}</p>
-              ) : null}
-              <a
-                href={offer.number <= "05" ? "#carte" : "#calculateur"}
-                data-formula-target={offer.number <= "05" ? "menu" : undefined}
-                data-select-formula={
-                  (
-                    {
-                      "01": "buffet",
-                      "02": "plateau",
-                      "03": "assiette",
-                      "04": "aperitifs",
-                      "05": "brunch",
-                      "06": "barbecue",
-                      "07": "chef",
-                    } as Record<string, string>
-                  )[offer.number]
-                }
-              >
-                {offer.cta} <ArrowRight size={16} />
-              </a>
+            <div className="offer-price">
+              {offer.price} <small>{offer.suffix}</small>
             </div>
-          </article>
+            <span className="offer-open" aria-hidden="true">
+              Voir le menu <ArrowRight size={14} />
+            </span>
+          </a>
         ))}
       </section>
 
-      <section className="catalogue section-pad" id="carte">
-        <div className="catalogue-heading">
-          <p className="eyebrow dark">Le menu de chaque formule</p>
-          <h2>
-            Généreuse. Élégante.
-            <br />
-            <em>Métissée.</em>
-          </h2>
-          <p>
-            La carte de notre traiteur à Brunoy, formule par formule : buffet,
-            plateau, service à l’assiette, cocktail dînatoire et brunch. Choisissez
-            une formule avec les onglets ci-dessous. Les photos de chaque plat
-            sont dans notre{" "}
-            <a href="/liseuse/" data-liseuse="1">
-              catalogue
-            </a>
-            .
-          </p>
-        </div>
+      <section className="catalogue section-pad formula-panel" id="carte">
         <CatalogueTabs
           plats={
             <div className="menu-showcase">
-              <div
-                className="carte-tabs"
-                role="group"
-                aria-label="Choisir une formule"
-              >
-                <a
-                  href="#carte"
-                  data-select-formula="buffet"
-                  data-formula-target="menu"
-                >
-                  Buffet
-                </a>
-                <a
-                  href="#carte"
-                  data-select-formula="plateau"
-                  data-formula-target="menu"
-                >
-                  Plateau
-                </a>
-                <a
-                  href="#carte"
-                  data-select-formula="assiette"
-                  data-formula-target="menu"
-                >
-                  À l’assiette
-                </a>
-                <a
-                  href="#carte"
-                  data-select-formula="aperitifs"
-                  data-formula-target="menu"
-                >
-                  Cocktail & vin d’honneur
-                </a>
-                <a
-                  href="#carte"
-                  data-select-formula="brunch"
-                  data-formula-target="menu"
-                >
-                  Brunch
-                </a>
-                <a
-                  href="#carte"
-                  data-select-formula="barbecue"
-                  data-formula-target="menu"
-                >
-                  Barbecue Party
-                </a>
-                <a
-                  href="#carte"
-                  data-select-formula="chef"
-                  data-formula-target="menu"
-                >
-                  Chef à domicile
-                </a>
-              </div>
               <div className="formula-menu-list">
                 <details id="menu-aperitifs" data-menu-formula="aperitifs">
                   <summary>
@@ -890,6 +846,7 @@ export default function Home() {
                     <b aria-hidden="true">+</b>
                   </summary>
                   <div className="formula-menu-body">
+                    <OfferRecap formula="aperitifs" />
                     <p className="formula-menu-note">
                       Choisissez librement parmi nos 30 créations. Toutes sont
                       proposées au même tarif.
@@ -950,6 +907,7 @@ export default function Home() {
                     <b aria-hidden="true">+</b>
                   </summary>
                   <div className="formula-menu-body">
+                    <OfferRecap formula="plateau" />
                     <p className="formula-menu-note">
                       Le menu du buffet, présenté sur plateaux et apporté à
                       table.
@@ -995,6 +953,7 @@ export default function Home() {
                     <b aria-hidden="true">+</b>
                   </summary>
                   <div className="formula-menu-body">
+                    <OfferRecap formula="assiette" />
                     <p className="formula-menu-note">
                       Composez un repas complet dressé et servi
                       individuellement.
@@ -1040,6 +999,7 @@ export default function Home() {
                     <b aria-hidden="true">+</b>
                   </summary>
                   <div className="formula-menu-body">
+                    <OfferRecap formula="buffet" />
                     <p className="formula-menu-note">
                       Choisissez dans chaque catégorie pour composer votre
                       buffet.
@@ -1083,6 +1043,7 @@ export default function Home() {
                     <b aria-hidden="true">+</b>
                   </summary>
                   <div className="formula-menu-body">
+                    <OfferRecap formula="brunch" />
                     <a
                       className="formula-choose-cta"
                       href="#calculateur"
@@ -1130,6 +1091,7 @@ export default function Home() {
                     <b aria-hidden="true">+</b>
                   </summary>
                   <div className="formula-menu-body">
+                    <OfferRecap formula="barbecue" />
                     <p className="formula-menu-note">
                       Une prestation conviviale et festive pour les beaux jours.
                       Les grillades cuisent en direct, les invités se servent.
@@ -1174,11 +1136,11 @@ export default function Home() {
                     <b aria-hidden="true">+</b>
                   </summary>
                   <div className="formula-menu-body">
+                    <OfferRecap formula="chef" />
                     <p className="formula-menu-note">
-                      La cheffe Huguette et son équipe apportent la cuisine, la
-                      vaisselle, le nappage et le service, avec l’exigence d’une
-                      belle table d’hôtel ou de restaurant haut de gamme. Dès 12
-                      couverts, hors frais de déplacement.
+                      L’exigence d’une belle table d’hôtel ou de restaurant haut
+                      de gamme, nappage compris. Dès 12 couverts, hors frais de
+                      déplacement.
                     </p>
                     <a
                       className="formula-choose-cta"
