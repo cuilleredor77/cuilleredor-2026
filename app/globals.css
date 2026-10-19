@@ -6876,3 +6876,24 @@ html[data-selected-formula="chef"]
     justify-self: stretch;
   }
 }
+
+/* Liseuse du catalogue intégrée (public/liseuse/, générée par catalogue-source/build_liseuse.py avec LISEUSE_SITE=1) */
+.catalogue-liseuse {
+  grid-column: 1/-1;
+  overflow: hidden;
+  border: 1px solid rgba(197, 160, 89, 0.55);
+  border-radius: 10px;
+  background: #141210;
+  box-shadow: 0 18px 40px rgba(20, 15, 5, 0.25);
+}
+.catalogue-liseuse iframe {
+  display: block;
+  width: 100%;
+  height: min(86vh, 900px);
+  border: 0;
+}
+@media (max-width: 720px) {
+  .catalogue-liseuse iframe {
+    height: 82vh;
+  }
+}

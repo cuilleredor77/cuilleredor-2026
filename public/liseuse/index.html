@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Liseuse – Catalogue Cuillère d'Or 2027-2028</title>
+<meta name="description" content="Feuilletez le catalogue 2027-2028 de Cuillère d'Or, traiteur : formules, menus et tarifs.">
+<meta name="theme-color" content="#1a1a1a">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+  :root{ --ink:#1a1a1a; --ink-2:#2b2723; --gold:#d4af37; --gold-soft:#e8cf8a; --cream:#f7f4ec; --paper:#fffaf2;
+    --serif:Georgia,'Times New Roman',serif; --sans:Arial,Helvetica,sans-serif; --bar:60px; }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; margin:0; }
+  body{ background:var(--ink); color:var(--cream); font-family:var(--sans); overflow:hidden;
+    display:flex; flex-direction:column; height:100dvh; }
+  button,a{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  .sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+  /* barre du haut */
+  header{ height:var(--bar); flex:none; display:flex; align-items:center; gap:12px; padding:0 16px;
+    padding-top:env(safe-area-inset-top); border-bottom:1px solid rgba(212,175,55,.35); background:var(--ink); }
+  .logo{ display:flex; align-items:center; min-height:44px; flex:none; }
+  .logo img{ height:36px; width:auto; display:block; }
+  .embed .logo{ display:none; } /* intégrée dans cuilleredor.fr : le site a déjà son logo */
+  h1{ font:400 17px/1.2 var(--serif); color:var(--gold-soft); margin:0; flex:1; min-width:0;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:.02em; }
+  .tools{ display:flex; align-items:center; gap:6px; flex:none; }
+  .lang{ display:flex; border:1px solid rgba(212,175,55,.6); border-radius:999px; overflow:hidden; }
+  .lang button{ min-width:44px; height:44px; border:0; background:transparent; cursor:pointer; font-size:13px; font-weight:700; letter-spacing:.06em; }
+  .lang button[aria-pressed="true"]{ background:var(--gold); color:var(--ink); }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; min-width:44px; height:44px; padding:0 12px;
+    border-radius:999px; border:1px solid rgba(212,175,55,.6); background:transparent; cursor:pointer; text-decoration:none;
+    font-size:13px; font-weight:700; letter-spacing:.04em; }
+  .btn:hover:not(:disabled){ background:var(--gold); color:var(--ink); }
+  .btn:disabled{ opacity:.35; cursor:default; }
+  .btn svg{ width:20px; height:20px; flex:none; }
+  .btn.round{ padding:0; width:44px; }
+
+  /* scène */
+  main{ flex:1; min-height:0; position:relative; padding:20px 24px;
+    background:radial-gradient(ellipse 80% 70% at 50% 45%, #40372d 0%, #24201c 55%, var(--ink) 100%); }
+  #book{ width:100%; height:100%; transition:transform .7s cubic-bezier(.4,0,.2,1); }
+  .page{ background:var(--paper); overflow:hidden; }
+  .page img{ width:100%; height:100%; display:block; object-fit:cover; user-select:none; -webkit-user-drag:none; position:relative;
+    opacity:0; transition:opacity .35s; }
+  .page img.ok{ opacity:1; }
+  .page .ph{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font:italic 15px var(--serif); color:#b9a88a; }
+  /* pli central : la page se creuse vers la reliure */
+  .page::after{ content:""; position:absolute; top:0; bottom:0; width:12%; pointer-events:none; }
+  .page.--left::after{ right:0; background:linear-gradient(to left, rgba(0,0,0,.22), rgba(0,0,0,.06) 35%, transparent); }
+  .page.--right::after{ left:0; background:linear-gradient(to right, rgba(0,0,0,.22), rgba(0,0,0,.06) 35%, transparent); }
+  .page.--hard::after, .portrait .page::after{ display:none; }
+  .stf__block{ filter:drop-shadow(0 18px 28px rgba(0,0,0,.45)); }
+  .hint{ position:absolute; left:50%; bottom:12px; transform:translateX(-50%); z-index:5; pointer-events:none;
+    background:rgba(26,26,26,.85); border:1px solid rgba(212,175,55,.5); border-radius:999px; padding:8px 16px;
+    font-size:13px; white-space:nowrap; transition:opacity .6s; }
+  .hint.off{ opacity:0; }
+
+  /* barre du bas */
+  nav{ flex:none; display:flex; align-items:center; justify-content:center; gap:8px; padding:8px 16px;
+    padding-bottom:calc(8px + env(safe-area-inset-bottom)); border-top:1px solid rgba(212,175,55,.35); background:var(--ink); }
+  .count{ font:15px var(--serif); color:var(--gold-soft); min-width:118px; text-align:center; }
+  #slider{ width:min(320px,30vw); accent-color:var(--gold); height:44px; margin:0 6px; }
+  .sep{ width:1px; height:28px; background:rgba(212,175,55,.35); margin:0 6px; }
+
+  /* zoom */
+  #zoom{ position:fixed; inset:0; z-index:50; background:#111; display:flex; flex-direction:column; }
+  #zoom[hidden]{ display:none; }
+  .zbar{ flex:none; display:flex; align-items:center; gap:8px; padding:8px 16px; padding-top:calc(8px + env(safe-area-inset-top));
+    border-bottom:1px solid rgba(212,175,55,.35); }
+  .zbar .grow{ flex:1; font:15px var(--serif); color:var(--gold-soft); }
+  .zscroll{ flex:1; overflow:auto; -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y pinch-zoom; padding:16px; }
+  .zpages{ display:flex; margin:0 auto; width:calc(var(--z,1) * 100%); max-width:calc(var(--z,1) * var(--zmax,1400px)); }
+  .zpages img{ flex:1 1 0; min-width:0; height:auto; display:block; background:var(--paper); }
+
+  @media (max-width:700px){
+    h1{ display:none; }
+    .logo{ flex:1; }
+    .logo img{ height:32px; }
+    .btn .t{ display:none; }
+    .btn{ padding:0; width:44px; }
+    main{ padding:12px 16px; }
+    nav{ gap:4px; }
+    #slider, .sep, .edge{ display:none; }
+    .count{ min-width:0; flex:1; }
+  }
+  @media (prefers-reduced-motion:reduce){ .page img, .hint, #book{ transition:none; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="../" id="home" aria-label="Retour au catalogue"><img src="logo.png" alt="Cuillère d'Or" width="800" height="226"></a>
+  <h1 id="title">Catalogue 2027-2028</h1>
+  <div class="tools">
+    <div class="lang" role="group" id="lang" aria-label="Langue">
+      <button type="button" data-l="fr" aria-pressed="true" lang="fr">FR</button>
+      <button type="button" data-l="en" aria-pressed="false" lang="en">EN</button>
+    </div>
+    <a class="btn" id="dl" href="#" download>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
+      <span class="t" id="dl-t">PDF</span>
+    </a>
+  </div>
+</header>
+
+<main id="stage">
+  <p class="hint" id="hint" aria-hidden="true"></p>
+</main>
+
+<nav id="bar" aria-label="Navigation dans le catalogue">
+  <button type="button" class="btn round edge" id="first"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 18-6-6 6-6M7 6v12"/></svg></button>
+  <button type="button" class="btn round" id="prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+  <span class="count" id="count" aria-live="polite"></span>
+  <input type="range" id="slider" min="1" value="1">
+  <button type="button" class="btn round" id="next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+  <button type="button" class="btn round edge" id="last"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 18 6-6-6-6M17 6v12"/></svg></button>
+  <span class="sep" aria-hidden="true"></span>
+  <button type="button" class="btn round" id="zoom-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M11 8v6M8 11h6"/></svg></button>
+  <button type="button" class="btn round" id="fs" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+</nav>
+
+<div id="zoom" role="dialog" aria-modal="true" aria-labelledby="zoom-t" hidden>
+  <div class="zbar">
+    <span class="grow" id="zoom-t"></span>
+    <button type="button" class="btn round" id="zout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg></button>
+    <button type="button" class="btn round" id="zin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button>
+    <button type="button" class="btn round" id="zclose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="zscroll" id="zscroll"><div class="zpages" id="zpages"></div></div>
+</div>
+
+<script src="page-flip.browser.js"></script>
+<script>
+(function(){
+  var M={"fr": {"dir": "pages/fr-66e06d5d", "n": 26, "w": 596, "h": 842}, "en": {"dir": "pages/en-5ac62f7f", "n": 26, "w": 596, "h": 842}};
+  var T={
+    fr:{title:'Catalogue 2027-2028',doc:'Liseuse – Catalogue Cuillère d’Or 2027-2028',home:'Retour au catalogue',lang:'Langue',dl:'PDF',dla:'Télécharger le catalogue en PDF',
+      nav:'Navigation dans le catalogue',first:'Première page',prev:'Page précédente',next:'Page suivante',last:'Dernière page',slider:'Aller à la page',
+      zoom:'Agrandir la page',zin:'Agrandir',zout:'Réduire',zclose:'Fermer l’agrandissement',fs:'Plein écran',fsx:'Quitter le plein écran',
+      page:'Page',pages:'Pages',of:'sur',alt:'Catalogue Cuillère d’Or, page ',
+      hint:'Glissez ou cliquez sur le bord d’une page pour la tourner',hintKb:'Flèches ← → pour tourner les pages'},
+    en:{title:'Catalogue 2027-2028',doc:'Flipbook – Cuillère d’Or Catalogue 2027-2028',home:'Back to the catalogue',lang:'Language',dl:'PDF',dla:'Download the catalogue as PDF',
+      nav:'Catalogue navigation',first:'First page',prev:'Previous page',next:'Next page',last:'Last page',slider:'Go to page',
+      zoom:'Enlarge the page',zin:'Zoom in',zout:'Zoom out',zclose:'Close zoom',fs:'Full screen',fsx:'Exit full screen',
+      page:'Page',pages:'Pages',of:'of',alt:'Cuillère d’Or catalogue, page ',
+      hint:'Swipe or click a page edge to turn it',hintKb:'Use ← → arrow keys to turn pages'}};
+  var PDF={fr:'/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf',en:'/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf'};
+  function $(id){return document.getElementById(id);}
+  var stage=$('stage'), pf=null, imgs=[], n=0, lang, zl=0, ZL=[1,1.5,2,3];
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var q=new URLSearchParams(location.search);
+  lang=q.get('lang')==='en'?'en':'fr';
+  var embed=q.has('embed'); if(embed) document.documentElement.classList.add('embed');
+  var start=(parseInt((location.hash.match(/p=(\d+)/)||[])[1],10)||1)-1;
+
+  function src(i,k){var m=M[lang];return m.dir+'/'+(i<9?'0':'')+(i+1)+'-'+k+'.webp';}
+  function want(i){var im=imgs[i]; if(im&&!im.getAttribute('src')) im.src=src(i,'m');}
+  function around(p){for(var i=p-1;i<=p+3;i++) want(i);}
+  // une fois les pages visibles chargées, on charge le reste en arrière-plan, une image à la fois
+  var bgTimer;
+  function background(){clearTimeout(bgTimer); bgTimer=setTimeout(function step(){
+    for(var i=0;i<n;i++){ if(!imgs[i].getAttribute('src')){ want(i); imgs[i].addEventListener('load',function(){bgTimer=setTimeout(step,150);},{once:true}); return; } }
+  },1500);}
+
+  function build(p){
+    if(pf){ pf.destroy(); pf=null; }
+    var m=M[lang], t=T[lang]; n=m.n; imgs=[];
+    var book=document.createElement('div'); book.id='book'; stage.insertBefore(book,stage.firstChild);
+    for(var i=0;i<n;i++){
+      var d=document.createElement('div'); d.className='page';
+      var ph=document.createElement('span'); ph.className='ph'; ph.textContent=t.page+' '+(i+1); d.appendChild(ph);
+      var im=document.createElement('img'); im.alt=t.alt+(i+1); im.draggable=false; im.decoding='async';
+      im.addEventListener('load',function(){this.classList.add('ok');});
+      d.appendChild(im); book.appendChild(d); imgs.push(im);
+    }
+    p=Math.max(0,Math.min(n-1,p));
+    around(p);
+    pf=new St.PageFlip(book,{width:m.w,height:m.h,size:'stretch',minWidth:280,maxWidth:2400,minHeight:200,maxHeight:3400,
+      autoSize:false,showCover:true,usePortrait:true,mobileScrollSupport:false,maxShadowOpacity:.5,
+      flippingTime:reduce?250:850,startPage:p,swipeDistance:20,showPageCorners:true});
+    pf.loadFromHTML(book.querySelectorAll('.page'));
+    // StPageFlip rend la couverture et la dernière page rigides : on les veut souples comme du papier
+    var pc=pf.getPageCollection(); [0,n-1].forEach(function(i){ pc.getPage(i).setDensity('soft'); });
+    pf.on('flip',function(){update(); hideHint();});
+    pf.on('changeOrientation',update);
+    pf.on('changeState',function(e){
+      if(e.data==='flipping'||e.data==='user_fold'){ var c=pf.getCurrentPageIndex(); around(c);
+        // le livre glisse vers sa position finale pendant que la page tourne
+        var s=shown(); shift(side==='left'?s[0]-1:s[s.length-1]+1); }
+      else if(e.data==='read') update();
+    });
+    $('slider').max=n;
+    // premier placement sans animation, une fois la taille du livre connue
+    book.style.transition='none'; update();
+    requestAnimationFrame(function(){ update(); requestAnimationFrame(function(){ book.style.transition=''; }); });
+    background();
+  }
+
+  // pages affichées : couverture et dernière page seules, sinon double page sur grand écran
+  function shown(){
+    var c=pf.getCurrentPageIndex();
+    if(pf.getOrientation()==='portrait'||c===0||c>=n-1) return [c];
+    if(c%2===0) c--; return [c,c+1];
+  }
+  // couverture seule : centrée (et non collée à droite) ; dernière page seule : centrée aussi
+  var side='right';
+  stage.addEventListener('pointerdown',function(e){ var r=stage.getBoundingClientRect(); side=e.clientX<r.left+r.width/2?'left':'right'; },true);
+  function shift(c){
+    var b=$('book'); if(!b||!pf) return; var x=0;
+    if(pf.getOrientation()!=='portrait'){ var w=pf.getRender().getRect().pageWidth; if(c<=0) x=-w/2; else if(c>=n-1) x=w/2; }
+    b.style.transform=x?'translateX('+x+'px)':'';
+  }
+  window.addEventListener('resize',function(){ setTimeout(update,0); });
+  function label(s){var t=T[lang]; return (s.length>1?t.pages+' '+(s[0]+1)+'–'+(s[1]+1):t.page+' '+(s[0]+1))+' '+t.of+' '+n;}
+  function update(){
+    if(!pf) return;
+    var s=shown(), c=s[0];
+    around(c); shift(c);
+    $('count').textContent=label(s);
+    $('slider').value=c+1;
+    document.body.classList.toggle('portrait',pf.getOrientation()==='portrait');
+    $('first').disabled=$('prev').disabled=c<=0;
+    $('next').disabled=$('last').disabled=s[s.length-1]>=n-1;
+    var qs=[embed?'embed':'',lang==='en'?'lang=en':''].filter(Boolean).join('&');
+    history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+(c>0?'#p='+(c+1):''));
+  }
+  function go(i){ if(!pf) return; i=Math.max(0,Math.min(n-1,i)); around(i); pf.turnToPage(i); update(); }
+
+  function texts(){
+    var t=T[lang];
+    document.documentElement.lang=lang; document.title=t.doc; $('title').textContent=t.title;
+    $('home').setAttribute('aria-label',t.home); $('lang').setAttribute('aria-label',t.lang);
+    document.querySelectorAll('#lang button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===lang?'true':'false');});
+    var dl=$('dl'); dl.href=PDF[lang]+'?v='+M[lang].dir.split('-').pop(); dl.setAttribute('aria-label',t.dla); dl.title=t.dla; $('dl-t').textContent=t.dl;
+    $('bar').setAttribute('aria-label',t.nav);
+    [['first','first'],['prev','prev'],['next','next'],['last','last'],['zoom-btn','zoom'],['zin','zin'],['zout','zout'],['zclose','zclose']].forEach(function(a){
+      var b=$(a[0]); b.setAttribute('aria-label',t[a[1]]); b.title=t[a[1]]; });
+    $('slider').setAttribute('aria-label',t.slider);
+    fsLabel();
+    var touch=window.matchMedia&&matchMedia('(pointer: coarse)').matches;
+    $('hint').textContent=touch?t.hint:t.hint+' · '+t.hintKb;
+  }
+
+  // indication de départ, retirée au premier feuilletage
+  var hintT=setTimeout(hideHint,6000);
+  function hideHint(){ clearTimeout(hintT); $('hint').classList.add('off'); }
+
+  function prev(){ side='left'; pf.flipPrev(); }
+  function next(){ side='right'; pf.flipNext(); }
+  $('prev').addEventListener('click',prev);
+  $('next').addEventListener('click',next);
+  $('first').addEventListener('click',function(){ go(0); });
+  $('last').addEventListener('click',function(){ go(n-1); });
+  $('slider').addEventListener('input',function(){ go(this.value-1); });
+  document.querySelectorAll('#lang button').forEach(function(b){ b.addEventListener('click',function(){
+    if(b.dataset.l===lang) return; var c=pf?pf.getCurrentPageIndex():0; lang=b.dataset.l; texts(); build(c);
+  }); });
+
+  // zoom : les pages visibles en haute définition, défilables (pincer pour zoomer sur mobile)
+  var zoom=$('zoom'), main=$('stage'), bar=$('bar'), head=document.querySelector('header');
+  function zset(){ $('zpages').style.setProperty('--z',ZL[zl]); $('zout').disabled=zl===0; $('zin').disabled=zl===ZL.length-1; }
+  function zopen(){
+    var s=shown(), box=$('zpages'); box.innerHTML=''; hideHint();
+    box.style.setProperty('--zmax',(s.length*900)+'px');
+    s.forEach(function(i){ var im=new Image(); im.src=src(i,'l'); im.alt=T[lang].alt+(i+1); im.width=M[lang].w*3; im.height=M[lang].h*3; box.appendChild(im); });
+    $('zoom-t').textContent=label(s); zl=0; zset();
+    zoom.hidden=false; main.inert=bar.inert=head.inert=true; $('zscroll').scrollTo(0,0); $('zclose').focus();
+  }
+  function zcloseFn(){ zoom.hidden=true; main.inert=bar.inert=head.inert=false; $('zoom-btn').focus(); }
+  $('zoom-btn').addEventListener('click',zopen);
+  $('zclose').addEventListener('click',zcloseFn);
+  $('zin').addEventListener('click',function(){ if(zl<ZL.length-1){zl++;zset();} });
+  $('zout').addEventListener('click',function(){ if(zl>0){zl--;zset();} });
+
+  // plein écran (absent sur iPhone : le bouton reste masqué)
+  var de=document.documentElement;
+  var fsOk=document.fullscreenEnabled||document.webkitFullscreenEnabled;
+  function fsEl(){ return document.fullscreenElement||document.webkitFullscreenElement; }
+  function fsLabel(){ var b=$('fs'), t=T[lang], on=!!fsEl(); b.setAttribute('aria-label',on?t.fsx:t.fs); b.title=on?t.fsx:t.fs; b.setAttribute('aria-pressed',on?'true':'false'); }
+  if(fsOk){ $('fs').hidden=false;
+    $('fs').addEventListener('click',function(){
+      if(fsEl()) (document.exitFullscreen||document.webkitExitFullscreen).call(document);
+      else (de.requestFullscreen||de.webkitRequestFullscreen).call(de);
+    });
+    document.addEventListener('fullscreenchange',fsLabel); document.addEventListener('webkitfullscreenchange',fsLabel);
+  }
+
+  // clavier
+  document.addEventListener('keydown',function(e){
+    if(e.altKey||e.ctrlKey||e.metaKey) return;
+    if(!zoom.hidden){
+      if(e.key==='Escape'){ e.preventDefault(); zcloseFn(); }
+      else if(e.key==='+'||e.key==='='){ $('zin').click(); }
+      else if(e.key==='-'){ $('zout').click(); }
+      return;
+    }
+    var tag=(e.target.tagName||'').toLowerCase(); if(tag==='input') return;
+    var k=e.key;
+    if(k==='ArrowRight'||k==='PageDown'){ e.preventDefault(); next(); }
+    else if(k==='ArrowLeft'||k==='PageUp'){ e.preventDefault(); prev(); }
+    else if(k==='Home'){ e.preventDefault(); go(0); }
+    else if(k==='End'){ e.preventDefault(); go(n-1); }
+    else if(k==='+'||k==='='||k==='z'){ e.preventDefault(); zopen(); }
+    else if(k==='f'&&fsOk){ $('fs').click(); }
+  });
+
+  texts(); build(start);
+})();
+</script>
+</body>
+</html>

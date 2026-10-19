@@ -6,7 +6,9 @@ import hashlib,io,json,os,shutil
 import fitz
 from PIL import Image
 
-OUT='../catalogue-site/liseuse'
+# LISEUSE_SITE=1 : copie pour cuilleredor.fr (public/liseuse/, intégrée en iframe ; PDF servis par le site).
+SITE=os.environ.get('LISEUSE_SITE')=='1'
+OUT='../public/liseuse' if SITE else '../catalogue-site/liseuse'
 PDFS={'fr':'../public/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf',
       'en':'../public/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf'}
 SIZES={'m':(1000,78),'l':(1800,80)}  # largeur en px, qualité WebP
@@ -28,7 +30,11 @@ def build():
     m={lang:render(lang,pdf) for lang,pdf in PDFS.items()}
     s=open('liseuse/index.html',encoding='utf8').read()
     assert s.count('__MANIFEST__')==1
-    open(OUT+'/index.html','w',encoding='utf8').write(s.replace('__MANIFEST__',json.dumps(m)))
+    s=s.replace('__MANIFEST__',json.dumps(m))
+    if SITE:
+        s=s.replace("'../pdf/Catalogue-Cuillere-dOr-2027-2028-FR.pdf'","'/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf'")
+        s=s.replace("'../pdf/Catalogue-Cuillere-dOr-2027-2028-EN.pdf'","'/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf'")
+    open(OUT+'/index.html','w',encoding='utf8').write(s)
     for f in ['page-flip.browser.js','LICENSE-page-flip.txt']: shutil.copy('liseuse/'+f,OUT+'/'+f)
     # logo du catalogue publié s'il existe (build_site.py l'y a déjà copié), sinon celui des sources
     logo=next(f for f in [OUT+'/../images/logo-site.png','images/logo-site.png','images/logo.png'] if os.path.isfile(f))

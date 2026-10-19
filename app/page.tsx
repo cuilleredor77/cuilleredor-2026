@@ -826,13 +826,16 @@ export default function Home() {
             téléchargez le catalogue ou votre sélection en PDF.
           </p>
           <div className="catalogue-preview-actions">
+            <a className="button button-gold" href="#liseuse">
+              Feuilleter le catalogue <ArrowRight size={17} />
+            </a>
             <a
-              className="button button-gold"
+              className="button button-dark"
               href="https://catalogue.cuilleredor.fr"
               target="_blank"
               rel="noreferrer"
             >
-              Feuilleter le catalogue <ArrowRight size={17} />
+              Choisir mes plats
             </a>
             <a
               className="button button-dark"
@@ -865,29 +868,15 @@ export default function Home() {
             </a>
           </p>
         </div>
-        <a
-          className="catalogue-preview-pages"
-          href="https://catalogue.cuilleredor.fr"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Ouvrir le catalogue en ligne"
-        >
-          {[
-            ["couverture", "Couverture du catalogue Cuillère d’Or 2027-2028"],
-            ["formules", "Page des formules du catalogue"],
-            ["tarifs", "Page des tarifs du catalogue"],
-          ].map(([name, alt]) => (
-            <img
-              key={name}
-              src={`/catalogue-apercu-${name}.webp`}
-              width="911"
-              height="1287"
-              alt={alt}
-              loading="lazy"
-              decoding="async"
-            />
-          ))}
-        </a>
+        <div className="catalogue-liseuse" id="liseuse">
+          <iframe
+            src="/liseuse/?embed"
+            title="Catalogue Cuillère d’Or 2027-2028 à feuilleter"
+            loading="lazy"
+            allow="fullscreen"
+            allowFullScreen
+          />
+        </div>
       </section>
 
       <section className="catalogue section-pad" id="carte">

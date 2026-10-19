@@ -31,7 +31,7 @@ interface ExecutionContext {
 // static.cloudflareinsights.com, measurements sent to cloudflareinsights.com).
 const SECURITY_HEADERS: Record<string, string> = {
   "content-security-policy":
-    "default-src 'self'; script-src 'self' 'unsafe-inline' https://tracker.metricool.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tracker.metricool.com; font-src 'self'; frame-src https://docs.google.com; connect-src 'self' https://tracker.metricool.com https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://tracker.metricool.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tracker.metricool.com; font-src 'self'; frame-src 'self' https://docs.google.com; connect-src 'self' https://tracker.metricool.com https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'",
   "x-content-type-options": "nosniff",
   "x-frame-options": "SAMEORIGIN",
   "referrer-policy": "strict-origin-when-cross-origin",
