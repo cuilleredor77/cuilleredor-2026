@@ -15,6 +15,10 @@
   "images": {
     "binding": "IMAGES"
   },
+  "vars": {
+    "MAIL_FROM": "Cuillère d’Or <contact@cuilleredor.fr>",
+    "REVIEW_EMAIL": "cuilleredor4@gmail.com"
+  },
   "workers_dev": true,
   "d1_databases": [
     {

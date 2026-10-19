@@ -42,8 +42,8 @@ relectrice (`REVIEW_EMAIL`) avec un bouton « Envoyer au client » → e-mail au
 3. Déploiement : migration D1 `--remote` FAITE le 19/10/2026. Reste, dans l'ordre :
    a. Compte Resend (l'utilisatrice le crée), domaine `cuilleredor.fr` vérifié (enregistrements DNS donnés par Resend),
       clé API : `npx wrangler secret put RESEND_API_KEY`.
-   b. Variables `MAIL_FROM` (ex. `Cuillère d'Or <devis@cuilleredor.fr>`) et `REVIEW_EMAIL` (adresse de la relectrice)
-      dans `wrangler.jsonc` (`vars`) ou en secrets.
+   b. FAIT : `wrangler.jsonc` → `MAIL_FROM` = contact@cuilleredor.fr (pas de nouvelle boîte), `REVIEW_EMAIL` =
+      cuilleredor4@gmail.com ; les réponses des clients vont aussi sur cuilleredor4@gmail.com (Reply-To).
    c. Mot de passe de l'espace privé (choisi par l'utilisatrice, 8 caractères min.) : `npx wrangler secret put ADMIN_PASSWORD`.
    d. `npm run deploy` (met en ligne le nouveau formulaire : à faire seulement après a, b, c).
 4. Test de bout en bout en production avec une fausse demande (puis suppression).
