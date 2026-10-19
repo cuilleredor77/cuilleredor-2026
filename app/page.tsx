@@ -15,6 +15,7 @@ import PricingGrids from "./pricing-grids";
 import QuoteChooser from "./quote-chooser";
 import CatalogueTabs from "./catalogue-tabs";
 import FormulaExperience from "./formula-experience";
+import LiseuseOverlay from "./liseuse-overlay";
 
 const QUOTE_FORM =
   "https://docs.google.com/forms/d/e/1FAIpQLSdgBezVdjmGFxCTjhBvonBf870csBIy79wLWkPZPq_03I7YUQ/viewform";
@@ -544,6 +545,7 @@ export default function Home() {
       />
       <HashScrollFix />
       <FormulaExperience />
+      <LiseuseOverlay />
       <header className="site-header">
         <a
           className="brand"
@@ -558,9 +560,9 @@ export default function Home() {
           />
         </a>
         <nav className="desktop-nav" aria-label="Navigation principale">
-          <a href="#formules">Nos formules</a>
-          <a href="#carte">La carte</a>
-          <a href="#tarifs">Tarifs</a>
+          <a href="#formules">1. Formules & menus</a>
+          <a href="#tarifs">2. Estimer</a>
+          <a href="#devis">3. Devis</a>
           <a href="#feuilleter">Catalogue</a>
         </nav>
         <a className="header-cta" href="#calculateur">
@@ -574,11 +576,10 @@ export default function Home() {
             <span className="mobile-menu-label">Menu</span>
           </summary>
           <nav>
-            <a href="#formules">Nos formules</a>
-            <a href="#carte">La carte</a>
-            <a href="#tarifs">Tarifs</a>
+            <a href="#formules">1. Formules & menus</a>
+            <a href="#tarifs">2. Estimer ma réception</a>
+            <a href="#devis">3. Recevoir mon devis</a>
             <a href="#feuilleter">Feuilleter le catalogue</a>
-            <a href="#devis">Demander un devis directement</a>
           </nav>
         </details>
       </header>
@@ -611,7 +612,7 @@ export default function Home() {
           </p>
           <div className="hero-actions">
             <a className="button button-gold" href="#calculateur">
-              Estimer mon événement <ArrowRight size={17} />
+              Estimer ma réception <ArrowRight size={17} />
             </a>
             <a
               className="button button-ghost"
@@ -631,7 +632,7 @@ export default function Home() {
               en France et à l’étranger
             </span>
             <span>
-              <Clock3 size={20} aria-hidden="true" /> Devis sous 48 à 72 h
+              <Clock3 size={20} aria-hidden="true" /> Devis en ligne
             </span>
           </div>
         </div>
@@ -713,7 +714,7 @@ export default function Home() {
               <MapPin size={16} /> Laboratoire · 29 rue de Montgeron, Brunoy
             </p>
             <a href="#devis">
-              Demander un devis <ArrowRight size={15} />
+              Recevoir mon devis <ArrowRight size={15} />
             </a>
           </div>
         </div>
@@ -721,7 +722,7 @@ export default function Home() {
 
       <section className="intro section-pad">
         <div>
-          <p className="eyebrow dark">01 — Choisissez votre formule</p>
+          <p className="eyebrow dark">01 — Formules & menus</p>
           <h2>
             Comment vos invités
             <br />
@@ -730,21 +731,18 @@ export default function Home() {
         </div>
         <div className="intro-copy">
           <p>
-            Choisissez d’abord le style de réception. Vous estimerez le budget
-            avant de composer le menu.
+            Choisissez le style de réception et découvrez son menu, estimez
+            votre budget, puis recevez votre devis personnalisé par e-mail.
           </p>
           <ol className="journey-steps">
             <li className="active">
               <span>01</span>Choisir
             </li>
             <li>
-              <span>02</span>Découvrir
+              <span>02</span>Estimer
             </li>
             <li>
-              <span>03</span>Construire
-            </li>
-            <li>
-              <span>04</span>Devis
+              <span>03</span>Devis
             </li>
           </ol>
         </div>
@@ -813,76 +811,9 @@ export default function Home() {
         ))}
       </section>
 
-      <section className="catalogue-preview section-pad" id="feuilleter">
-        <div className="catalogue-preview-copy">
-          <p className="eyebrow dark">Catalogue 2027-2028</p>
-          <h2>
-            Feuilletez notre
-            <br />
-            <em>catalogue.</em>
-          </h2>
-          <p>
-            Parcourez en ligne toutes nos prestations, page après page : plats,
-            tarifs, options et conditions. Cochez vos plats préférés, puis
-            téléchargez le catalogue ou votre sélection en PDF.
-          </p>
-          <div className="catalogue-preview-actions">
-            <a className="button button-gold" href="#liseuse">
-              Feuilleter le catalogue <ArrowRight size={17} />
-            </a>
-            <a
-              className="button button-dark"
-              href="https://catalogue.cuilleredor.fr"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Choisir mes plats
-            </a>
-            <a
-              className="button button-dark"
-              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf?v=6"
-              download
-            >
-              Télécharger le PDF
-            </a>
-          </div>
-          <p className="catalogue-preview-note">
-            Disponible en français et en anglais (bouton FR / EN dans le
-            catalogue en ligne) ·{" "}
-            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf?v=6" download>
-              PDF English
-            </a>
-            <br />
-            Pour imprimer :{" "}
-            <a
-              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR-HD-impression.pdf?v=6"
-              download
-            >
-              PDF haute définition (18 Mo)
-            </a>{" "}
-            ·{" "}
-            <a
-              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN-HD-print.pdf?v=6"
-              download
-            >
-              English HD
-            </a>
-          </p>
-        </div>
-        <div className="catalogue-liseuse" id="liseuse">
-          <iframe
-            src="/liseuse/?embed"
-            title="Catalogue Cuillère d’Or 2027-2028 à feuilleter"
-            loading="lazy"
-            allow="fullscreen"
-            allowFullScreen
-          />
-        </div>
-      </section>
-
       <section className="catalogue section-pad" id="carte">
         <div className="catalogue-heading">
-          <p className="eyebrow dark">02 — Découvrez votre menu</p>
+          <p className="eyebrow dark">Le menu de chaque formule</p>
           <h2>
             Généreuse. Élégante.
             <br />
@@ -892,13 +823,9 @@ export default function Home() {
             La carte de notre traiteur à Brunoy, formule par formule : buffet,
             plateau, service à l’assiette, cocktail dînatoire et brunch. Choisissez
             une formule avec les onglets ci-dessous. Les photos de chaque plat
-            sont dans le{" "}
-            <a
-              href="https://catalogue.cuilleredor.fr"
-              target="_blank"
-              rel="noreferrer"
-            >
-              catalogue en ligne
+            sont dans notre{" "}
+            <a href="/liseuse/" data-liseuse="1">
+              catalogue
             </a>
             .
           </p>
@@ -984,14 +911,13 @@ export default function Home() {
                       href="#tarifs"
                       data-select-formula="aperitifs"
                     >
-                      Choisir cette formule pour mon estimation{" "}
+                      Estimer ma réception{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="https://catalogue.cuilleredor.fr/#aperitifs-sales"
-                      target="_blank"
-                      rel="noreferrer"
+                      href="/liseuse/#p=9"
+                      data-liseuse="9"
                     >
                       Voir les photos de ce menu dans le catalogue{" "}
                       <ArrowRight size={14} />
@@ -1045,14 +971,13 @@ export default function Home() {
                       href="#tarifs"
                       data-select-formula="plateau"
                     >
-                      Choisir cette formule pour mon estimation{" "}
+                      Estimer ma réception{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="https://catalogue.cuilleredor.fr/#buffet"
-                      target="_blank"
-                      rel="noreferrer"
+                      href="/liseuse/#p=6"
+                      data-liseuse="6"
                     >
                       Voir les photos de ce menu dans le catalogue{" "}
                       <ArrowRight size={14} />
@@ -1091,14 +1016,13 @@ export default function Home() {
                       href="#tarifs"
                       data-select-formula="assiette"
                     >
-                      Choisir cette formule pour mon estimation{" "}
+                      Estimer ma réception{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="https://catalogue.cuilleredor.fr/#assiette"
-                      target="_blank"
-                      rel="noreferrer"
+                      href="/liseuse/#p=7"
+                      data-liseuse="7"
                     >
                       Voir les photos de ce menu dans le catalogue{" "}
                       <ArrowRight size={14} />
@@ -1137,14 +1061,13 @@ export default function Home() {
                       href="#tarifs"
                       data-select-formula="buffet"
                     >
-                      Choisir cette formule pour mon estimation{" "}
+                      Estimer ma réception{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="https://catalogue.cuilleredor.fr/#buffet"
-                      target="_blank"
-                      rel="noreferrer"
+                      href="/liseuse/#p=6"
+                      data-liseuse="6"
                     >
                       Voir les photos de ce menu dans le catalogue{" "}
                       <ArrowRight size={14} />
@@ -1177,14 +1100,13 @@ export default function Home() {
                       href="#tarifs"
                       data-select-formula="brunch"
                     >
-                      Choisir cette formule pour mon estimation{" "}
+                      Estimer ma réception{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="https://catalogue.cuilleredor.fr/#brunch"
-                      target="_blank"
-                      rel="noreferrer"
+                      href="/liseuse/#p=12"
+                      data-liseuse="12"
                     >
                       Voir les photos de ce menu dans le catalogue{" "}
                       <ArrowRight size={14} />
@@ -1204,7 +1126,7 @@ export default function Home() {
                       </div>
                     </div>
                     <a className="formula-menu-cta" href="#formulaire-brunch">
-                      Demander un devis brunch <ArrowRight size={16} />
+                      Recevoir mon devis <ArrowRight size={16} />
                     </a>
                   </div>
                 </details>
@@ -1230,14 +1152,13 @@ export default function Home() {
                       href="#tarifs"
                       data-select-formula="barbecue"
                     >
-                      Choisir cette formule pour mon estimation{" "}
+                      Estimer ma réception{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="https://catalogue.cuilleredor.fr/#barbecue"
-                      target="_blank"
-                      rel="noreferrer"
+                      href="/liseuse/#p=14"
+                      data-liseuse="14"
                     >
                       Voir les photos de ce menu dans le catalogue{" "}
                       <ArrowRight size={14} />
@@ -1276,14 +1197,13 @@ export default function Home() {
                       href="#tarifs"
                       data-select-formula="chef"
                     >
-                      Choisir cette formule pour mon estimation{" "}
+                      Estimer ma réception{" "}
                       <ArrowRight size={16} />
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="https://catalogue.cuilleredor.fr/#chef-domicile"
-                      target="_blank"
-                      rel="noreferrer"
+                      href="/liseuse/#p=15"
+                      data-liseuse="15"
                     >
                       Voir les photos de ce menu dans le catalogue{" "}
                       <ArrowRight size={14} />
@@ -1309,7 +1229,7 @@ export default function Home() {
 
       <section className="pricing section-pad" id="tarifs">
         <div className="pricing-heading">
-          <p className="eyebrow dark">03 — Construisez votre réception</p>
+          <p className="eyebrow dark">02 — Estimez votre réception</p>
           <h2>
             Votre réception,
             <br />
@@ -1327,7 +1247,7 @@ export default function Home() {
       <section className="quote-path section-pad" id="devis">
         <div className="quote-heading">
           <div>
-            <p className="eyebrow">04 — Recevez votre devis</p>
+            <p className="eyebrow">03 — Recevez votre devis</p>
             <h2>
               Recevez votre
               <br />
@@ -1341,6 +1261,83 @@ export default function Home() {
           </p>
         </div>
         <QuoteChooser formUrl={QUOTE_FORM} />
+      </section>
+
+      <section className="catalogue-preview section-pad" id="feuilleter">
+        <div className="catalogue-preview-copy">
+          <p className="eyebrow dark">Catalogue 2027-2028</p>
+          <h2>
+            Feuilletez notre
+            <br />
+            <em>catalogue.</em>
+          </h2>
+          <p>
+            Parcourez en ligne toutes nos prestations, page après page : plats,
+            tarifs, options et conditions. Cochez vos plats préférés, puis
+            téléchargez le catalogue ou votre sélection en PDF.
+          </p>
+          <div className="catalogue-preview-actions">
+            <a className="button button-gold" href="/liseuse/" data-liseuse="1">
+              Feuilleter le catalogue <ArrowRight size={17} />
+            </a>
+            <a
+              className="button button-dark"
+              href="https://catalogue.cuilleredor.fr"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Choisir mes plats
+            </a>
+            <a
+              className="button button-dark"
+              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf?v=6"
+              download
+            >
+              Télécharger le PDF
+            </a>
+          </div>
+          <p className="catalogue-preview-note">
+            Disponible en français et en anglais (bouton FR / EN dans le
+            catalogue en ligne) ·{" "}
+            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf?v=6" download>
+              PDF English
+            </a>
+            <br />
+            Pour imprimer :{" "}
+            <a
+              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR-HD-impression.pdf?v=6"
+              download
+            >
+              PDF haute définition (18 Mo)
+            </a>{" "}
+            ·{" "}
+            <a
+              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN-HD-print.pdf?v=6"
+              download
+            >
+              English HD
+            </a>
+          </p>
+        </div>
+        <a
+          className="catalogue-cover-button"
+          id="liseuse"
+          href="/liseuse/"
+          data-liseuse="1"
+          aria-label="Feuilleter le catalogue"
+        >
+          <img
+            src="/catalogue-apercu-couverture.webp"
+            width="911"
+            height="1287"
+            alt="Couverture du catalogue Cuillère d’Or 2027-2028"
+            loading="lazy"
+            decoding="async"
+          />
+          <span>
+            Feuilleter <ArrowRight size={15} />
+          </span>
+        </a>
       </section>
 
       <section className="faq section-pad" id="faq" aria-labelledby="faq-title">
@@ -1427,7 +1424,7 @@ export default function Home() {
           </p>
           <div className="contact-actions">
             <a className="button button-gold" href="#devis">
-              Demander mon devis personnalisé <ArrowRight size={17} />
+              Recevoir mon devis <ArrowRight size={17} />
             </a>
             <a
               className="button button-dark"
@@ -1465,16 +1462,6 @@ export default function Home() {
         >
           <ArrowUp size={20} />
         </a>
-        <a
-          className="whatsapp-float"
-          href={WHATSAPP}
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Échanger avec Cuillère d'Or sur WhatsApp"
-        >
-          <MessageCircle size={22} />
-          <span>WhatsApp</span>
-        </a>
       </div>
 
       <footer>
@@ -1488,7 +1475,7 @@ export default function Home() {
         <div className="footer-action">
           <span>Votre réception commence ici</span>
           <a href="#devis">
-            Demander un devis <ArrowRight size={16} />
+            Recevoir mon devis <ArrowRight size={16} />
           </a>
           <nav className="footer-legal" aria-label="Informations légales">
             <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf?v=6">Catalogue PDF</a>

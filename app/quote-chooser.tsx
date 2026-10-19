@@ -228,8 +228,8 @@ function NativeForm({
       <div className="native-form-done" role="status">
         <strong>Merci, votre demande est bien arrivée.</strong>
         <p>
-          Huguette vous répond sous 48 à 72 h à l’adresse {fields.email} avec
-          votre devis personnalisé.
+          Votre devis personnalisé vous sera envoyé par e-mail à l’adresse{" "}
+          {fields.email}, puis nous vous contacterons.
         </p>
       </div>
     );
@@ -361,7 +361,7 @@ function NativeForm({
       )}
 
       <button className="native-form-submit" type="submit" disabled={status === "sending"}>
-        {status === "sending" ? "Envoi en cours…" : "Envoyer ma demande de devis"}
+        {status === "sending" ? "Envoi en cours…" : "Recevoir mon devis par e-mail"}
         <ArrowRight size={16} />
       </button>
     </form>
@@ -508,7 +508,7 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
         </p>
       </div>
       <p className="quote-reassurance">
-        Réponse sous 48 à 72 h · Sans engagement · Vos informations servent
+        Devis en ligne · Sans engagement · Vos informations servent
         uniquement à traiter votre demande.
       </p>
     </div>

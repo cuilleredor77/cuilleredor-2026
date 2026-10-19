@@ -216,7 +216,7 @@ export default function PricingGrids() {
               35 € <small>par personne</small>
             </strong>
             <a href="#formulaire-brunch">
-              Demander un devis brunch <ArrowRight size={16} />
+              Recevoir mon devis <ArrowRight size={16} />
             </a>
           </div>
         </details>

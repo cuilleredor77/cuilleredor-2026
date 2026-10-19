@@ -797,7 +797,7 @@ export default function PricingCalculator() {
             }
             onClick={requestQuote}
           >
-            Demander mon devis personnalisé <ArrowRight size={17} />
+            Recevoir mon devis <ArrowRight size={17} />
           </a>
           <a className="calculator-secondary-link" href="#carte">
             Voir les plats <ArrowRight size={17} />
