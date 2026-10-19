@@ -5,8 +5,8 @@ OUT='../catalogue-site'
 s=open('index.merged.html',encoding='utf8').read()
 btn=r'''<div class="pdf-menu" id="pdf-menu">
   <div class="pdf-panel" id="pdf-panel" hidden>
-    <a id="pdf-dl" href="pdf/Cuillere-dOr-Catalogue-2027-2028-FR.pdf?v=2" download><b id="pdf-full-t">Catalogue complet</b><small id="pdf-full-s">PDF vierge</small></a>
-    <a id="pdf-hd" href="pdf/Cuillere-dOr-Catalogue-2027-2028-FR-HD-impression.pdf?v=2" download><b id="pdf-hd-t">Version impression (HD)</b><small id="pdf-hd-s">PDF haute d&eacute;finition, 18 Mo</small></a>
+    <a id="pdf-dl" href="pdf/Catalogue-Cuillere-dOr-2027-2028-FR.pdf" download><b id="pdf-full-t">Catalogue complet</b><small id="pdf-full-s">PDF vierge</small></a>
+    <a id="pdf-hd" href="pdf/Catalogue-Cuillere-dOr-2027-2028-FR-HD-impression.pdf" download><b id="pdf-hd-t">Version impression (HD)</b><small id="pdf-hd-s">PDF haute d&eacute;finition, 18 Mo</small></a>
     <button type="button" id="pdf-sel"><b id="pdf-sel-t">Ma s&eacute;lection</b><small id="pdf-sel-s">PDF avec mes cases coch&eacute;es</small></button>
     <button type="button" id="pdf-mail"><b id="pdf-mail-t">Envoyer ma s&eacute;lection</b><small id="pdf-mail-s">Par e-mail &agrave; Cuill&egrave;re d&rsquo;Or, pour un devis</small></button>
   </div>
@@ -41,9 +41,10 @@ btn=r'''<div class="pdf-menu" id="pdf-menu">
 </style>
 <script>
 (function(){
-  var L={fr:{btn:'Télécharger le PDF',full:'Catalogue complet',fulls:'PDF vierge',sel:'Ma sélection',sels:'PDF avec mes cases cochées',n:function(n){return n+' case'+(n>1?'s':'')+' cochée'+(n>1?'s':'')+' · PDF personnalisé';},hint:'Dans la fenêtre qui s’ouvre, choisissez « Enregistrer au format PDF ».',hd:'Version impression (HD)',hds:'PDF haute définition, 18 Mo',mail:'Envoyer ma sélection',mails:'Par e-mail à Cuillère d’Or, pour un devis',mailn:function(n){return n+' plat'+(n>1?'s':'')+' · à envoyer par e-mail';},none:'Cochez d’abord quelques plats dans le catalogue.',copied:'Votre sélection est très longue : elle a aussi été copiée, collez-la dans le message si besoin.',subj:'Demande de devis – catalogue 2027-2028',hello:'Bonjour,\n\nJe souhaite recevoir un devis. Voici ma sélection issue du catalogue 2027-2028 :\n',guests:'Convives',ad:'adultes',ch:'enfants',pr:'prestataires',foot:'\nDate de l’événement :\nLieu :\nFormule souhaitée :\nMes coordonnées (nom, téléphone) :\n\nMerci !',title:'Catalogue Cuillère d’Or 2027-2028 – ma sélection'},
-         en:{btn:'Download PDF',full:'Full catalogue',fulls:'Blank PDF',sel:'My selection',sels:'PDF with my ticked boxes',n:function(n){return n+' box'+(n>1?'es':'')+' ticked · personalised PDF';},hint:'In the window that opens, choose “Save as PDF”.',hd:'Print version (HD)',hds:'High-definition PDF, 18 MB',mail:'Send my selection',mails:'By e-mail to Cuillère d’Or, for a quote',mailn:function(n){return n+' dish'+(n>1?'es':'')+' · ready to e-mail';},none:'Please tick a few dishes in the catalogue first.',copied:'Your selection is long: it was also copied, paste it into the message if needed.',subj:'Quote request – catalogue 2027-2028',hello:'Hello,\n\nI would like to receive a quote. Here is my selection from the 2027-2028 catalogue:\n',guests:'Guests',ad:'adults',ch:'children',pr:'service providers',foot:'\nEvent date:\nVenue:\nPreferred formula:\nMy contact details (name, phone):\n\nThank you!',title:'Cuillère d’Or Catalogue 2027-2028 – my selection'}};
-  var lang='fr', state=null;
+  var L={fr:{btn:'Télécharger le PDF',full:'Catalogue complet',fulls:'PDF vierge',sel:'Ma sélection',sels:'PDF avec mes cases cochées',n:function(n){return n+' case'+(n>1?'s':'')+' cochée'+(n>1?'s':'')+' · PDF personnalisé';},hint:'Dans la fenêtre qui s’ouvre, choisissez « Enregistrer au format PDF ».',hd:'Version impression (HD)',hds:'PDF haute définition, 18 Mo',mail:'Envoyer ma sélection',mails:'Par e-mail à Cuillère d’Or, pour un devis',mailn:function(n){return n+' plat'+(n>1?'s':'')+' · à envoyer par e-mail';},none:'Cochez d’abord quelques plats dans le catalogue.',copied:'Votre sélection est très longue : elle a été copiée, collez-la dans le message (Ctrl/Cmd + V).',paste:'Ma sélection complète a été copiée dans votre presse-papiers : collez-la ici (Ctrl/Cmd + V).',subj:'Demande de devis – catalogue 2027-2028',hello:'Bonjour,\n\nJe souhaite recevoir un devis. Voici ma sélection issue du catalogue 2027-2028 :\n',guests:'Convives',ad:'adultes',ch:'enfants',pr:'prestataires',foot:'\nDate de l’événement :\nLieu (ville) :\nFormule souhaitée :\nNombre de convives :\nMes coordonnées (nom, téléphone) :\n\nMerci !',title:'Catalogue Cuillère d’Or 2027-2028 – ma sélection'},
+         en:{btn:'Download PDF',full:'Full catalogue',fulls:'Blank PDF',sel:'My selection',sels:'PDF with my ticked boxes',n:function(n){return n+' box'+(n>1?'es':'')+' ticked · personalised PDF';},hint:'In the window that opens, choose “Save as PDF”.',hd:'Print version (HD)',hds:'High-definition PDF, 18 MB',mail:'Send my selection',mails:'By e-mail to Cuillère d’Or, for a quote',mailn:function(n){return n+' dish'+(n>1?'es':'')+' · ready to e-mail';},none:'Please tick a few dishes in the catalogue first.',copied:'Your selection is long: it was copied, paste it into the message (Ctrl/Cmd + V).',paste:'My full selection has been copied to your clipboard: paste it here (Ctrl/Cmd + V).',subj:'Quote request – catalogue 2027-2028',hello:'Hello,\n\nI would like to receive a quote. Here is my selection from the 2027-2028 catalogue:\n',guests:'Guests',ad:'adults',ch:'children',pr:'service providers',foot:'\nEvent date:\nVenue (city):\nPreferred formula:\nNumber of guests:\nMy contact details (name, phone):\n\nThank you!',title:'Cuillère d’Or Catalogue 2027-2028 – my selection'}};
+  var lang='fr', state=null, KEY='cdo-catalogue-selection';
+  try{ var raw=localStorage.getItem(KEY); if(raw){ var o=JSON.parse(raw); if(o&&o.c&&o.v) state=o; } }catch(e){}
   function $(id){return document.getElementById(id);}
   function boxes(){return Array.prototype.slice.call(document.querySelectorAll('#stage input[type=checkbox]'));}
   function fields(){return Array.prototype.slice.call(document.querySelectorAll('#stage .cv-in'));}
@@ -54,7 +55,7 @@ btn=r'''<div class="pdf-menu" id="pdf-menu">
     $('pdf-hd-t').textContent=t.hd; $('pdf-hd-s').textContent=t.hds;
     var dn=dishes().length; $('pdf-mail-t').textContent=t.mail; $('pdf-mail-s').textContent=dn>0?t.mailn(dn):t.mails;}
   // plats cochés (cartes .pc), regroupés par page du catalogue
-  function dishes(){return Array.prototype.slice.call(document.querySelectorAll('#stage .pc input[type=checkbox]')).filter(function(b){return b.checked;});}
+  function dishes(){return Array.prototype.slice.call(document.querySelectorAll('#stage input[type=checkbox]')).filter(function(b){return b.checked && !b.closest('[id^=carnet]');});}
   function sheetTitle(b){var sh=b.closest('.sheet'),h=sh&&sh.querySelector('h1,h2,h3');return h?h.innerText.replace(/\s+/g,' ').replace(/[.\s]+$/,''):'';}
   function buildMail(){
     var t=L[lang],groups=[],idx={};
@@ -66,7 +67,7 @@ btn=r'''<div class="pdf-menu" id="pdf-menu">
     return {full:full,compact:compact,subj:t.subj};
   }
   window.__cdoUi=function(l){lang=l; ui();};
-  function save(){state={c:boxes().map(function(b){return b.checked;}),v:fields().map(function(f){return f.value;})};}
+  function save(){state={c:boxes().map(function(b){return b.checked;}),v:fields().map(function(f){return f.value;})}; try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
   document.addEventListener('change',function(e){ if(e.target.closest&&e.target.closest('#stage')){save();ui();} });
   document.addEventListener('input',function(e){ if(e.target.closest&&e.target.closest('#stage')){save();} });
   // conserve les cases cochées quand on change de langue (même structure FR/EN)
@@ -83,8 +84,8 @@ btn=r'''<div class="pdf-menu" id="pdf-menu">
   $('pdf-mail').addEventListener('click',function(){
     close(); var t=L[lang], toast=$('pdf-toast');
     if(!dishes().length){ toast.textContent=t.none; toast.hidden=false; setTimeout(function(){toast.hidden=true;},3500); return; }
-    var m=buildMail(), body=m.full, long=encodeURIComponent(body).length>1800;
-    if(long){ body=m.compact; try{navigator.clipboard.writeText(m.full);}catch(e){} toast.textContent=t.copied; toast.hidden=false; setTimeout(function(){toast.hidden=true;},6000); }
+    var m=buildMail(), body=m.full, long=encodeURIComponent(body).length>6000;
+    if(long){ body=t.paste+'\n\n'+m.compact; try{navigator.clipboard.writeText(m.full);}catch(e){} toast.textContent=t.copied; toast.hidden=false; setTimeout(function(){toast.hidden=true;},6000); }
     var ml=document.createElement('a'); ml.href='mailto:contact@cuilleredor.fr?subject='+encodeURIComponent(m.subj)+'&body='+encodeURIComponent(body); document.body.appendChild(ml); ml.click(); ml.remove();
   });
   var oldTitle=document.title;
@@ -101,7 +102,7 @@ assert s.count(a)==1
 s=s.replace(a,btn+a,1)
 old="      var bk=document.getElementById('cdo-book'); if(bk) bk.setAttribute('data-style',style);\n"
 assert s.count(old)==1
-new=old+"""      var d=document.getElementById('pdf-dl'); if(d){ d.href='pdf/Cuillere-dOr-Catalogue-2027-2028-'+(lang==='en'?'EN':'FR')+'.pdf?v=2'; var h=document.getElementById('pdf-hd'); if(h){ h.href='pdf/Cuillere-dOr-Catalogue-2027-2028-'+(lang==='en'?'EN-HD-print':'FR-HD-impression')+'.pdf?v=2'; } }
+new=old+"""      var d=document.getElementById('pdf-dl'); if(d){ d.href='pdf/Catalogue-Cuillere-dOr-2027-2028-'+(lang==='en'?'EN':'FR')+'.pdf'; var h=document.getElementById('pdf-hd'); if(h){ h.href='pdf/Catalogue-Cuillere-dOr-2027-2028-'+(lang==='en'?'EN-HD-print':'FR-HD-impression')+'.pdf'; } }
       if(window.__cdoUi) window.__cdoUi(lang,style);
 """
 s=s.replace(old,new,1)
@@ -134,7 +135,10 @@ for f in sorted(set(re.findall(r'images/[A-Za-z0-9_./-]+\.(?:jpg|png|jpeg|webp|s
 for f in ['favicon.ico','favicon-32.png','icon-192.png','apple-touch-icon.png']: shutil.copy('icons/'+f,OUT+'/'+f)
 # PDF : les fichiers finaux (FR/EN, allégés et haute définition) vivent dans ../public/catalogue/
 PDFS='../public/catalogue/'
-for f in ['Cuillere-dOr-Catalogue-2027-2028-FR.pdf','Cuillere-dOr-Catalogue-2027-2028-EN.pdf','Cuillere-dOr-Catalogue-2027-2028-FR-HD-impression.pdf','Cuillere-dOr-Catalogue-2027-2028-EN-HD-print.pdf']: shutil.copy(PDFS+f,OUT+'/pdf/'+f)
+# nouveaux noms (Cloudflare garde les anciens PDF en cache 24 h) ; les anciens noms restent servis avec le même contenu
+NAMES={'Cuillere-dOr-Catalogue-2027-2028-FR.pdf':'Catalogue-Cuillere-dOr-2027-2028-FR.pdf','Cuillere-dOr-Catalogue-2027-2028-EN.pdf':'Catalogue-Cuillere-dOr-2027-2028-EN.pdf','Cuillere-dOr-Catalogue-2027-2028-FR-HD-impression.pdf':'Catalogue-Cuillere-dOr-2027-2028-FR-HD-impression.pdf','Cuillere-dOr-Catalogue-2027-2028-EN-HD-print.pdf':'Catalogue-Cuillere-dOr-2027-2028-EN-HD-print.pdf'}
+for old,new_ in NAMES.items():
+    shutil.copy(PDFS+old,OUT+'/pdf/'+new_); shutil.copy(PDFS+old,OUT+'/pdf/'+old)
 open(OUT+'/_headers','w').write('/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n/images/*\n  Cache-Control: public, max-age=2592000\n/pdf/*\n  Cache-Control: public, max-age=86400\n')
 open(OUT+'/LISEZ-MOI.txt','w',encoding='utf8').write("Catalogue Cuillère d'Or 2027-2028 — site statique\nDéposer ce dossier entier sur Cloudflare Pages (Workers & Pages > Create > Pages > Upload assets).\nindex.html = catalogue ; images/ ; pdf/ = téléchargements ; _headers = cache.\n")
 
