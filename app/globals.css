@@ -6698,3 +6698,144 @@ html[data-selected-formula="chef"]
 #carte .formula-menu-category-flat li {
   border-bottom: 0 !important;
 }
+
+/* Formulaire de demande natif (remplace l'iframe Google, gardée en secours) */
+.native-form {
+  display: grid;
+  gap: 22px;
+  padding: 24px 28px 28px;
+}
+.native-form fieldset {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 18px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.native-form legend {
+  grid-column: 1/-1;
+  margin-bottom: 10px;
+  color: #775a19;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.native-form label {
+  display: grid;
+  gap: 6px;
+  color: #3a3a3a;
+  font-size: 0.86rem;
+}
+.native-form .native-form-wide {
+  grid-column: 1/-1;
+}
+.native-form input,
+.native-form select,
+.native-form textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  color: #1a1a1a;
+  font: inherit;
+  font-size: 1rem;
+  background: #fff;
+  border: 1px solid #d1c5b4;
+  border-radius: 6px;
+}
+.native-form textarea {
+  resize: vertical;
+}
+.native-form input:focus,
+.native-form select:focus,
+.native-form textarea:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+  border-color: var(--gold);
+}
+.native-form .native-form-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: end;
+  min-height: 44px;
+}
+.native-form .native-form-check input {
+  width: 20px;
+  min-height: 20px;
+  accent-color: #775a19;
+}
+.native-form-trap {
+  position: absolute !important;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.native-form-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  justify-self: start;
+  min-height: 48px;
+  padding: 0 26px;
+  color: #0a0a0a;
+  font: inherit;
+  font-weight: 700;
+  background: var(--gold);
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.native-form-submit:hover {
+  background: var(--gold-bright);
+}
+.native-form-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.native-form-error {
+  padding: 14px 16px;
+  color: #7a1f1f;
+  background: #fbeeee;
+  border: 1px solid #e3b4b4;
+  border-radius: 6px;
+}
+.native-form-error p {
+  margin: 0 0 8px;
+}
+.native-form-error button,
+.quote-form-switch {
+  padding: 0;
+  color: #775a19;
+  font: inherit;
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.native-form-done {
+  padding: 32px 28px;
+}
+.native-form-done strong {
+  font-family: Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+}
+.native-form-done p {
+  margin: 8px 0 0;
+  color: #5e5e5e;
+}
+@media (max-width: 720px) {
+  .native-form {
+    padding: 20px 16px 24px;
+  }
+  .native-form fieldset {
+    grid-template-columns: 1fr;
+  }
+  .native-form-submit {
+    justify-self: stretch;
+  }
+}

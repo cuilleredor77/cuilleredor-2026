@@ -19,6 +19,7 @@ type Estimate = {
   adults: number;
   children: number;
   providers: number;
+  serviceId?: string;
   service: string;
   options: EstimateOption[];
   total: number | null;
@@ -44,6 +45,18 @@ const FORMULA_FORM_VALUE: Record<FormulaId, string> = {
   barbecue: "Barbecue Party",
   chef: "Chef à domicile",
 };
+
+// Formules pour lesquelles le vin d'honneur est une option (cf. lib/quote.ts).
+const WITH_HONOR_WINE: FormulaId[] = ["buffet", "plateau", "assiette"];
+
+const EVENT_TYPES = [
+  "Mariage",
+  "Anniversaire",
+  "Baptême",
+  "Événement d’entreprise",
+  "Fête de famille",
+  "Autre",
+];
 
 function guestsLine(estimate: Estimate) {
   return `${estimate.adults} adulte${estimate.adults > 1 ? "s" : ""} · ${estimate.children} enfant${estimate.children > 1 ? "s" : ""} · ${estimate.providers} prestataire${estimate.providers > 1 ? "s" : ""}`;
@@ -84,6 +97,233 @@ function buildFormUrl(baseUrl: string, choice: Choice, estimate: Estimate | null
   return `${baseUrl}?${params.toString()}`;
 }
 
+type Fields = {
+  name: string;
+  email: string;
+  phone: string;
+  eventType: string;
+  eventDate: string;
+  place: string;
+  formula: FormulaId;
+  adults: string;
+  children: string;
+  providers: string;
+  honorWine: boolean;
+  budget: string;
+  selection: string;
+  message: string;
+  website: string;
+};
+
+function fieldsFrom(choice: Choice, estimate: Estimate | null, previous?: Fields): Fields {
+  const base: Fields = previous || {
+    name: "",
+    email: "",
+    phone: "",
+    eventType: "Mariage",
+    eventDate: "",
+    place: "",
+    formula: "buffet",
+    adults: "",
+    children: "0",
+    providers: "0",
+    honorWine: true,
+    budget: "",
+    selection: "",
+    message: "",
+    website: "",
+  };
+  if (estimate) {
+    return {
+      ...base,
+      formula: estimate.formulaId,
+      adults: String(estimate.adults || ""),
+      children: String(estimate.children || 0),
+      providers: String(estimate.providers || 0),
+      honorWine: estimate.serviceId ? estimate.serviceId === "avec-vin" : true,
+    };
+  }
+  if (choice === "brunch") return { ...base, formula: "brunch" };
+  return base;
+}
+
+function NativeForm({
+  choice,
+  estimate,
+  onFallback,
+}: {
+  choice: Choice;
+  estimate: Estimate | null;
+  onFallback: () => void;
+}) {
+  const [fields, setFields] = useState<Fields>(() => fieldsFrom(choice, estimate));
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [error, setError] = useState("");
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+
+  useEffect(() => {
+    setFields((current) => fieldsFrom(choice, estimate, current));
+  }, [choice, estimate]);
+
+  function set<K extends keyof Fields>(key: K, value: Fields[K]) {
+    setFields((current) => ({ ...current, [key]: value }));
+  }
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setStatus("sending");
+    setError("");
+    try {
+      const response = await fetch("/api/demande", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          ...fields,
+          adults: Number(fields.adults),
+          children: Number(fields.children),
+          providers: Number(fields.providers),
+          honorWine: WITH_HONOR_WINE.includes(fields.formula) ? fields.honorWine : false,
+          // L'estimation n'est jointe que si elle correspond encore à la formule envoyée.
+          estimate: estimate && estimate.formulaId === fields.formula ? estimate : undefined,
+        }),
+      });
+      const data = (await response.json().catch(() => ({}))) as { error?: string };
+      if (!response.ok) {
+        setStatus("error");
+        setError(data.error || "L’envoi n’a pas abouti.");
+        return;
+      }
+      setStatus("sent");
+    } catch {
+      setStatus("error");
+      setError("L’envoi n’a pas abouti (connexion interrompue).");
+    }
+  }
+
+  if (status === "sent") {
+    return (
+      <div className="native-form-done" role="status">
+        <strong>Merci, votre demande est bien arrivée.</strong>
+        <p>
+          Huguette vous répond sous 48 à 72 h à l’adresse {fields.email} avec
+          votre devis personnalisé.
+        </p>
+      </div>
+    );
+  }
+
+  const showHonorWine = WITH_HONOR_WINE.includes(fields.formula);
+
+  return (
+    <form className="native-form" onSubmit={submit}>
+      <fieldset>
+        <legend>Vous</legend>
+        <label>
+          Nom et prénom *
+          <input required autoComplete="name" value={fields.name} onChange={(e) => set("name", e.target.value)} />
+        </label>
+        <label>
+          E-mail *
+          <input required type="email" autoComplete="email" value={fields.email} onChange={(e) => set("email", e.target.value)} />
+        </label>
+        <label>
+          Téléphone *
+          <input required type="tel" autoComplete="tel" value={fields.phone} onChange={(e) => set("phone", e.target.value)} />
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Votre événement</legend>
+        <label>
+          Type d’événement
+          <select value={fields.eventType} onChange={(e) => set("eventType", e.target.value)}>
+            {EVENT_TYPES.map((type) => (
+              <option key={type}>{type}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Date *
+          <input required type="date" min={today} value={fields.eventDate} onChange={(e) => set("eventDate", e.target.value)} />
+        </label>
+        <label className="native-form-wide">
+          Lieu de réception (adresse ou ville)
+          <input autoComplete="street-address" value={fields.place} onChange={(e) => set("place", e.target.value)} />
+        </label>
+        <label className="native-form-wide">
+          Formule envisagée *
+          <select required value={fields.formula} onChange={(e) => set("formula", e.target.value as FormulaId)}>
+            {(Object.keys(FORMULA_FORM_VALUE) as FormulaId[]).map((id) => (
+              <option key={id} value={id}>
+                {FORMULA_FORM_VALUE[id]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Adultes *
+          <input required type="number" min={1} max={5000} inputMode="numeric" value={fields.adults} onChange={(e) => set("adults", e.target.value)} />
+        </label>
+        <label>
+          Enfants (− 12 ans)
+          <input type="number" min={0} max={5000} inputMode="numeric" value={fields.children} onChange={(e) => set("children", e.target.value)} />
+        </label>
+        <label>
+          Prestataires (DJ, photographe…)
+          <input type="number" min={0} max={5000} inputMode="numeric" value={fields.providers} onChange={(e) => set("providers", e.target.value)} />
+        </label>
+        {showHonorWine && (
+          <label className="native-form-check">
+            <input type="checkbox" checked={fields.honorWine} onChange={(e) => set("honorWine", e.target.checked)} />
+            Avec vin d’honneur
+          </label>
+        )}
+        <label>
+          Enveloppe budgétaire
+          <input placeholder="ex. 6 000 €" value={fields.budget} onChange={(e) => set("budget", e.target.value)} />
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Vos envies</legend>
+        <label className="native-form-wide">
+          Plats choisis dans le catalogue
+          <textarea
+            rows={4}
+            placeholder="Collez ici la liste reçue avec « Envoyer ma sélection », ou indiquez vos plats préférés."
+            value={fields.selection}
+            onChange={(e) => set("selection", e.target.value)}
+          />
+        </label>
+        <label className="native-form-wide">
+          Message
+          <textarea rows={4} value={fields.message} onChange={(e) => set("message", e.target.value)} />
+        </label>
+      </fieldset>
+
+      {/* Champ piège : invisible pour les personnes, rempli par les robots. */}
+      <label className="native-form-trap" aria-hidden="true">
+        Site web
+        <input tabIndex={-1} autoComplete="off" value={fields.website} onChange={(e) => set("website", e.target.value)} />
+      </label>
+
+      {status === "error" && (
+        <div className="native-form-error" role="alert">
+          <p>{error}</p>
+          <button type="button" onClick={onFallback}>
+            Utiliser le formulaire de secours
+          </button>
+        </div>
+      )}
+
+      <button className="native-form-submit" type="submit" disabled={status === "sending"}>
+        {status === "sending" ? "Envoi en cours…" : "Envoyer ma demande de devis"}
+        <ArrowRight size={16} />
+      </button>
+    </form>
+  );
+}
+
 export default function QuoteChooser({
   formUrl,
   whatsapp,
@@ -97,6 +337,7 @@ export default function QuoteChooser({
       ? "brunch"
       : "event";
   const [choice, setChoice] = useState<Choice>(initialChoice);
+  const [useGoogleForm, setUseGoogleForm] = useState(false);
   const [formLoaded, setFormLoaded] = useState(false);
   const [estimate, setEstimate] = useState<Estimate | null>(null);
   const isEvent = choice === "event";
@@ -187,31 +428,48 @@ export default function QuoteChooser({
             </p>
           </div>
         </div>
-        <div className="form-frame">
-          {!formLoaded && (
-            <div className="form-loading" role="status">
-              <span aria-hidden="true" />
-              <strong>Préparation de votre formulaire…</strong>
-              <small>Quelques secondes suffisent.</small>
-            </div>
-          )}
-          <iframe
-            key={iframeSrc}
-            className={formLoaded ? "is-loaded" : ""}
-            src={iframeSrc}
-            title="Demande de devis Cuillère d’Or"
-            onLoad={() => setFormLoaded(true)}
-          >
-            Chargement du formulaire…
-          </iframe>
-        </div>
+        {useGoogleForm ? (
+          <div className="form-frame">
+            {!formLoaded && (
+              <div className="form-loading" role="status">
+                <span aria-hidden="true" />
+                <strong>Préparation de votre formulaire…</strong>
+                <small>Quelques secondes suffisent.</small>
+              </div>
+            )}
+            <iframe
+              key={iframeSrc}
+              className={formLoaded ? "is-loaded" : ""}
+              src={iframeSrc}
+              title="Demande de devis Cuillère d’Or"
+              onLoad={() => setFormLoaded(true)}
+            >
+              Chargement du formulaire…
+            </iframe>
+          </div>
+        ) : (
+          <NativeForm
+            choice={choice}
+            estimate={estimate}
+            onFallback={() => setUseGoogleForm(true)}
+          />
+        )}
         <p className="quote-privacy-note">
           En envoyant ce formulaire, vous acceptez l’utilisation de vos
           informations pour préparer votre proposition et votre prestation.{" "}
           <a href="/politique-confidentialite" target="_blank" rel="noreferrer">
             Politique de confidentialité
           </a>
-          .
+          .{" "}
+          <button
+            type="button"
+            className="quote-form-switch"
+            onClick={() => setUseGoogleForm((current) => !current)}
+          >
+            {useGoogleForm
+              ? "Revenir au formulaire du site"
+              : "Le formulaire ne s’affiche pas bien ? Utiliser le formulaire de secours"}
+          </button>
         </p>
       </div>
       <p className="quote-reassurance">

@@ -22,11 +22,16 @@ fichier de suivi.
   services complémentaires + contrat imprimables en PDF, texte du contrat repris du modèle d'Huguette).
 - Base : `migrations/0001_init.sql`, `wrangler.jsonc` (binding D1 `DB`, base `cuilleredor-devis`,
   id `c25c78ae-40f0-4d51-9881-0d9738dad1d8`, créée sur le compte Cloudflare, migration appliquée en LOCAL seulement).
+- Formulaire de demande natif (`app/quote-chooser.tsx`, styles `.native-form*` en fin de `app/globals.css`) :
+  poste sur `/api/demande`, pré-rempli par l'estimation du simulateur (formule, convives, vin d'honneur), champ
+  « plats choisis » à coller depuis le catalogue, champ piège anti-robots ; formulaire Google conservé en secours
+  (bouton en cas d'échec + lien sous le formulaire). Testé en local (envoi, ligne en D1, mobile 375 px sans défilement).
+- `public/robots.txt` : `/admin`, `/devis/`, `/api/` interdits.
 
 ## Reste à faire (dans l'ordre)
-1. Formulaire de demande natif sur le site (remplace l'iframe Google dans `app/quote-chooser.tsx`) qui poste sur
-   `/api/demande` avec l'estimation du simulateur (`estimate`) et la sélection de plats ; garder le formulaire Google en secours.
-2. `public/robots.txt` : interdire `/admin`, `/devis/`, `/api/`.
+1. ~~Formulaire natif~~ et 2. ~~robots.txt~~ : faits le 19/10/2026.
+   À décider avant la mise en ligne : AUCUNE notification n'est envoyée à Huguette quand une demande arrive
+   (elle doit ouvrir `/admin`). Prévoir un e-mail de notification (ex. via un service d'envoi type Resend/Brevo).
 3. Déploiement : `npx wrangler d1 migrations apply cuilleredor-devis --remote`, puis le mot de passe de l'espace
    privé (à choisir par Huguette, 8 caractères minimum) : `npx wrangler secret put ADMIN_PASSWORD`, puis `npm run deploy`.
 4. Test de bout en bout en production avec une fausse demande (puis suppression).
