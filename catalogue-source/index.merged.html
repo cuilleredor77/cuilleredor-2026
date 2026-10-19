@@ -340,7 +340,7 @@
   <div class="scrim-t"></div>
   <div class="frame dark-frame">
     <div class="cv-mag">
-      <div class="cv-mast"><span>Catalogue</span><em>de prestations</em></div><img class="cv-logo" src="images/logo-site.png" alt="Cuillère d’Or – Le paradis du goût"/>
+      <div class="cv-mast"><span>Catalogue</span><em>de prestations</em></div><img class="cv-logo" src="images/logo-cover.png" alt="Cuillère d’Or – Le paradis du goût"/>
       <div class="cv-issue"><span>Mariages · Réceptions · Entreprises</span><span class="cv-yr">2027 · 2028</span></div>
       <div class="cv-lines">
         <div class="cv-l2"><i>07</i><b>formules<br/>de réception</b><p>Buffet, plateau, assiette, cocktail, brunch, barbecue et chef à domicile.</p></div>
@@ -1099,7 +1099,7 @@
   <div class="ct-photo">
     <img src="images/realisation.webp" alt="Service Cuillère d’Or en réception"/>
     <div class="ct-veil"></div>
-    <img class="ct-logo" src="images/logo.png" alt="Cuillère d’Or"/>
+    <img class="ct-logo" src="images/logo-cover.png" alt="Cuillère d’Or"/>
   </div>
   <div class="ct-bottom">
     <div class="ct-left">
@@ -1510,7 +1510,7 @@
   .cl2-card.maroon{ background:#6d2433; color:#fffaf2; } .cl2-card.maroon small{ color:#f4d7a7; } .cl2-card.maroon span{ color:#f3ebdd; }
   .cl2-coords{ margin-top:auto; display:flex; flex-direction:column; gap:.5cqi; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.25cqi*var(--fs,1)); color:#e9dcc4; line-height:1.5; }
   .cl2-coords a{ color:#f4d7a7; text-decoration:none; } .cl2-coords b{ color:#fffaf2; }
-  .book[data-style="c"]{ --fs:1.12; --paper:#ffffff; --cream:#faf8f4; }
+  .book[data-style="c"]{ --fs:1.12; --paper:#ffffff; --cream:#faf8f4; --heading-font:Georgia,"Times New Roman",serif; }
   .book[data-style="c"] .sheet.cream{ background:#ffffff; }
   .book[data-style="a"] .sheet.cream{ background:#ffffff; }
   .book[data-style="a"] .sheet.cream .fc-addon{ background:#f4f4f4; }
@@ -1998,7 +1998,7 @@
   <div class="scrim-t"></div>
   <div class="frame dark-frame">
     <div class="cv-mag">
-      <div class="cv-mast"><span>Services</span><em>catalogue</em></div><img class="cv-logo" src="images/logo-site.png" alt="Cuillère d’Or – Le paradis du goût"/>
+      <div class="cv-mast"><span>Services</span><em>catalogue</em></div><img class="cv-logo" src="images/logo-cover.png" alt="Cuillère d’Or – Le paradis du goût"/>
       <div class="cv-issue"><span>Weddings · Receptions · Corporate</span><span class="cv-yr">2027 · 2028</span></div>
       <div class="cv-lines">
         <div class="cv-l2"><i>07</i><b>reception<br/>packages</b><p>Buffet, platter, plated, cocktail, brunch, barbecue and private chef.</p></div>
@@ -2757,7 +2757,7 @@
   <div class="ct-photo">
     <img src="images/realisation.webp" alt="Cuillère d’Or service at a reception"/>
     <div class="ct-veil"></div>
-    <img class="ct-logo" src="images/logo.png" alt="Cuillère d’Or"/>
+    <img class="ct-logo" src="images/logo-cover.png" alt="Cuillère d’Or"/>
   </div>
   <div class="ct-bottom">
     <div class="ct-left">
@@ -3168,7 +3168,7 @@
   .cl2-card.maroon{ background:#6d2433; color:#fffaf2; } .cl2-card.maroon small{ color:#f4d7a7; } .cl2-card.maroon span{ color:#f3ebdd; }
   .cl2-coords{ margin-top:auto; display:flex; flex-direction:column; gap:.5cqi; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.25cqi*var(--fs,1)); color:#e9dcc4; line-height:1.5; }
   .cl2-coords a{ color:#f4d7a7; text-decoration:none; } .cl2-coords b{ color:#fffaf2; }
-  .book[data-style="c"]{ --fs:1.12; --paper:#ffffff; --cream:#faf8f4; }
+  .book[data-style="c"]{ --fs:1.12; --paper:#ffffff; --cream:#faf8f4; --heading-font:Georgia,"Times New Roman",serif; }
   .book[data-style="c"] .sheet.cream{ background:#ffffff; }
   .book[data-style="a"] .sheet.cream{ background:#ffffff; }
   .book[data-style="a"] .sheet.cream .fc-addon{ background:#f4f4f4; }
@@ -3763,20 +3763,20 @@
   .pc:has(input:checked) .pc-ph{ outline:3px solid var(--gold-bright,#d4af37); outline-offset:-3px; }
   @media screen and (max-width:600px){
     .pc input{ width:28px !important; height:28px !important; top:6px !important; right:6px !important; }
-    /* textes trop petits sur téléphone : 11 px minimum, 9-10 px pour les têtes de colonnes serrées */
-    .note, .pt-tag{ font-size:11px !important; }
-    .pc-sub{ font-size:11px !important; }
-    .pc-grid .pc .pc-ph b{ font-size:11px !important; }
-    .mosaic .pc-ph em{ font-size:9px !important; }
-    .sm-facts span{ font-size:11px !important; }
-    .sm-path em{ font-size:11px !important; }
-    .fc-price small, .fc-tone, .fc-addon{ font-size:11px !important; }
-    .lexi dd, .lexi dt{ font-size:11px !important; }
-    .lexi-t, .sm-path-t, .cl2-kicker, .ct-legal, .cover-eyebrow{ font-size:10.5px !important; }
-    .cn-c1, .cn-c2, .cn-c3, .cn-c4, .cn-c5{ font-size:9px !important; }
-    .cn-head span{ font-size:9px !important; }
-    .cn-lines span, .tf-duo span, .tf-opt span, .cv-box span, .np-hero-price small, .np-hero-price span{ font-size:11px !important; }
-    .cover-contact-row a, .cover-contact-row span{ font-size:11px !important; }
+    /* textes trop petits sur téléphone : 12,5 px minimum, 11 px pour les têtes de colonnes serrées (audit du 19/10/2026) */
+    .note, .pt-tag{ font-size:12.5px !important; }
+    .pc-sub{ font-size:12.5px !important; }
+    .pc-grid .pc .pc-ph b{ font-size:12.5px !important; }
+    .mosaic .pc-ph em{ font-size:11px !important; }
+    .sm-facts span{ font-size:12.5px !important; }
+    .sm-path em{ font-size:12.5px !important; }
+    .fc-price small, .fc-tone, .fc-addon{ font-size:12.5px !important; }
+    .lexi dd, .lexi dt{ font-size:12.5px !important; }
+    .lexi-t, .sm-path-t, .cl2-kicker, .ct-legal, .cover-eyebrow{ font-size:12px !important; }
+    .cn-c1, .cn-c2, .cn-c3, .cn-c4, .cn-c5{ font-size:11px !important; }
+    .cn-head span{ font-size:11px !important; }
+    .cn-lines span, .tf-duo span, .tf-opt span, .cv-box span, .np-hero-price small, .np-hero-price span{ font-size:12.5px !important; }
+    .cover-contact-row a, .cover-contact-row span{ font-size:12.5px !important; }
     .rf-nav a{ font-size:16px !important; min-width:28px; text-align:center; }
     /* zones tactiles : 44 px de haut minimum */
     a.toc-row, a.solid, .cta-abs a, .cta-line a, .cta-line .btn, .pick{ min-height:44px; display:flex; align-items:center; }
