@@ -165,11 +165,14 @@ assert n>500, n
 s=s.replace('</style>','  @media screen and (max-width:600px){ :root{ --minfs:12.5px; } .cover-eyebrow{ margin-bottom:8px !important; } .cover-contact-row{ flex-wrap:wrap; row-gap:4px; } .cv-box{ flex-wrap:wrap; justify-content:center; row-gap:10px; } #stage .sheet .cn-row{ height:auto !important; min-height:44px !important; flex:none !important; padding-top:4px !important; padding-bottom:4px !important; } .cn-head{ letter-spacing:.03em !important; } }\n</style>',1)
 # lien profond depuis le site principal (ex. /#buffet) : le catalogue est injecté par JS, on fait défiler après le rendu
 s=s.rstrip('\n')+"\n<script>window.addEventListener('load',function(){var h=location.hash.slice(1);if(!h)return;var e=document.getElementById(h);if(e)e.scrollIntoView();});</script>\n"
+# logo du site sous un nouveau nom : l'ancien images/logo.png reste 30 jours dans les caches (Cache-Control de /images/*)
+s=s.replace('images/logo.png','images/logo-site.png')
 shutil.rmtree(OUT,ignore_errors=True); os.makedirs(OUT+'/pdf')
 open(OUT+'/index.html','w',encoding='utf8').write(s)
 for f in sorted(set(re.findall(r'images/[A-Za-z0-9_./-]+\.(?:jpg|png|jpeg|webp|svg)',s))):
-    if os.path.isfile(f):
-        os.makedirs(os.path.dirname(OUT+'/'+f),exist_ok=True); shutil.copy(f,OUT+'/'+f)
+    src='images/logo.png' if f=='images/logo-site.png' else f
+    if os.path.isfile(src):
+        os.makedirs(os.path.dirname(OUT+'/'+f),exist_ok=True); shutil.copy(src,OUT+'/'+f)
     else: print('MISSING',f)
 for f in ['favicon.ico','favicon-32.png','icon-192.png','apple-touch-icon.png']: shutil.copy('icons/'+f,OUT+'/'+f)
 # PDF : les fichiers finaux (FR/EN, allégés et haute définition) vivent dans ../public/catalogue/
@@ -201,7 +204,7 @@ open(OUT+'/404.html','w',encoding='utf8').write("""<!doctype html>
 </head>
 <body>
 <main>
-  <img src="/images/logo.png" alt="Cuillère d’Or" width="800" height="226"/>
+  <img src="/images/logo-site.png" alt="Cuillère d’Or" width="800" height="226"/>
   <h1>Page introuvable</h1>
   <p>Cette adresse n’existe pas ou plus. / This page does not exist.</p>
   <nav><a class="btn solid" href="/">Voir le catalogue</a><a class="btn" href="https://cuilleredor.fr/">Retour au site</a></nav>
