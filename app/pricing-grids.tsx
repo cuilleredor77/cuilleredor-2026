@@ -62,7 +62,7 @@ export default function PricingGrids() {
                 <tr>
                   <th>Convives</th>
                   <th>Sans vin d’honneur</th>
-                  <th>Avec vin d’honneur (+ 5 €)</th>
+                  <th>Avec vin d’honneur</th>
                 </tr>
               </thead>
               <tbody>
@@ -104,7 +104,7 @@ export default function PricingGrids() {
                 <tr>
                   <th>Convives</th>
                   <th>Sans vin d’honneur</th>
-                  <th>Avec vin d’honneur (+ 5 €)</th>
+                  <th>Avec vin d’honneur</th>
                 </tr>
               </thead>
               <tbody>
@@ -142,7 +142,7 @@ export default function PricingGrids() {
                 <tr>
                   <th>Convives</th>
                   <th>Sans vin d’honneur</th>
-                  <th>Avec vin d’honneur (+ 5 €)</th>
+                  <th>Avec vin d’honneur</th>
                 </tr>
               </thead>
               <tbody>

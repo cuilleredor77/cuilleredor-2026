@@ -355,7 +355,7 @@ export default function PricingCalculator() {
   )
     optionLines.push({
       id: "honorWine",
-      label: `Vin d’honneur, 10 pièces au choix (${HONOR_WINE_SUPPLEMENT} €/pers.)`,
+      label: "Vin d’honneur, 10 pièces au choix",
       amount: guests * HONOR_WINE_SUPPLEMENT,
     });
   if (children && !isChef)
