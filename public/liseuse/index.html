@@ -94,7 +94,7 @@
 </head>
 <body>
 <header>
-  <a class="logo" href="../" id="home" aria-label="Retour au catalogue"><img src="logo.png" alt="Cuillère d'Or" width="800" height="226"></a>
+  <a class="logo" href="../" id="home" aria-label="Retour au site Cuillère d’Or"><img src="logo.png" alt="Cuillère d'Or" width="800" height="226"></a>
   <h1 id="title">Catalogue 2027-2028</h1>
   <div class="tools">
     <div class="lang" role="group" id="lang" aria-label="Langue">
@@ -139,12 +139,12 @@
 (function(){
   var M={"fr": {"dir": "pages/fr-66e06d5d", "n": 26, "w": 596, "h": 842}, "en": {"dir": "pages/en-5ac62f7f", "n": 26, "w": 596, "h": 842}};
   var T={
-    fr:{title:'Catalogue 2027-2028',doc:'Liseuse – Catalogue Cuillère d’Or 2027-2028',home:'Retour au catalogue',lang:'Langue',dl:'PDF',dla:'Télécharger le catalogue en PDF',
+    fr:{title:'Catalogue 2027-2028',doc:'Liseuse – Catalogue Cuillère d’Or 2027-2028',home:'Retour au site Cuillère d’Or',lang:'Langue',dl:'PDF',dla:'Télécharger le catalogue en PDF',
       nav:'Navigation dans le catalogue',first:'Première page',prev:'Page précédente',next:'Page suivante',last:'Dernière page',slider:'Aller à la page',
       zoom:'Agrandir la page',zin:'Agrandir',zout:'Réduire',zclose:'Fermer l’agrandissement',fs:'Plein écran',fsx:'Quitter le plein écran',
       page:'Page',pages:'Pages',of:'sur',alt:'Catalogue Cuillère d’Or, page ',
       hint:'Glissez ou cliquez sur le bord d’une page pour la tourner',hintKb:'Flèches ← → pour tourner les pages'},
-    en:{title:'Catalogue 2027-2028',doc:'Flipbook – Cuillère d’Or Catalogue 2027-2028',home:'Back to the catalogue',lang:'Language',dl:'PDF',dla:'Download the catalogue as PDF',
+    en:{title:'Catalogue 2027-2028',doc:'Flipbook – Cuillère d’Or Catalogue 2027-2028',home:'Back to the Cuillère d’Or website',lang:'Language',dl:'PDF',dla:'Download the catalogue as PDF',
       nav:'Catalogue navigation',first:'First page',prev:'Previous page',next:'Next page',last:'Last page',slider:'Go to page',
       zoom:'Enlarge the page',zin:'Zoom in',zout:'Zoom out',zclose:'Close zoom',fs:'Full screen',fsx:'Exit full screen',
       page:'Page',pages:'Pages',of:'of',alt:'Cuillère d’Or catalogue, page ',
@@ -288,6 +288,14 @@
       else (de.requestFullscreen||de.webkitRequestFullscreen).call(de);
     });
     document.addEventListener('fullscreenchange',fsLabel); document.addEventListener('webkitfullscreenchange',fsLabel);
+  } else if(embed){
+    // iPhone (pas de plein écran) dans le site : le bouton ouvre la liseuse seule, sur tout l'écran, à la même page
+    $('fs').hidden=false;
+    $('fs').addEventListener('click',function(){
+      var c=pf?pf.getCurrentPageIndex():0;
+      var url=location.pathname+(lang==='en'?'?lang=en':'')+(c>0?'#p='+(c+1):'');
+      try{ window.top.location.href=url; }catch(e){ window.open(url,'_blank'); }
+    });
   }
 
   // clavier

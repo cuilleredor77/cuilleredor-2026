@@ -6907,3 +6907,27 @@ html[data-selected-formula="chef"]
   color: #775a19 !important;
   font-weight: 600;
 }
+
+/* Menu mobile : ☰ fermé, ✕ ouvert, grande zone tactile */
+.mobile-menu .mobile-menu-close { display: none; }
+.mobile-menu[open] .mobile-menu-open { display: none; }
+.mobile-menu[open] .mobile-menu-close { display: inline; }
+@media (max-width: 720px) {
+  .mobile-menu summary {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(197, 160, 89, 0.6);
+    border-radius: 8px;
+  }
+  .mobile-menu summary > span.mobile-menu-open,
+  .mobile-menu summary > span.mobile-menu-close {
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+  .mobile-menu[open] summary { background: #0a0a0a; color: #e9c83e; }
+  .mobile-menu nav { width: calc(100vw - 24px); }
+  .mobile-menu nav a { min-height: 48px; display: flex; align-items: center; font-size: 1rem; }
+}

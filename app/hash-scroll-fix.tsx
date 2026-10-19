@@ -20,6 +20,14 @@ export default function HashScrollFix() {
     };
 
     const stopAutomaticScroll = () => { cancelled = true; };
+    // Menu mobile : se referme après un choix, ou en touchant ailleurs sur la page
+    const closeMobileMenu = (event: Event) => {
+      const menu = document.querySelector<HTMLDetailsElement>(".mobile-menu");
+      if (!menu?.open) return;
+      const target = event.target as Element | null;
+      if (target?.closest(".mobile-menu nav a") || !target?.closest(".mobile-menu")) menu.open = false;
+    };
+    document.addEventListener("click", closeMobileMenu);
     schedule();
     window.addEventListener("load", schedule);
     window.addEventListener("hashchange", schedule);
@@ -36,6 +44,7 @@ export default function HashScrollFix() {
       window.removeEventListener("touchstart", stopAutomaticScroll);
       window.removeEventListener("pointerdown", stopAutomaticScroll);
       window.removeEventListener("keydown", stopAutomaticScroll);
+      document.removeEventListener("click", closeMobileMenu);
     };
   }, []);
 

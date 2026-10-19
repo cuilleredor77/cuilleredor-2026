@@ -34,6 +34,8 @@ def build():
     if SITE:
         s=s.replace("'../pdf/Catalogue-Cuillere-dOr-2027-2028-FR.pdf'","'/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf'")
         s=s.replace("'../pdf/Catalogue-Cuillere-dOr-2027-2028-EN.pdf'","'/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf'")
+        s=s.replace('aria-label="Retour au catalogue"','aria-label="Retour au site Cuillère d’Or"')
+        s=s.replace("home:'Retour au catalogue'","home:'Retour au site Cuillère d’Or'").replace("home:'Back to the catalogue'","home:'Back to the Cuillère d’Or website'")
     open(OUT+'/index.html','w',encoding='utf8').write(s)
     for f in ['page-flip.browser.js','LICENSE-page-flip.txt']: shutil.copy('liseuse/'+f,OUT+'/'+f)
     # logo du catalogue publié s'il existe (build_site.py l'y a déjà copié), sinon celui des sources

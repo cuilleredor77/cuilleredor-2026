@@ -568,8 +568,9 @@ export default function Home() {
           <span className="header-cta-short">Estimer</span>
         </a>
         <details className="mobile-menu">
-          <summary aria-label="Ouvrir le menu">
-            <span aria-hidden="true">☰</span>
+          <summary aria-label="Ouvrir ou fermer le menu">
+            <span className="mobile-menu-open" aria-hidden="true">☰</span>
+            <span className="mobile-menu-close" aria-hidden="true">✕</span>
             <span className="mobile-menu-label">Menu</span>
           </summary>
           <nav>
@@ -626,8 +627,8 @@ export default function Home() {
               <Users size={20} aria-hidden="true" /> Dès 30 convives
             </span>
             <span>
-              <MapPin size={20} aria-hidden="true" /> Île-de-France · ailleurs
-              sur devis
+              <MapPin size={20} aria-hidden="true" /> Île-de-France, partout
+              en France et à l’étranger
             </span>
             <span>
               <Clock3 size={20} aria-hidden="true" /> Devis sous 48 à 72 h

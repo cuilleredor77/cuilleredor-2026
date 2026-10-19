@@ -288,6 +288,14 @@
       else (de.requestFullscreen||de.webkitRequestFullscreen).call(de);
     });
     document.addEventListener('fullscreenchange',fsLabel); document.addEventListener('webkitfullscreenchange',fsLabel);
+  } else if(embed){
+    // iPhone (pas de plein écran) dans le site : le bouton ouvre la liseuse seule, sur tout l'écran, à la même page
+    $('fs').hidden=false;
+    $('fs').addEventListener('click',function(){
+      var c=pf?pf.getCurrentPageIndex():0;
+      var url=location.pathname+(lang==='en'?'?lang=en':'')+(c>0?'#p='+(c+1):'');
+      try{ window.top.location.href=url; }catch(e){ window.open(url,'_blank'); }
+    });
   }
 
   // clavier
