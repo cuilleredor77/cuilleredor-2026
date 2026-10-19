@@ -242,6 +242,14 @@ function optionAmount(
   return def.unit * value;
 }
 
+// Champ nombre (enfants, prestataires) : « 02 » redevient « 2 ». React ne réécrit pas
+// le champ quand la valeur numérique est déjà la bonne, donc on le fait ici.
+function countValue(input: HTMLInputElement): number {
+  const n = Math.min(1000, Math.max(0, Math.floor(Number(input.value)) || 0));
+  if (input.value !== "" && input.value !== String(n)) input.value = String(n);
+  return n;
+}
+
 export default function PricingCalculator() {
   const rootRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -613,11 +621,8 @@ export default function PricingCalculator() {
               max="1000"
               inputMode="numeric"
               value={children}
-              onChange={(e) =>
-                setChildren(
-                  Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
-                )
-              }
+              onFocus={(e) => e.target.select()}
+              onChange={(e) => setChildren(countValue(e.target))}
             />
             <small className="calculator-field-help">
               Repas adapté aux 5-12 ans · 25 €/personne.
@@ -633,11 +638,8 @@ export default function PricingCalculator() {
               max="1000"
               inputMode="numeric"
               value={providers}
-              onChange={(e) =>
-                setProviders(
-                  Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
-                )
-              }
+              onFocus={(e) => e.target.select()}
+              onChange={(e) => setProviders(countValue(e.target))}
             />
             <small className="calculator-field-help">
               Photographe, DJ, vidéaste… · 30 €/personne.
