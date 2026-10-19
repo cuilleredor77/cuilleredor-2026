@@ -376,9 +376,11 @@ export default function PricingCalculator() {
       const amount = optionAmount(def, value, guests, totalGuests);
       if (amount <= 0) continue;
       const qtyPart = def.kind === "qty" ? `${value} ${def.qtyLabel} · ` : "";
+      // Un forfait affiche déjà son montant à droite : pas de « (50 € le forfait) » en doublon.
+      const isFlat = !qtyPart && def.unitLabel.endsWith("le forfait");
       optionLines.push({
         id: def.id,
-        label: `${def.label} (${qtyPart}${def.unitLabel})`,
+        label: isFlat ? def.label : `${def.label} (${qtyPart}${def.unitLabel})`,
         amount,
       });
     }
