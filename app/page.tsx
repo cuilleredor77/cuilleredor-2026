@@ -106,15 +106,6 @@ function MenuCategory({
         </b>
       </summary>
       <div className="formula-category-content">
-        <img
-          className="formula-category-image"
-          src={category.image}
-          width="640"
-          height="320"
-          alt={category.alt}
-          loading="lazy"
-          decoding="async"
-        />
         <ul>
           {category.items.map((item) => (
             <li key={`${keyPrefix}-${item}`}>{item}</li>
@@ -452,6 +443,51 @@ const platedCategories = [
   },
 ];
 
+const menuSection = (
+  name: string,
+  categories: Array<{ title: string; items: string[] }>,
+) => ({
+  "@type": "MenuSection",
+  name,
+  hasMenuSection: categories.map((category) => ({
+    "@type": "MenuSection",
+    name: category.title,
+    hasMenuItem: category.items.map((item) => ({
+      "@type": "MenuItem",
+      name: item,
+    })),
+  })),
+});
+
+const MENU_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Menu",
+  name: "Carte traiteur Cuillère d’Or 2027-2028",
+  inLanguage: "fr",
+  url: "https://cuilleredor.fr/#carte",
+  provider: { "@type": "FoodEstablishment", name: "Cuillère d’Or" },
+  hasMenuSection: [
+    menuSection("Buffet et plateau", buffetCategories),
+    menuSection("Service à l’assiette", platedCategories),
+    menuSection("Cocktail dînatoire et vin d’honneur", [
+      { title: "Créations salées", items: savoury.map((item) => item.name) },
+      { title: "Douceurs sucrées", items: sweet.map((item) => item.name) },
+    ]),
+    menuSection("Brunch Signature", [
+      {
+        title: "Base commune",
+        items: [
+          "Pain, beurre et confitures",
+          "Mini viennoiseries",
+          "Pancakes et toppings",
+          "Œufs brouillés ou au plat",
+          "Thé, café, chocolat chaud, eaux et jus de fruits",
+        ],
+      },
+    ]),
+  ],
+};
+
 const faqItems = [
   {
     question: "Quelle formule choisir pour mon événement ?",
@@ -534,6 +570,10 @@ const FAQ_VISIBLE_COUNT = 5;
 export default function Home() {
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(MENU_JSON_LD) }}
+      />
       <HashScrollFix />
       <FormulaExperience />
       <header className="site-header">
@@ -843,8 +883,18 @@ export default function Home() {
             <em>Métissée.</em>
           </h2>
           <p>
-            Seule la formule sélectionnée est affichée. Vous pouvez modifier
-            votre choix depuis la calculette.
+            La carte de notre traiteur à Brunoy, formule par formule : buffet,
+            plateau, service à l’assiette, cocktail dînatoire et brunch. Seule
+            la formule sélectionnée est ouverte ; modifiez votre choix depuis la
+            calculette. Les photos de chaque plat sont dans le{" "}
+            <a
+              href="https://catalogue.cuilleredor.fr"
+              target="_blank"
+              rel="noreferrer"
+            >
+              catalogue en ligne
+            </a>
+            .
           </p>
         </div>
         <CatalogueTabs
@@ -922,6 +972,15 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
+                    <a
+                      className="formula-catalogue-link"
+                      href="https://catalogue.cuilleredor.fr/#aperitifs-sales"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Voir les photos de ce menu dans le catalogue{" "}
+                      <ArrowRight size={14} />
+                    </a>
                     <details className="formula-dishes" open>
                       <summary>
                         Découvrir les créations{" "}
@@ -943,13 +1002,6 @@ export default function Home() {
                             <ul>
                               {savoury.map((item) => (
                                 <li key={`menu-${item.name}`}>
-                                  <img
-                                    src={item.image}
-                                    width="96"
-                                    height="96"
-                                    alt=""
-                                    loading="lazy"
-                                  />
                                   <span>{item.name}</span>
                                 </li>
                               ))}
@@ -967,13 +1019,6 @@ export default function Home() {
                             <ul>
                               {sweet.map((item) => (
                                 <li key={`menu-${item.name}`}>
-                                  <img
-                                    src={item.image}
-                                    width="96"
-                                    height="96"
-                                    alt=""
-                                    loading="lazy"
-                                  />
                                   <span>{item.name}</span>
                                 </li>
                               ))}
@@ -1011,6 +1056,15 @@ export default function Home() {
                     >
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
+                    </a>
+                    <a
+                      className="formula-catalogue-link"
+                      href="https://catalogue.cuilleredor.fr/#buffet"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Voir les photos de ce menu dans le catalogue{" "}
+                      <ArrowRight size={14} />
                     </a>
                     <details className="formula-dishes" open>
                       <summary>
@@ -1055,6 +1109,15 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
+                    <a
+                      className="formula-catalogue-link"
+                      href="https://catalogue.cuilleredor.fr/#assiette"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Voir les photos de ce menu dans le catalogue{" "}
+                      <ArrowRight size={14} />
+                    </a>
                     <details className="formula-dishes" open>
                       <summary>
                         Découvrir les plats{" "}
@@ -1098,6 +1161,15 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
+                    <a
+                      className="formula-catalogue-link"
+                      href="https://catalogue.cuilleredor.fr/#buffet"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Voir les photos de ce menu dans le catalogue{" "}
+                      <ArrowRight size={14} />
+                    </a>
                     <details className="formula-dishes" open>
                       <summary>
                         Découvrir les plats{" "}
@@ -1135,6 +1207,15 @@ export default function Home() {
                       Choisir cette formule pour mon estimation{" "}
                       <ArrowRight size={16} />
                     </a>
+                    <a
+                      className="formula-catalogue-link"
+                      href="https://catalogue.cuilleredor.fr/#brunch"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Voir les photos de ce menu dans le catalogue{" "}
+                      <ArrowRight size={14} />
+                    </a>
                     <details className="formula-dishes" open>
                       <summary>
                         Découvrir le brunch{" "}
@@ -1151,14 +1232,6 @@ export default function Home() {
                             </b>
                           </summary>
                           <div className="formula-category-content">
-                            <img
-                              className="formula-category-image"
-                              src="/brunch/brunch-signature-480.webp"
-                              width="640"
-                              height="320"
-                              alt="Brunch Signature Cuillère d’Or"
-                              loading="lazy"
-                            />
                             <ul>
                               <li>Viennoiseries et pièces sucrées</li>
                               <li>Pièces salées</li>
