@@ -49,3 +49,6 @@ next-env.d.ts
 # catalogue : dossier généré et ancien dépôt local
 /catalogue-site
 /catalogue-export
+
+# secrets locaux Cloudflare
+.dev.vars

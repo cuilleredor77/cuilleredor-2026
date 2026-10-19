@@ -15,6 +15,14 @@
   "images": {
     "binding": "IMAGES"
   },
-  "workers_dev": true
+  "workers_dev": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cuilleredor-devis",
+      "database_id": "c25c78ae-40f0-4d51-9881-0d9738dad1d8",
+      "migrations_dir": "migrations"
+    }
+  ]
 }
 
