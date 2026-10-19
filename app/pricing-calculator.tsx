@@ -462,12 +462,7 @@ export default function PricingCalculator() {
   };
   // Dès que la personne a touché au simulateur, le formulaire de demande reprend ses chiffres (sans attendre le bouton).
   const estimateKey = JSON.stringify(estimate);
-  const firstEstimate = useRef(true);
   useEffect(() => {
-    if (firstEstimate.current) {
-      firstEstimate.current = false;
-      return;
-    }
     window.dispatchEvent(
       new CustomEvent("cuillere:estimate", { detail: JSON.parse(estimateKey) }),
     );

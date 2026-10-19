@@ -381,6 +381,8 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
   const [useGoogleForm, setUseGoogleForm] = useState(false);
   const [formLoaded, setFormLoaded] = useState(false);
   const [estimate, setEstimate] = useState<Estimate | null>(null);
+  // Le devis par e-mail est une option qui se déplie sous l'estimation
+  const [open, setOpen] = useState(false);
   const isEvent = choice === "event";
   const iframeSrc = useMemo(
     () => buildFormUrl(formUrl, choice, estimate),
@@ -399,6 +401,7 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
   useEffect(() => {
     const selectFromLocation = () => {
       setEstimate(liveEstimate);
+      if (/^#(devis|formulaire-)/.test(window.location.hash)) setOpen(true);
       if (window.location.hash === "#formulaire-brunch") choose("brunch");
       if (window.location.hash === "#formulaire-evenement") choose("event");
     };
@@ -409,6 +412,7 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
       setFormLoaded(false);
       choose(detail.choice);
       setEstimate(detail.estimate || null);
+      setOpen(true);
     };
     const followCalculator = (event: Event) => {
       const detail = (event as CustomEvent<Estimate>).detail;
@@ -430,39 +434,38 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
 
   return (
     <div className="quote-chooser">
-      {estimate && (
-        <div className="quote-estimate-summary">
-          <span>Votre réception</span>
+      {!open && (
+        <div className="quote-option">
           <div>
-            <strong>{estimate.formula}</strong>
-            <p>{guestsLine(estimate)}</p>
-            {estimate.options.length > 0 && <p>{optionsLine(estimate)}</p>}
+            <strong>Recevoir mon devis personnalisé par e-mail</strong>
+            <p>
+              Il reprend votre estimation ci-dessus, avec le contrat prêt à
+              signer. Facultatif et sans engagement.
+            </p>
           </div>
-          <div>
-            <strong>{totalValue(estimate)}</strong>
-            <p>Déplacement calculé avec vous · estimation non contractuelle</p>
-          </div>
-          <a href="#calculateur">Modifier mon estimation</a>
+          <button type="button" onClick={() => setOpen(true)}>
+            Recevoir mon devis par e-mail <ArrowRight size={16} />
+          </button>
         </div>
       )}
 
+      {open && (
       <div
         className="selected-form"
         id={isEvent ? "formulaire-evenement" : "formulaire-brunch"}
       >
         <div className="selected-form-heading">
-          <span>Formulaire</span>
+          <span>Devis par e-mail</span>
           <div>
-            <h3>Votre demande de devis</h3>
+            <h3>Recevoir mon devis personnalisé</h3>
             <p>
               {estimate
-                ? `Votre estimation ${estimate.formula} est conservée pendant votre demande.`
+                ? `Il reprend votre estimation ${estimate.formula} (${guestsLine(estimate)}).`
                 : "Indiquez la date, le lieu, les convives et la formule envisagée."}
             </p>
             <p className="quote-required">
-              Cette demande est indispensable pour démarrer les échanges : vous
-              recevrez votre devis personnalisé par e-mail, puis nous vous
-              contacterons.
+              Vous recevez votre devis par e-mail, puis nous vous contactons :
+              c’est cette demande qui démarre les échanges.
             </p>
           </div>
         </div>
@@ -510,6 +513,7 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
           </button>
         </p>
       </div>
+      )}
       <p className="quote-reassurance">
         Devis en ligne · Sans engagement · Vos informations servent
         uniquement à traiter votre demande.

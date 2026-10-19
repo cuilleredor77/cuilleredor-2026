@@ -7083,3 +7083,41 @@ body:has(.calculator-mobile-bar.is-visible) .back-to-top {
 .native-form-recap a { margin-left: auto; color: #775a19; font-weight: 700; text-decoration: underline; }
 .calculator-controls-row:has(> label:only-child) { grid-template-columns: 1fr; }
 .native-form-hint { color: #6b6b6b; font-size: 0.8rem; line-height: 1.4; }
+
+/* Devis par e-mail : option sous la calculette (section « Estimer ») */
+.quote-inline { margin-top: 24px; scroll-margin-top: 92px; }
+.quote-inline .quote-chooser { margin-top: 0 !important; }
+.quote-inline .quote-reassurance { color: #6b6b6b; text-align: center; }
+.quote-option {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding: 22px 26px;
+  color: #1a1a1a;
+  background: #fff;
+  border: 1px solid rgba(197, 160, 89, 0.55);
+  border-radius: 10px;
+}
+.quote-option strong { font-family: Georgia, serif; font-size: 1.3rem; font-weight: 400; }
+.quote-option p { margin: 6px 0 0; color: #5e5e5e; font-size: 0.92rem; max-width: 560px; }
+.quote-option button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 24px;
+  color: #0a0a0a;
+  font: inherit;
+  font-weight: 700;
+  background: var(--gold);
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.quote-option button:hover { background: var(--gold-bright); }
+@media (max-width: 720px) {
+  .quote-option { padding: 18px 16px; }
+  .quote-option button { width: 100%; justify-content: center; }
+}

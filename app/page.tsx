@@ -561,8 +561,7 @@ export default function Home() {
         </a>
         <nav className="desktop-nav" aria-label="Navigation principale">
           <a href="#formules">1. Formules & menus</a>
-          <a href="#calculateur">2. Estimer</a>
-          <a href="#devis">3. Devis</a>
+          <a href="#calculateur">2. Estimer & devis</a>
           <a href="#feuilleter">Catalogue</a>
         </nav>
         <a className="header-cta" href="#calculateur">
@@ -577,8 +576,7 @@ export default function Home() {
           </summary>
           <nav>
             <a href="#formules">1. Formules & menus</a>
-            <a href="#calculateur">2. Estimer mon événement</a>
-            <a href="#devis">3. Recevoir mon devis</a>
+            <a href="#calculateur">2. Estimer et recevoir mon devis</a>
             <a href="#feuilleter">Feuilleter le catalogue</a>
           </nav>
         </details>
@@ -723,18 +721,16 @@ export default function Home() {
         </div>
         <div className="intro-copy">
           <p>
-            Choisissez le style de réception et découvrez son menu, estimez
-            votre budget, puis recevez votre devis personnalisé par e-mail.
+            Choisissez le style de réception et découvrez son menu, puis
+            estimez votre événement : le devis personnalisé par e-mail vous
+            est proposé juste après.
           </p>
           <ol className="journey-steps">
             <li className="active">
               <span>01</span>Choisir
             </li>
             <li>
-              <span>02</span>Estimer
-            </li>
-            <li>
-              <span>03</span>Devis
+              <span>02</span>Estimer & recevoir le devis
             </li>
           </ol>
         </div>
@@ -1232,25 +1228,9 @@ export default function Home() {
         </div>
         <PricingGrids />
         <PricingCalculator />
-      </section>
-
-      <section className="quote-path section-pad" id="devis">
-        <div className="quote-heading">
-          <div>
-            <p className="eyebrow">03 — Recevez votre devis</p>
-            <h2>
-              Recevez votre
-              <br />
-              <em>devis personnalisé.</em>
-            </h2>
-          </div>
-          <p>
-            Indiquez votre enveloppe budgétaire : nous ajustons la
-            proposition avec vous. La sélection des pièces (apéritifs,
-            brunch) n&apos;est pas obligatoire pour recevoir un premier devis.
-          </p>
+        <div className="quote-inline" id="devis">
+          <QuoteChooser formUrl={QUOTE_FORM} />
         </div>
-        <QuoteChooser formUrl={QUOTE_FORM} />
       </section>
 
       <section className="catalogue-preview section-pad" id="feuilleter">
