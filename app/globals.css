@@ -7156,3 +7156,6 @@ html[data-selected-formula] .formula-menu-list>details[open]{display:block;anima
 @media(max-width:1050px){.offers.offers-picker{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
 @media(max-width:720px){.offers.offers-picker{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;padding-left:16px!important;padding-right:16px!important}.offers-picker .offer-card h3{font-size:1.1rem}.offer-recap dl{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){html[data-selected-formula] .formula-menu-list>details[open]{animation:none}.offers-picker .offer-card{transition:none}}
+
+/* Calculette : le détail des lignes au-dessus du cadre noir de l’estimation */
+.calculator-summary-sticky > .calculator-breakdown { margin: 0 0 14px; }

@@ -755,6 +755,36 @@ export default function PricingCalculator() {
 
       </div>
       <div className="calculator-summary-sticky" ref={summaryRef}>
+      {estimatedTotal !== null && (
+        <ul className="calculator-breakdown">
+          <li>
+            <span>
+              {guests} adulte{guests > 1 ? "s" : ""} × {isChef ? "dès " : ""}
+              {price} €/pers.
+            </span>
+            <span>
+              {mealTotal!.toLocaleString("fr-FR", { minimumFractionDigits: mealTotal! % 1 ? 2 : 0 })}{" "}
+              €
+            </span>
+          </li>
+          {optionLines.map((line) => (
+            <li key={line.id}>
+              <span>{line.label}</span>
+              <span>
+                {line.amount.toLocaleString("fr-FR", { minimumFractionDigits: line.amount % 1 ? 2 : 0 })}{" "}
+                €
+              </span>
+            </li>
+          ))}
+          <li className="calculator-breakdown-total">
+            <span>Estimation</span>
+            <span>
+              {estimatedTotal.toLocaleString("fr-FR", { minimumFractionDigits: estimatedTotal % 1 ? 2 : 0 })}{" "}
+              €
+            </span>
+          </li>
+        </ul>
+      )}
       <div className="calculator-initial-result" aria-live="polite">
         <div>
           <span>Votre réception</span>
@@ -793,36 +823,6 @@ export default function PricingCalculator() {
           </a>
         </div>
       </div>
-      {estimatedTotal !== null && (
-        <ul className="calculator-breakdown">
-          <li>
-            <span>
-              {guests} adulte{guests > 1 ? "s" : ""} × {isChef ? "dès " : ""}
-              {price} €/pers.
-            </span>
-            <span>
-              {mealTotal!.toLocaleString("fr-FR", { minimumFractionDigits: mealTotal! % 1 ? 2 : 0 })}{" "}
-              €
-            </span>
-          </li>
-          {optionLines.map((line) => (
-            <li key={line.id}>
-              <span>{line.label}</span>
-              <span>
-                {line.amount.toLocaleString("fr-FR", { minimumFractionDigits: line.amount % 1 ? 2 : 0 })}{" "}
-                €
-              </span>
-            </li>
-          ))}
-          <li className="calculator-breakdown-total">
-            <span>Estimation</span>
-            <span>
-              {estimatedTotal.toLocaleString("fr-FR", { minimumFractionDigits: estimatedTotal % 1 ? 2 : 0 })}{" "}
-              €
-            </span>
-          </li>
-        </ul>
-      )}
       <p className="calculator-disclaimer">
         Estimation non contractuelle. Le déplacement et le détail du devis
         sont calculés avec vous à partir de votre demande.
