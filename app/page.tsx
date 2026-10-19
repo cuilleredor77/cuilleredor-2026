@@ -122,6 +122,7 @@ const offers = [
     secondLabel: "Tarifs",
     secondValue: "Tarifs dégressifs pour les grandes réceptions",
     price: "35 à 45 €",
+    wineNote: "+5 € par personne avec vin d’honneur",
     suffix: "/ personne · dès 30 convives",
     cta: "Choisir le buffet",
   },
@@ -138,6 +139,7 @@ const offers = [
     secondLabel: "Idéal pour",
     secondValue: "Réception élégante avec un service fluide",
     price: "40 à 50 €",
+    wineNote: "+5 € par personne avec vin d’honneur",
     suffix: "/ personne · dès 30 convives",
     cta: "Choisir le plateau",
   },
@@ -154,6 +156,7 @@ const offers = [
     secondLabel: "Idéal pour",
     secondValue: "Mariage, dîner de gala et réception formelle",
     price: "60 à 70 €",
+    wineNote: "+5 € par personne avec vin d’honneur",
     suffix: "/ personne · dès 30 convives",
     cta: "Choisir le service à l’assiette",
   },
@@ -225,99 +228,40 @@ const offers = [
   },
 ];
 
+// Noms repris du catalogue 2027-2028 (même ordre, même orthographe).
 const savoury = [
-  {
-    name: "Sphère de foie gras, hibiscus et coco · décembre à mars",
-    image: "/dishes/foie-gras-hibiscus.webp",
-  },
-  {
-    name: "Mini-burger pikliz, banane plantain et poulet",
-    image: "/dishes/burger-pikliz.webp",
-  },
-  {
-    name: "Mini-burger au saumon, sauce aïoli",
-    image: "/dishes/burger-saumon.webp",
-  },
-  {
-    name: "Mini-cake tomate et estragon, mascarpone fumée",
-    image: "/dishes/mini-cake-tomate.webp",
-  },
-  {
-    name: "Croquette de patate douce et gambas, mangue-piment",
-    image: "/dishes/croquette-gambas.webp",
-  },
-  {
-    name: "Croquette de morue, crème de curry vert",
-    image: "/dishes/croquette-morue.webp",
-  },
-  {
-    name: "Croquette d’igname, crème de poivron rouge",
-    image: "/dishes/croquette-igname.webp",
-  },
-  {
-    name: "Banane frite et effiloché de bœuf, sauce barbecue",
-    image: "/dishes/banane-boeuf.webp",
-  },
-  {
-    name: "Tartelette curcuma, salsa mangue, saumon ou crevette",
-    image: "/dishes/tartelette-curcuma.webp",
-  },
+  { name: "Plantain frit", image: "/plantains-480.webp" },
+  { name: "Mini-burger pikliz, plantain et poulet", image: "/dishes/burger-pikliz.webp" },
+  { name: "Mini-burger au saumon, sauce aïoli", image: "/dishes/burger-saumon.webp" },
+  { name: "Mini-cake tomate et estragon, mascarpone fumé", image: "/dishes/mini-cake-tomate.webp" },
+  { name: "Croquette de patate douce, gambas, coulis mangue, piment d’oiseau", image: "/dishes/croquette-gambas.webp" },
+  { name: "Croquette de morue, crème de curry vert", image: "/dishes/croquette-morue.webp" },
+  { name: "Croquette d’igname, crème de poivron rouge", image: "/dishes/croquette-igname.webp" },
+  { name: "Banane frite, effiloché de bœuf, sauce barbecue", image: "/dishes/banane-boeuf.webp" },
+  { name: "Tartelette au curcuma, mangue, guacamole", image: "/dishes/tartelette-curcuma.webp" },
   { name: "Mini-burger au bœuf", image: "/dishes/mini-burger.webp" },
   { name: "Navette au saumon", image: "/dishes/navette-saumon.webp" },
   { name: "Samoussa au bœuf ou aux légumes", image: "/dishes/samoussa.webp" },
-  {
-    name: "Nems au poulet ou pastels au thon",
-    image: "/dishes/nems-pastels.webp",
-  },
+  { name: "Nem au poulet ou pastel au thon", image: "/dishes/nems-pastels.webp" },
+  { name: "Mini-brochette de poulet ou de bœuf", image: "/dishes/mini-brochettes.webp" },
+  { name: "Mini-wrap", image: "/dishes/mini-wraps.webp" },
+  { name: "Tempura de crevettes", image: "/dishes/tempuras.webp" },
+  { name: "Tartelette végétarienne", image: "/dishes/tartelettes-vegetariennes.webp" },
+  { name: "Pastèque braisée, concombre et feta · selon la saison", image: "/dishes/pasteque-feta.webp" },
   { name: "Mini-quiche lorraine", image: "/dishes/mini-quiche-lorraine.webp" },
-  {
-    name: "Mini-brochettes de poulet ou de bœuf",
-    image: "/dishes/mini-brochettes.webp",
-  },
-  { name: "Mini-wraps", image: "/dishes/mini-wraps.webp" },
-  {
-    name: "Gambas grillées ou tenders de poulet",
-    image: "/dishes/gambas-tenders.webp",
-  },
-  {
-    name: "Brochettes tomate-mozzarella",
-    image: "/dishes/tomate-mozzarella.webp",
-  },
-  { name: "Tempuras de crevettes", image: "/dishes/tempuras.webp" },
-  {
-    name: "Tartelettes végétariennes",
-    image: "/dishes/tartelettes-vegetariennes.webp",
-  },
-  {
-    name: "Pastèque braisée, concombre et feta · selon la saison",
-    image: "/dishes/pasteque-feta.webp",
-  },
+  { name: "Gambas grillées ou tenders de poulet", image: "/dishes/gambas-tenders.webp" },
+  { name: "Sphère de foie gras, hibiscus et coco · décembre à mars", image: "/dishes/foie-gras-hibiscus.webp" },
+  { name: "Brochette tomate-mozzarella", image: "/dishes/tomate-mozzarella.webp" },
 ];
 const sweet = [
-  {
-    name: "Mi-cuit au chocolat, crème fouettée et cacao",
-    image: "/dishes/mi-cuit-chocolat.webp",
-  },
-  {
-    name: "Riz au lait revisité, perles de riz et caramel",
-    image: "/dishes/riz-au-lait.webp",
-  },
-  { name: "Tiramisu spéculoos", image: "/dishes/tiramisu.webp" },
-  {
-    name: "Brochette ou verrine de fruits de saison",
-    image: "/dishes/fruits-saison.webp",
-  },
-  {
-    name: "Beignets de riz panés au panko",
-    image: "/dishes/beignets-riz-panko.webp",
-  },
-  { name: "Beignets classiques", image: "/dishes/beignets-classiques.webp" },
-  { name: "Beignets de banane", image: "/dishes/beignets-banane.webp" },
-  { name: "Tôt-fait aux pommes", image: "/dishes/tot-fait-pommes.webp" },
-  {
-    name: "Panna cotta aux fruits rouges ou exotiques",
-    image: "/dishes/panna-cotta.webp",
-  },
+  { name: "Mi-cuit au chocolat, crème fouettée et cacao", image: "/dishes/mi-cuit-chocolat.webp" },
+  { name: "Riz au lait revisité, perles de riz et caramel", image: "/dishes/riz-au-lait.webp" },
+  { name: "Tiramisu au spéculoos", image: "/dishes/tiramisu.webp" },
+  { name: "Brochette ou verrine de fruits de saison", image: "/dishes/fruits-saison.webp" },
+  { name: "Beignet de riz pané au panko, classique", image: "/dishes/beignets-riz-panko.webp" },
+  { name: "Beignet de riz pané au panko, à la banane", image: "/dishes/beignets-banane.webp" },
+  { name: "Gâteau tôt-fait aux pommes", image: "/dishes/tot-fait-pommes.webp" },
+  { name: "Panna cotta aux fruits rouges ou exotiques", image: "/dishes/panna-cotta.webp" },
 ];
 
 const buffetCategories = [
@@ -345,13 +289,10 @@ const buffetCategories = [
     image: "/plantains-480.webp",
     alt: "Bananes plantains dressées par Cuillère d’Or",
     items: [
-      "Riz blanc",
-      "Riz rouge à la tomate",
-      "Riz cantonais",
-      "Riz au curry",
-      "Bananes plantains",
+      "Banane plantain",
+      "Riz blanc, riz rouge à la tomate, riz cantonais ou riz au curry",
       "Manioc (kwanga)",
-      "Beignets",
+      "Beignet",
       "Attiéké",
     ],
   },
@@ -373,10 +314,9 @@ const platedCategories = [
     image: "/assiette-traiteur-480.webp",
     alt: "Entrée dressée à l’assiette par Cuillère d’Or",
     items: [
-      "Tomate du jardin, crème d’anchois · selon la saison",
       "Gambas poêlées, tagliatelles de carotte fumée",
       "Quesadillas au crabe, crème de maïs et polenta croustillante",
-      "Banane plantain, sauce aux trois poivrons et effiloché de bœuf",
+      "Banane plantain, sauce trois poivrons, effiloché de bœuf",
       "Tartare de saumon, salsa mangue et guacamole",
       "Œuf mollet, crème de champignons, morilles et huile de ciboulette",
       "Avocat brûlé, gambas poêlées et crème de guacamole",
@@ -815,6 +755,9 @@ export default function Home() {
               <div className="offer-price">
                 {offer.price} <small>{offer.suffix}</small>
               </div>
+              {"wineNote" in offer && offer.wineNote ? (
+                <p className="offer-wine-note">{offer.wineNote}</p>
+              ) : null}
               <a
                 href={offer.number <= "05" ? "#carte" : "#tarifs"}
                 data-formula-target={offer.number <= "05" ? "menu" : undefined}

@@ -38,6 +38,18 @@ btn=r'''<div class="pdf-menu" id="pdf-menu">
   .lang-switcher-label{ font-family:Arial,Helvetica,sans-serif; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#d4af37; padding:0 2px; }
   .lang-switcher{ right:18px !important; bottom:18px !important; }
   @media (max-width:560px){ .lang-switcher{ right:10px !important; bottom:10px !important; } }
+  /* téléphone : les deux boutons fixes vivent dans une barre basse opaque ; le bas de page reste lisible (marge réservée) */
+  @media (max-width:560px){
+    body{ padding-bottom:68px; }
+    body::after{ content:''; position:fixed; left:0; right:0; bottom:0; height:60px; z-index:99; pointer-events:none;
+      background:#1a1a1af5; border-top:1px solid #d4af37; }
+    .pdf-menu{ left:8px; bottom:8px; }
+    .pdf-dl{ min-height:44px; background:transparent; backdrop-filter:none; box-shadow:none; }
+    .lang-switcher{ right:8px !important; bottom:8px !important; padding:0 !important; background:transparent !important; backdrop-filter:none !important; box-shadow:none !important; }
+    .lang-switcher-label{ display:none; }
+    .lang-switcher button{ min-width:44px !important; height:44px !important; }
+    .pdf-toast{ bottom:76px; }
+  }
 </style>
 <script>
 (function(){
@@ -111,6 +123,22 @@ assert s.count(old2)==1
 s=s.replace(old2,"    style='c';\n",1)
 t0="<title>Catalogue Cuillère d'Or</title>"
 assert s.count(t0)==1
+# en-tête complet : doctype (mode standard), encodage (accents corrects même sans en-tête HTTP), titre, partage
+TITLE="Catalogue 2027-2028 | Cuillère d'Or, traiteur mariage et événementiel"
+DESC="Le catalogue Cuillère d'Or 2027-2028 : formules buffet, plateau, assiette, apéritifs, Brunch Signature, barbecue et chef à domicile, tarifs et cocktails. À lire en ligne ou en PDF."
+OG='https://catalogue.cuilleredor.fr/images/chezlina/plat-signature-hd.jpg'
+head=('<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8"/>\n'
+  '<meta name="description" content="'+DESC+'"/>\n'
+  '<link rel="canonical" href="https://catalogue.cuilleredor.fr/"/>\n'
+  '<meta property="og:type" content="website"/>\n<meta property="og:locale" content="fr_FR"/>\n'
+  '<meta property="og:site_name" content="Cuillère d’Or"/>\n'
+  '<meta property="og:title" content="'+TITLE+'"/>\n<meta property="og:description" content="'+DESC+'"/>\n'
+  '<meta property="og:url" content="https://catalogue.cuilleredor.fr/"/>\n<meta property="og:image" content="'+OG+'"/>\n'
+  '<meta name="twitter:card" content="summary_large_image"/>\n')
+assert not s.lstrip().lower().startswith('<!doctype')
+s=head+s
+s=s.replace(t0,'<title>'+TITLE+'</title>',1)
+t0='<title>'+TITLE+'</title>'
 s=s.replace(t0,t0+'\n<link rel="icon" href="/favicon.ico" sizes="48x48">\n<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">\n<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">\n<link rel="apple-touch-icon" href="/apple-touch-icon.png">',1)
 import re as _re
 # pas de sélecteur de charte sur le site public : on retire le bloc HTML, le CSS et les appels JS
@@ -118,12 +146,20 @@ s,n=_re.subn(r'<div class="style-switcher".*?</div>\n','',s,count=1,flags=_re.S)
 s=s.replace('class="style-switcher-label" id="lang-label"','class="lang-switcher-label" id="lang-label"')
 s=s.replace("{fr:{style:'Charte',lang:'Langue',sa:'Choisir une charte graphique',la:","{fr:{lang:'Langue',la:").replace("en:{style:'Style',lang:'Language',sa:'Choose a design style',la:","en:{lang:'Language',la:")
 s=s.replace("document.getElementById('style-label').textContent=L[l].style; ","")
+old_t="document.title = l==='en' ? 'Cuillère d’Or Catalogue 2027-2028' : 'Catalogue Cuillère d\\u2019Or 2027-2028';"
+assert s.count(old_t)==1
+s=s.replace(old_t,"document.title = l==='en' ? 'Catalogue 2027-2028 | Cuillère d’Or, wedding and event caterer' : '"+TITLE.replace("'","\\'")+"';",1)
 s=s.replace("document.querySelector('.style-switcher').setAttribute('aria-label',L[l].sa); ","")
 s=_re.sub(r"    document\.querySelectorAll\('\.style-switcher button'\)\.forEach\(function\(b\)\{ b\.addEventListener.*?\}\); \}\);\n","",s,count=1,flags=_re.S)
 s=_re.sub(r"      document\.querySelectorAll\('\.style-switcher button'\)\.forEach\(function\(b\)\{ b\.setAttribute.*?\}\);\n","",s,count=1,flags=_re.S)
 s=s.replace(", .style-switcher button:hover","").replace(", .style-switcher button[aria-pressed=\"true\"]","").replace(".lang-switcher button, .style-switcher button{",".lang-switcher button{")
 s=_re.sub(r"\n  \.style-switcher(?:-label)?\{[^}]*\}","",s)
 s=s.replace("  @media print{ .style-switcher{ display:none !important; } }\n","").replace("  @media (max-width: 480px){ .style-switcher{ right:10px; bottom:10px; } }\n","")
+# lisibilité sur téléphone : les tailles du catalogue suivent la largeur de page (cqi) et tombaient sous 9 px ;
+# plancher de 12,5 px sur écran étroit uniquement (--minfs vaut 0 ailleurs, donc ni l'ordinateur ni les PDF ne changent)
+s,n=re.subn(r'font-size:calc\(([0-9.]+cqi\*var\(--fs,1\))\)',r'font-size:max(var(--minfs,0px),calc(\1))',s)
+assert n>500, n
+s=s.replace('</style>','  @media screen and (max-width:600px){ :root{ --minfs:12.5px; } .cover-eyebrow{ margin-bottom:8px !important; } .cover-contact-row{ flex-wrap:wrap; row-gap:4px; } .cv-box{ flex-wrap:wrap; justify-content:center; row-gap:10px; } #stage .sheet .cn-row{ height:auto !important; min-height:44px !important; flex:none !important; padding-top:4px !important; padding-bottom:4px !important; } .cn-head{ letter-spacing:.03em !important; } }\n</style>',1)
 # lien profond depuis le site principal (ex. /#buffet) : le catalogue est injecté par JS, on fait défiler après le rendu
 s=s.rstrip('\n')+"\n<script>window.addEventListener('load',function(){var h=location.hash.slice(1);if(!h)return;var e=document.getElementById(h);if(e)e.scrollIntoView();});</script>\n"
 shutil.rmtree(OUT,ignore_errors=True); os.makedirs(OUT+'/pdf')
@@ -140,7 +176,37 @@ NAMES={'Cuillere-dOr-Catalogue-2027-2028-FR.pdf':'Catalogue-Cuillere-dOr-2027-20
 for old,new_ in NAMES.items():
     shutil.copy(PDFS+old,OUT+'/pdf/'+new_); shutil.copy(PDFS+old,OUT+'/pdf/'+old)
 open(OUT+'/_headers','w').write('/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n/images/*\n  Cache-Control: public, max-age=2592000\n/pdf/*\n  Cache-Control: public, max-age=86400\n')
-open(OUT+'/LISEZ-MOI.txt','w',encoding='utf8').write("Catalogue Cuillère d'Or 2027-2028 — site statique\nDéposer ce dossier entier sur Cloudflare Pages (Workers & Pages > Create > Pages > Upload assets).\nindex.html = catalogue ; images/ ; pdf/ = téléchargements ; _headers = cache.\n")
+# vraie page 404 : sans 404.html, Cloudflare Pages renvoie le catalogue (code 200) pour toute adresse inconnue
+open(OUT+'/404.html','w',encoding='utf8').write("""<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex"/>
+<title>Page introuvable | Cuillère d'Or</title>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<style>
+  body{ margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#f7f4ec; color:#1a1a1a; font:17px/1.6 Arial,Helvetica,sans-serif; }
+  main{ max-width:520px; padding:32px 20px; text-align:center; }
+  img{ width:min(260px,70vw); height:auto; }
+  h1{ font-family:Georgia,serif; font-weight:400; font-size:2rem; margin:24px 0 8px; }
+  p{ margin:0 0 24px; color:#555; }
+  nav{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
+  a.btn{ display:inline-flex; align-items:center; min-height:44px; padding:0 20px; border-radius:999px; border:1px solid #9a7b11; color:#1a1a1a; text-decoration:none; font-weight:700; }
+  a.btn.solid{ background:#9a7b11; color:#fff; }
+</style>
+</head>
+<body>
+<main>
+  <img src="/images/logo.png" alt="Cuillère d’Or" width="1781" height="406"/>
+  <h1>Page introuvable</h1>
+  <p>Cette adresse n’existe pas ou plus. / This page does not exist.</p>
+  <nav><a class="btn solid" href="/">Voir le catalogue</a><a class="btn" href="https://cuilleredor.fr/">Retour au site</a></nav>
+</main>
+</body>
+</html>
+""")
+open(OUT+'/LISEZ-MOI.txt','w',encoding='utf8').write("Catalogue Cuillère d'Or 2027-2028 — site statique\nDéposer ce dossier entier sur Cloudflare Pages (Workers & Pages > Create > Pages > Upload assets).\nindex.html = catalogue ; 404.html = page introuvable ; images/ ; pdf/ = téléchargements ; _headers = cache.\n")
 
 # supprime les fichiers parasites macOS (._*, .DS_Store) créés par le volume externe
 for r,_,fs in os.walk(OUT):

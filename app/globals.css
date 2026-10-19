@@ -3612,6 +3612,12 @@ iframe {
   margin-bottom: 15px;
   font-size: 1.85rem;
 }
+.offer-wine-note {
+  margin: -8px 0 15px;
+  color: #6f5a12;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
 .offer-bottom > a {
   min-height: 44px;
 }
