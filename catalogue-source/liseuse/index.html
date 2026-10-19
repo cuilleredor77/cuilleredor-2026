@@ -42,7 +42,7 @@
   /* scène */
   main{ flex:1; min-height:0; position:relative; padding:20px 24px;
     background:radial-gradient(ellipse 80% 70% at 50% 45%, #40372d 0%, #24201c 55%, var(--ink) 100%); }
-  #book{ width:100%; height:100%; }
+  #book{ width:100%; height:100%; transition:transform .7s cubic-bezier(.4,0,.2,1); }
   .page{ background:var(--paper); overflow:hidden; }
   .page img{ width:100%; height:100%; display:block; object-fit:cover; user-select:none; -webkit-user-drag:none; position:relative;
     opacity:0; transition:opacity .35s; }
@@ -88,7 +88,7 @@
     #slider, .sep, .edge{ display:none; }
     .count{ min-width:0; flex:1; }
   }
-  @media (prefers-reduced-motion:reduce){ .page img, .hint{ transition:none; } }
+  @media (prefers-reduced-motion:reduce){ .page img, .hint, #book{ transition:none; } }
 </style>
 </head>
 <body>
@@ -171,7 +171,6 @@
     var book=document.createElement('div'); book.id='book'; stage.insertBefore(book,stage.firstChild);
     for(var i=0;i<n;i++){
       var d=document.createElement('div'); d.className='page';
-      if(i===0||i===n-1) d.setAttribute('data-density','hard');
       var ph=document.createElement('span'); ph.className='ph'; ph.textContent=t.page+' '+(i+1); d.appendChild(ph);
       var im=document.createElement('img'); im.alt=t.alt+(i+1); im.draggable=false; im.decoding='async';
       im.addEventListener('load',function(){this.classList.add('ok');});
@@ -183,11 +182,21 @@
       autoSize:false,showCover:true,usePortrait:true,mobileScrollSupport:false,maxShadowOpacity:.5,
       flippingTime:reduce?250:850,startPage:p,swipeDistance:20,showPageCorners:true});
     pf.loadFromHTML(book.querySelectorAll('.page'));
+    // StPageFlip rend la couverture et la dernière page rigides : on les veut souples comme du papier
+    var pc=pf.getPageCollection(); [0,n-1].forEach(function(i){ pc.getPage(i).setDensity('soft'); });
     pf.on('flip',function(){update(); hideHint();});
     pf.on('changeOrientation',update);
-    pf.on('changeState',function(e){ if(e.data==='flipping'||e.data==='user_fold'){ var c=pf.getCurrentPageIndex(); around(c); } });
+    pf.on('changeState',function(e){
+      if(e.data==='flipping'||e.data==='user_fold'){ var c=pf.getCurrentPageIndex(); around(c);
+        // le livre glisse vers sa position finale pendant que la page tourne
+        var s=shown(); shift(side==='left'?s[0]-1:s[s.length-1]+1); }
+      else if(e.data==='read') update();
+    });
     $('slider').max=n;
-    update(); background();
+    // premier placement sans animation, une fois la taille du livre connue
+    book.style.transition='none'; update();
+    requestAnimationFrame(function(){ update(); requestAnimationFrame(function(){ book.style.transition=''; }); });
+    background();
   }
 
   // pages affichées : couverture et dernière page seules, sinon double page sur grand écran
@@ -196,11 +205,20 @@
     if(pf.getOrientation()==='portrait'||c===0||c>=n-1) return [c];
     if(c%2===0) c--; return [c,c+1];
   }
+  // couverture seule : centrée (et non collée à droite) ; dernière page seule : centrée aussi
+  var side='right';
+  stage.addEventListener('pointerdown',function(e){ var r=stage.getBoundingClientRect(); side=e.clientX<r.left+r.width/2?'left':'right'; },true);
+  function shift(c){
+    var b=$('book'); if(!b||!pf) return; var x=0;
+    if(pf.getOrientation()!=='portrait'){ var w=pf.getRender().getRect().pageWidth; if(c<=0) x=-w/2; else if(c>=n-1) x=w/2; }
+    b.style.transform=x?'translateX('+x+'px)':'';
+  }
+  window.addEventListener('resize',function(){ setTimeout(update,0); });
   function label(s){var t=T[lang]; return (s.length>1?t.pages+' '+(s[0]+1)+'–'+(s[1]+1):t.page+' '+(s[0]+1))+' '+t.of+' '+n;}
   function update(){
     if(!pf) return;
     var s=shown(), c=s[0];
-    around(c);
+    around(c); shift(c);
     $('count').textContent=label(s);
     $('slider').value=c+1;
     document.body.classList.toggle('portrait',pf.getOrientation()==='portrait');
@@ -229,8 +247,10 @@
   var hintT=setTimeout(hideHint,6000);
   function hideHint(){ clearTimeout(hintT); $('hint').classList.add('off'); }
 
-  $('prev').addEventListener('click',function(){ pf.flipPrev(); });
-  $('next').addEventListener('click',function(){ pf.flipNext(); });
+  function prev(){ side='left'; pf.flipPrev(); }
+  function next(){ side='right'; pf.flipNext(); }
+  $('prev').addEventListener('click',prev);
+  $('next').addEventListener('click',next);
   $('first').addEventListener('click',function(){ go(0); });
   $('last').addEventListener('click',function(){ go(n-1); });
   $('slider').addEventListener('input',function(){ go(this.value-1); });
@@ -278,8 +298,8 @@
     }
     var tag=(e.target.tagName||'').toLowerCase(); if(tag==='input') return;
     var k=e.key;
-    if(k==='ArrowRight'||k==='PageDown'){ e.preventDefault(); pf.flipNext(); }
-    else if(k==='ArrowLeft'||k==='PageUp'){ e.preventDefault(); pf.flipPrev(); }
+    if(k==='ArrowRight'||k==='PageDown'){ e.preventDefault(); next(); }
+    else if(k==='ArrowLeft'||k==='PageUp'){ e.preventDefault(); prev(); }
     else if(k==='Home'){ e.preventDefault(); go(0); }
     else if(k==='End'){ e.preventDefault(); go(n-1); }
     else if(k==='+'||k==='='||k==='z'){ e.preventDefault(); zopen(); }
