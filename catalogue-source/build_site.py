@@ -214,6 +214,10 @@ open(OUT+'/404.html','w',encoding='utf8').write("""<!doctype html>
 """)
 open(OUT+'/LISEZ-MOI.txt','w',encoding='utf8').write("Catalogue Cuillère d'Or 2027-2028 — site statique\nDéposer ce dossier entier sur Cloudflare Pages (Workers & Pages > Create > Pages > Upload assets).\nindex.html = catalogue ; 404.html = page introuvable ; images/ ; pdf/ = téléchargements ; _headers = cache.\n")
 
+# liseuse « feuilletage » : ../catalogue-site/liseuse/ (voir build_liseuse.py)
+import build_liseuse; build_liseuse.build()
+open(OUT+'/_headers','a').write('/liseuse/pages/*\n  Cache-Control: public, max-age=31536000, immutable\n')
+
 # supprime les fichiers parasites macOS (._*, .DS_Store) créés par le volume externe
 for r,_,fs in os.walk(OUT):
     for f in fs:
