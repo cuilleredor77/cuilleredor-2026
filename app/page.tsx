@@ -614,14 +614,6 @@ export default function Home() {
             <a className="button button-gold" href="#calculateur">
               Estimer ma réception <ArrowRight size={17} />
             </a>
-            <a
-              className="button button-ghost"
-              href={WHATSAPP}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <MessageCircle size={17} /> Échanger sur WhatsApp
-            </a>
           </div>
           <div className="hero-facts">
             <span>
