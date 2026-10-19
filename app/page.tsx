@@ -1177,7 +1177,7 @@ export default function Home() {
                     <p className="formula-menu-note">
                       La cheffe Huguette et son équipe apportent la cuisine, la
                       vaisselle, le nappage et le service, avec l’exigence d’une
-                      belle table d’hôtel ou de restaurant haut de gamme. Dès 20
+                      belle table d’hôtel ou de restaurant haut de gamme. Dès 12
                       couverts, hors frais de déplacement.
                     </p>
                     <a
