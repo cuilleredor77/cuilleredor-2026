@@ -1340,7 +1340,7 @@ export default function Home() {
             brunch) n&apos;est pas obligatoire pour recevoir un premier devis.
           </p>
         </div>
-        <QuoteChooser formUrl={QUOTE_FORM} whatsapp={WHATSAPP} />
+        <QuoteChooser formUrl={QUOTE_FORM} />
       </section>
 
       <section className="faq section-pad" id="faq" aria-labelledby="faq-title">
@@ -1359,8 +1359,8 @@ export default function Home() {
               les réponses essentielles pour préparer votre réception
               sereinement.
             </p>
-            <a href="#devis">
-              Votre question reste ouverte ? <span>Demander un devis</span>{" "}
+            <a href={WHATSAPP} target="_blank" rel="noreferrer">
+              Une question reste ouverte ? <span>Écrivez-nous sur WhatsApp</span>{" "}
               <ArrowRight size={15} />
             </a>
           </div>

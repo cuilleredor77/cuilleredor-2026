@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, MessageCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 type Choice = "event" | "brunch";
 type FormulaId =
@@ -368,13 +368,7 @@ function NativeForm({
   );
 }
 
-export default function QuoteChooser({
-  formUrl,
-  whatsapp,
-}: {
-  formUrl: string;
-  whatsapp: string;
-}) {
+export default function QuoteChooser({ formUrl }: { formUrl: string }) {
   const initialChoice = (): Choice =>
     typeof window !== "undefined" &&
     window.location.hash === "#formulaire-brunch"
@@ -513,21 +507,6 @@ export default function QuoteChooser({
           </button>
         </p>
       </div>
-      <div className="quote-help">
-        <div>
-          <MessageCircle size={22} />
-          <p>
-            <strong>Une question sur votre demande ?</strong>
-            <span>
-              Envoyez d’abord le formulaire, puis écrivez-nous : nous aurons votre dossier sous les yeux.
-            </span>
-          </p>
-        </div>
-        <a href={whatsapp} target="_blank" rel="noreferrer">
-          Nous écrire sur WhatsApp <ArrowRight size={16} />
-        </a>
-      </div>
-
       <p className="quote-reassurance">
         Réponse sous 48 à 72 h · Sans engagement · Vos informations servent
         uniquement à traiter votre demande.

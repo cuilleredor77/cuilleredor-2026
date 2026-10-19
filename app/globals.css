@@ -6931,3 +6931,35 @@ html[data-selected-formula="chef"]
   .mobile-menu nav { width: calc(100vw - 24px); }
   .mobile-menu nav a { min-height: 48px; display: flex; align-items: center; font-size: 1rem; }
 }
+
+/* Demande de devis : formulaire sur toute la largeur, récapitulatif du simulateur en bandeau au-dessus */
+.quote-chooser {
+  display: flex !important;
+  flex-direction: column;
+  gap: 16px;
+}
+.quote-chooser > .selected-form,
+.quote-chooser > .quote-estimate-summary,
+.quote-chooser > .quote-reassurance {
+  grid-column: auto !important;
+  grid-row: auto !important;
+  width: 100%;
+}
+@media (min-width: 881px) {
+  .quote-chooser > .quote-estimate-summary {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 24px;
+    align-items: center;
+  }
+  .native-form fieldset {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Mobile : quand la barre « Estimation · Continuer » est affichée, les boutons ronds remontent au-dessus */
+body:has(.calculator-mobile-bar.is-visible) .whatsapp-float,
+body:has(.calculator-mobile-bar.is-visible) .back-to-top {
+  transform: translateY(-78px);
+  transition: transform 0.2s ease;
+}
