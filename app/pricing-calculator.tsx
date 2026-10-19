@@ -645,15 +645,6 @@ export default function PricingCalculator() {
           </label>
           )}
         </div>
-        <div className="calculator-guest-total">
-          <span>Total des convives</span>
-          <strong>{totalGuests}</strong>
-          <small>
-            {guests} adulte{guests > 1 ? "s" : ""} · {children} enfant
-            {children > 1 ? "s" : ""} · {providers} prestataire
-            {providers > 1 ? "s" : ""}
-          </small>
-        </div>
       </div>
 
       {!isChef && (
