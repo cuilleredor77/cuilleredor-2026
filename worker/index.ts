@@ -26,11 +26,12 @@ interface ExecutionContext {
 // const imageConfig: ImageConfig = { dangerouslyAllowSVG: true };
 
 // The site embeds exactly one third-party frame (Google Forms for quote
-// requests) and loads no external scripts/fonts/styles, so this stays tight
-// without needing a nonce.
+// requests). External scripts are limited to the Metricool tracker and the
+// Cloudflare Web Analytics beacon (injected by Cloudflare: script on
+// static.cloudflareinsights.com, measurements sent to cloudflareinsights.com).
 const SECURITY_HEADERS: Record<string, string> = {
   "content-security-policy":
-    "default-src 'self'; script-src 'self' 'unsafe-inline' https://tracker.metricool.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tracker.metricool.com; font-src 'self'; frame-src https://docs.google.com; connect-src 'self' https://tracker.metricool.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://tracker.metricool.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tracker.metricool.com; font-src 'self'; frame-src https://docs.google.com; connect-src 'self' https://tracker.metricool.com https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'",
   "x-content-type-options": "nosniff",
   "x-frame-options": "SAMEORIGIN",
   "referrer-policy": "strict-origin-when-cross-origin",

@@ -440,8 +440,13 @@ export default function PricingCalculator() {
     setGuestsText(null);
     if (guests < 1) setGuests(minGuests);
   }
-  const belowMin = guests > 0 && guests < minGuests;
+  // Le minimum porte sur le total des convives (adultes, enfants et
+  // prestataires compris), comme indiqué dans la FAQ et le catalogue.
+  const belowMin = guests > 0 && totalGuests < minGuests;
   const showBelowMin = belowMin && (!guestsFocused || guests >= 10);
+  const minGuestsLabel = isChef
+    ? `${minGuests} convives`
+    : `${minGuests} convives au total`;
   function requestQuote(event: React.MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
     const choice = formula === "brunch" ? "brunch" : "event";
@@ -576,7 +581,7 @@ export default function PricingCalculator() {
               {guestError ||
                 (showBelowMin ? (
                   <>
-                    Moins de {minGuests} adultes : contactez-nous directement
+                    Moins de {minGuestsLabel} : contactez-nous directement
                     sur{" "}
                     <a href={BELOW_MIN_WHATSAPP} target="_blank" rel="noreferrer">
                       WhatsApp
@@ -586,7 +591,9 @@ export default function PricingCalculator() {
                     possibilité.
                   </>
                 ) : (
-                  `Entre ${minGuests} et 1 000 adultes.`
+                  isChef
+                    ? `Entre ${minGuests} et 1 000 convives.`
+                    : `Dès ${minGuestsLabel}, enfants et prestataires compris.`
                 ))}
             </small>
           </label>

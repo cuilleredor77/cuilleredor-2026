@@ -340,7 +340,7 @@
   <div class="scrim-t"></div>
   <div class="frame dark-frame">
     <div class="cv-mag">
-      <div class="cv-mast"><span>Catalogue</span><em>de prestations</em></div><img class="cv-logo" src="images/logo-site.png" alt="Cuillère d’Or – Le paradis du goût"/>
+      <div class="cv-mast"><span>Catalogue</span><em>de prestations</em></div><img class="cv-logo" src="images/logo-cover.png" alt="Cuillère d’Or – Le paradis du goût"/>
       <div class="cv-issue"><span>Mariages · Réceptions · Entreprises</span><span class="cv-yr">2027 · 2028</span></div>
       <div class="cv-lines">
         <div class="cv-l2"><i>07</i><b>formules<br/>de réception</b><p>Buffet, plateau, assiette, cocktail, brunch, barbecue et chef à domicile.</p></div>
@@ -1099,7 +1099,7 @@
   <div class="ct-photo">
     <img src="images/realisation.webp" alt="Service Cuillère d’Or en réception"/>
     <div class="ct-veil"></div>
-    <img class="ct-logo" src="images/logo.png" alt="Cuillère d’Or"/>
+    <img class="ct-logo" src="images/logo-cover.png" alt="Cuillère d’Or"/>
   </div>
   <div class="ct-bottom">
     <div class="ct-left">
@@ -1314,12 +1314,12 @@
   .dom-cta{ margin-top:4cqi; }
   .cl-quote{ margin:3cqi 0; } .cl-roots{ margin-bottom:3cqi; }
   #contact{ background:#12141c; }
-  .ct-top{ position:absolute; top:0; left:0; right:0; height:24%; display:flex; justify-content:space-between; align-items:flex-start; padding:4.2cqi 7.4cqi 0; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.2cqi*var(--fs,1)); letter-spacing:.18em; text-transform:uppercase; color:var(--gold-bright); }
-  .ct-photo{ position:absolute; top:24%; left:0; right:0; height:50%; }
-  .ct-photo > img:first-child{ width:100%; height:100%; object-fit:cover; object-position:50% 35%; display:block; }
-  .ct-veil{ position:absolute; inset:0; background:linear-gradient(to bottom, rgba(10,10,8,.1) 0%, rgba(10,10,8,0) 40%, rgba(10,10,8,.8) 100%); }
-  .ct-logo{ position:absolute; left:50%; bottom:3.4cqi; transform:translateX(-50%); width:30cqi; height:auto; filter:drop-shadow(0 .4cqi 1.4cqi rgba(0,0,0,.6)); }
-  .ct-bottom{ position:absolute; top:74%; left:0; right:0; bottom:0; padding:0 7.4cqi; display:grid; grid-template-columns:1fr 1fr; gap:4cqi; align-items:center; color:var(--ink-contrast); }
+  .ct-top{ position:absolute; z-index:3; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:flex-start; padding:4.2cqi 7.4cqi 0; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.2cqi*var(--fs,1)); letter-spacing:.18em; text-transform:uppercase; color:var(--gold-bright); }
+  .ct-photo{ position:absolute; top:0; left:0; right:0; height:79%; }
+  .ct-photo > img:first-child{ width:100%; height:100%; object-fit:cover; object-position:58% 40%; display:block; }
+  .ct-veil{ position:absolute; inset:0; background:linear-gradient(to bottom, rgba(18,20,28,.78) 0%, rgba(18,20,28,0) 24%, rgba(18,20,28,0) 58%, #12141c 100%); }
+  .ct-logo{ position:absolute; left:50%; bottom:5cqi; transform:translateX(-50%); width:30cqi; height:auto; filter:drop-shadow(0 .4cqi 1.4cqi rgba(0,0,0,.6)); }
+  .ct-bottom{ position:absolute; top:80%; left:0; right:0; bottom:0; padding:0 7.4cqi; display:grid; grid-template-columns:1fr 1fr; gap:4cqi; align-items:center; color:var(--ink-contrast); }
   .ct-left{ display:flex; gap:2cqi; align-items:center; }
   .ct-left img{ width:12cqi; height:12cqi; background:#fff; padding:.6cqi; flex:0 0 auto; }
   .ct-left b{ display:block; font-family:var(--heading-font); font-weight:400; font-size:calc(2.6cqi*var(--fs,1)); line-height:1.15; color:var(--gold-bright); margin-bottom:.7cqi; }
@@ -1510,7 +1510,7 @@
   .cl2-card.maroon{ background:#6d2433; color:#fffaf2; } .cl2-card.maroon small{ color:#f4d7a7; } .cl2-card.maroon span{ color:#f3ebdd; }
   .cl2-coords{ margin-top:auto; display:flex; flex-direction:column; gap:.5cqi; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.25cqi*var(--fs,1)); color:#e9dcc4; line-height:1.5; }
   .cl2-coords a{ color:#f4d7a7; text-decoration:none; } .cl2-coords b{ color:#fffaf2; }
-  .book[data-style="c"]{ --fs:1.12; --paper:#ffffff; --cream:#faf8f4; }
+  .book[data-style="c"]{ --fs:1.12; --paper:#ffffff; --cream:#faf8f4; --heading-font:Georgia,"Times New Roman",serif; }
   .book[data-style="c"] .sheet.cream{ background:#ffffff; }
   .book[data-style="a"] .sheet.cream{ background:#ffffff; }
   .book[data-style="a"] .sheet.cream .fc-addon{ background:#f4f4f4; }
@@ -1927,8 +1927,8 @@
     #portrait .pt-awards{ flex-wrap:wrap; }
     #portrait .pt-awards p{ max-width:none; }
     /* contact */
-    #contact .ct-top{ position:relative; height:auto; padding:5cqi 5cqi 4cqi; }
-    #contact .ct-photo{ position:relative; top:auto; height:80cqi; flex:none; }
+    #contact{ position:relative; } #contact .ct-top{ position:absolute; padding:5cqi 5cqi 0; }
+    #contact .ct-photo{ position:relative; top:auto; height:104cqi; flex:none; } #contact .ct-photo > img:first-child{ object-position:66% 40%; }
     #contact .ct-bottom{ position:relative; top:auto; bottom:auto; padding:6cqi 5cqi 4cqi; grid-template-columns:1fr; gap:6cqi; }
     #contact .ct-right{ text-align:left; }
     .sheet{ display:flex; flex-direction:column; overflow:visible; }
@@ -1998,7 +1998,7 @@
   <div class="scrim-t"></div>
   <div class="frame dark-frame">
     <div class="cv-mag">
-      <div class="cv-mast"><span>Services</span><em>catalogue</em></div><img class="cv-logo" src="images/logo-site.png" alt="Cuillère d’Or – Le paradis du goût"/>
+      <div class="cv-mast"><span>Services</span><em>catalogue</em></div><img class="cv-logo" src="images/logo-cover.png" alt="Cuillère d’Or – Le paradis du goût"/>
       <div class="cv-issue"><span>Weddings · Receptions · Corporate</span><span class="cv-yr">2027 · 2028</span></div>
       <div class="cv-lines">
         <div class="cv-l2"><i>07</i><b>reception<br/>packages</b><p>Buffet, platter, plated, cocktail, brunch, barbecue and private chef.</p></div>
@@ -2757,7 +2757,7 @@
   <div class="ct-photo">
     <img src="images/realisation.webp" alt="Cuillère d’Or service at a reception"/>
     <div class="ct-veil"></div>
-    <img class="ct-logo" src="images/logo.png" alt="Cuillère d’Or"/>
+    <img class="ct-logo" src="images/logo-cover.png" alt="Cuillère d’Or"/>
   </div>
   <div class="ct-bottom">
     <div class="ct-left">
@@ -2972,12 +2972,12 @@
   .dom-cta{ margin-top:4cqi; }
   .cl-quote{ margin:3cqi 0; } .cl-roots{ margin-bottom:3cqi; }
   #contact{ background:#12141c; }
-  .ct-top{ position:absolute; top:0; left:0; right:0; height:24%; display:flex; justify-content:space-between; align-items:flex-start; padding:4.2cqi 7.4cqi 0; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.2cqi*var(--fs,1)); letter-spacing:.18em; text-transform:uppercase; color:var(--gold-bright); }
-  .ct-photo{ position:absolute; top:24%; left:0; right:0; height:50%; }
-  .ct-photo > img:first-child{ width:100%; height:100%; object-fit:cover; object-position:50% 35%; display:block; }
-  .ct-veil{ position:absolute; inset:0; background:linear-gradient(to bottom, rgba(10,10,8,.1) 0%, rgba(10,10,8,0) 40%, rgba(10,10,8,.8) 100%); }
-  .ct-logo{ position:absolute; left:50%; bottom:3.4cqi; transform:translateX(-50%); width:30cqi; height:auto; filter:drop-shadow(0 .4cqi 1.4cqi rgba(0,0,0,.6)); }
-  .ct-bottom{ position:absolute; top:74%; left:0; right:0; bottom:0; padding:0 7.4cqi; display:grid; grid-template-columns:1fr 1fr; gap:4cqi; align-items:center; color:var(--ink-contrast); }
+  .ct-top{ position:absolute; z-index:3; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:flex-start; padding:4.2cqi 7.4cqi 0; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.2cqi*var(--fs,1)); letter-spacing:.18em; text-transform:uppercase; color:var(--gold-bright); }
+  .ct-photo{ position:absolute; top:0; left:0; right:0; height:79%; }
+  .ct-photo > img:first-child{ width:100%; height:100%; object-fit:cover; object-position:58% 40%; display:block; }
+  .ct-veil{ position:absolute; inset:0; background:linear-gradient(to bottom, rgba(18,20,28,.78) 0%, rgba(18,20,28,0) 24%, rgba(18,20,28,0) 58%, #12141c 100%); }
+  .ct-logo{ position:absolute; left:50%; bottom:5cqi; transform:translateX(-50%); width:30cqi; height:auto; filter:drop-shadow(0 .4cqi 1.4cqi rgba(0,0,0,.6)); }
+  .ct-bottom{ position:absolute; top:80%; left:0; right:0; bottom:0; padding:0 7.4cqi; display:grid; grid-template-columns:1fr 1fr; gap:4cqi; align-items:center; color:var(--ink-contrast); }
   .ct-left{ display:flex; gap:2cqi; align-items:center; }
   .ct-left img{ width:12cqi; height:12cqi; background:#fff; padding:.6cqi; flex:0 0 auto; }
   .ct-left b{ display:block; font-family:var(--heading-font); font-weight:400; font-size:calc(2.6cqi*var(--fs,1)); line-height:1.15; color:var(--gold-bright); margin-bottom:.7cqi; }
@@ -3168,7 +3168,7 @@
   .cl2-card.maroon{ background:#6d2433; color:#fffaf2; } .cl2-card.maroon small{ color:#f4d7a7; } .cl2-card.maroon span{ color:#f3ebdd; }
   .cl2-coords{ margin-top:auto; display:flex; flex-direction:column; gap:.5cqi; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.25cqi*var(--fs,1)); color:#e9dcc4; line-height:1.5; }
   .cl2-coords a{ color:#f4d7a7; text-decoration:none; } .cl2-coords b{ color:#fffaf2; }
-  .book[data-style="c"]{ --fs:1.12; --paper:#ffffff; --cream:#faf8f4; }
+  .book[data-style="c"]{ --fs:1.12; --paper:#ffffff; --cream:#faf8f4; --heading-font:Georgia,"Times New Roman",serif; }
   .book[data-style="c"] .sheet.cream{ background:#ffffff; }
   .book[data-style="a"] .sheet.cream{ background:#ffffff; }
   .book[data-style="a"] .sheet.cream .fc-addon{ background:#f4f4f4; }
@@ -3585,8 +3585,8 @@
     #portrait .pt-awards{ flex-wrap:wrap; }
     #portrait .pt-awards p{ max-width:none; }
     /* contact */
-    #contact .ct-top{ position:relative; height:auto; padding:5cqi 5cqi 4cqi; }
-    #contact .ct-photo{ position:relative; top:auto; height:80cqi; flex:none; }
+    #contact{ position:relative; } #contact .ct-top{ position:absolute; padding:5cqi 5cqi 0; }
+    #contact .ct-photo{ position:relative; top:auto; height:104cqi; flex:none; } #contact .ct-photo > img:first-child{ object-position:66% 40%; }
     #contact .ct-bottom{ position:relative; top:auto; bottom:auto; padding:6cqi 5cqi 4cqi; grid-template-columns:1fr; gap:6cqi; }
     #contact .ct-right{ text-align:left; }
     .sheet{ display:flex; flex-direction:column; overflow:visible; }
@@ -3763,20 +3763,20 @@
   .pc:has(input:checked) .pc-ph{ outline:3px solid var(--gold-bright,#d4af37); outline-offset:-3px; }
   @media screen and (max-width:600px){
     .pc input{ width:28px !important; height:28px !important; top:6px !important; right:6px !important; }
-    /* textes trop petits sur téléphone : 11 px minimum, 9-10 px pour les têtes de colonnes serrées */
-    .note, .pt-tag{ font-size:11px !important; }
-    .pc-sub{ font-size:11px !important; }
-    .pc-grid .pc .pc-ph b{ font-size:11px !important; }
-    .mosaic .pc-ph em{ font-size:9px !important; }
-    .sm-facts span{ font-size:11px !important; }
-    .sm-path em{ font-size:11px !important; }
-    .fc-price small, .fc-tone, .fc-addon{ font-size:11px !important; }
-    .lexi dd, .lexi dt{ font-size:11px !important; }
-    .lexi-t, .sm-path-t, .cl2-kicker, .ct-legal, .cover-eyebrow{ font-size:10.5px !important; }
-    .cn-c1, .cn-c2, .cn-c3, .cn-c4, .cn-c5{ font-size:9px !important; }
-    .cn-head span{ font-size:9px !important; }
-    .cn-lines span, .tf-duo span, .tf-opt span, .cv-box span, .np-hero-price small, .np-hero-price span{ font-size:11px !important; }
-    .cover-contact-row a, .cover-contact-row span{ font-size:11px !important; }
+    /* textes trop petits sur téléphone : 12,5 px minimum, 11 px pour les têtes de colonnes serrées (audit du 19/10/2026) */
+    .note, .pt-tag{ font-size:12.5px !important; }
+    .pc-sub{ font-size:12.5px !important; }
+    .pc-grid .pc .pc-ph b{ font-size:12.5px !important; }
+    .mosaic .pc-ph em{ font-size:11px !important; }
+    .sm-facts span{ font-size:12.5px !important; }
+    .sm-path em{ font-size:12.5px !important; }
+    .fc-price small, .fc-tone, .fc-addon{ font-size:12.5px !important; }
+    .lexi dd, .lexi dt{ font-size:12.5px !important; }
+    .lexi-t, .sm-path-t, .cl2-kicker, .ct-legal, .cover-eyebrow{ font-size:12px !important; }
+    .cn-c1, .cn-c2, .cn-c3, .cn-c4, .cn-c5{ font-size:11px !important; }
+    .cn-head span{ font-size:11px !important; }
+    .cn-lines span, .tf-duo span, .tf-opt span, .cv-box span, .np-hero-price small, .np-hero-price span{ font-size:12.5px !important; }
+    .cover-contact-row a, .cover-contact-row span{ font-size:12.5px !important; }
     .rf-nav a{ font-size:16px !important; min-width:28px; text-align:center; }
     /* zones tactiles : 44 px de haut minimum */
     a.toc-row, a.solid, .cta-abs a, .cta-line a, .cta-line .btn, .pick{ min-height:44px; display:flex; align-items:center; }
