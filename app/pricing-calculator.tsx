@@ -4,39 +4,49 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, ListChecks } from "lucide-react";
 
 type Formula = "buffet" | "plateau" | "assiette" | "aperitifs" | "brunch";
-type Service = "avec-vin" | "sans-vin" | "sans-service";
+type Service = "avec-vin" | "sans-vin";
 type DishKit = "none" | "essentiel" | "complet" | "prestige";
 
 const services: Record<Formula, Array<{ value: Service; label: string }>> = {
   buffet: [
-    { value: "avec-vin", label: "Avec vin d’honneur" },
     { value: "sans-vin", label: "Sans vin d’honneur" },
-    { value: "sans-service", label: "Sans service" },
+    { value: "avec-vin", label: "Avec vin d’honneur (+ 5 €/pers.)" },
   ],
   plateau: [
-    { value: "avec-vin", label: "Avec vin d’honneur" },
     { value: "sans-vin", label: "Sans vin d’honneur" },
+    { value: "avec-vin", label: "Avec vin d’honneur (+ 5 €/pers.)" },
   ],
   assiette: [
-    { value: "avec-vin", label: "Avec vin d’honneur" },
     { value: "sans-vin", label: "Sans vin d’honneur" },
+    { value: "avec-vin", label: "Avec vin d’honneur (+ 5 €/pers.)" },
   ],
-  aperitifs: [{ value: "avec-vin", label: "Vin d’honneur inclus" }],
+  aperitifs: [{ value: "avec-vin", label: "10 pièces au choix" }],
   brunch: [{ value: "sans-vin", label: "Brunch Signature" }],
 };
 const MIN_GUESTS: Record<Formula, number> = {
-  buffet: 10,
-  plateau: 10,
-  assiette: 10,
-  aperitifs: 30,
-  brunch: 30,
+  buffet: 30,
+  plateau: 30,
+  assiette: 30,
+  aperitifs: 50,
+  brunch: 50,
 };
 const formulaNames: Record<Formula, string> = {
   buffet: "Buffet",
   plateau: "Plateau",
   assiette: "Service à l’assiette",
-  aperitifs: "Apéritifs & vin d’honneur",
+  aperitifs: "Cocktail dînatoire & vin d’honneur",
   brunch: "Brunch Signature",
+};
+const CHILD_PRICE = 25;
+const PROVIDER_PRICE = 30;
+const HONOR_WINE_SUPPLEMENT = 5;
+
+// Prix par adulte, service compris, selon le nombre total de convives
+// (adultes + enfants + prestataires) : 30 à 199, 200 à 349, 350 et plus.
+const TIER_PRICES: Record<"buffet" | "plateau" | "assiette", number[]> = {
+  buffet: [45, 40, 35],
+  plateau: [50, 45, 40],
+  assiette: [70, 65, 60],
 };
 
 function unitPrice(
@@ -45,25 +55,12 @@ function unitPrice(
   totalGuests: number,
 ) {
   if (formula === "aperitifs") return 25;
-  if (formula === "brunch") return 30;
-  if (formula === "assiette") {
-    if (totalGuests >= 350) return null;
-    return totalGuests < 200
-      ? service === "avec-vin"
-        ? 70
-        : 65
-      : service === "avec-vin"
-        ? 65
-        : 60;
-  }
+  if (formula === "brunch") return 35;
   const range = totalGuests < 200 ? 0 : totalGuests < 350 ? 1 : 2;
-  if (formula === "plateau")
-    return service === "avec-vin" ? [50, 45, 40][range] : [45, 40, 35][range];
-  return {
-    "avec-vin": [45, 40, 35],
-    "sans-vin": [40, 35, 30],
-    "sans-service": [35, 30, 25],
-  }[service][range];
+  return (
+    TIER_PRICES[formula][range] +
+    (service === "avec-vin" ? HONOR_WINE_SUPPLEMENT : 0)
+  );
 }
 
 type OptionDef = {
@@ -82,8 +79,25 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
     title: "Repas et boissons",
     options: [
       {
+        id: "extraMain",
+        label: "Viande ou poisson en plus",
+        unit: 5,
+        unitLabel: "5 €/pers.",
+        kind: "toggle",
+        basis: (guests) => guests,
+      },
+      {
+        id: "extraStarter",
+        label: "Entrée ou dessert en plus (service à l’assiette)",
+        unit: 5,
+        unitLabel: "5 €/pers.",
+        kind: "toggle",
+        basis: (guests) => guests,
+        help: "Avocat surprise sur glace carbonique : 8 €/pers., soit 3 € de plus que les autres entrées.",
+      },
+      {
         id: "cheese",
-        label: "Assiette d'assortiment de 3 fromages",
+        label: "Assiette de fromages avant le dessert",
         unit: 9,
         unitLabel: "9 €/pers.",
         kind: "toggle",
@@ -91,27 +105,37 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
       },
       {
         id: "drinks",
-        label: "Forfait boissons sans alcool (colas, sodas, eaux)",
-        unit: 3.8,
-        unitLabel: "3,80 €/pers.",
+        label: "Forfait soft et eau (Coca-Cola, Fanta, Oasis, eau plate et gazeuse)",
+        unit: 5,
+        unitLabel: "5 €/pers.",
         kind: "toggle",
         basis: (_guests, totalGuests) => totalGuests,
       },
       {
+        id: "cocktails",
+        label: "Cocktails signature",
+        unit: 10,
+        unitLabel: "10 €/litre",
+        kind: "qty",
+        qtyLabel: "litre(s)",
+        help: "1 litre pour environ 4 convives.",
+      },
+      {
         id: "drinksService",
-        label: "Service des boissons toute la soirée",
+        label: "Service des boissons",
         unit: 160,
         unitLabel: "160 €/serveur",
         kind: "toggle",
         basis: (_guests, totalGuests) => Math.max(1, Math.ceil(totalGuests / 50)),
-        help: "1 serveur par tranche de 50 convives, calculé automatiquement.",
+        help: "1 serveur conseillé pour 50 convives, calculé automatiquement.",
       },
       {
         id: "cakeService",
-        label: "Présentation, découpe et service du gâteau",
+        label: "Découpe et service du gâteau",
         unit: 150,
         unitLabel: "150 € le forfait",
         kind: "toggle",
+        help: "Wedding cake par notre partenaire Love Lo Cake, dès 6,50 €/part (à commander directement).",
       },
     ],
   },
@@ -134,14 +158,6 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
         kind: "qty",
         qtyLabel: "unité(s)",
       },
-      {
-        id: "tablecloths",
-        label: "Nappe",
-        unit: 15,
-        unitLabel: "15 €/unité",
-        kind: "qty",
-        qtyLabel: "unité(s)",
-      },
     ],
   },
   {
@@ -157,7 +173,7 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
       },
       {
         id: "chafingDishes",
-        label: "Chafing dish",
+        label: "Réchaud de buffet (chafing dish)",
         unit: 25,
         unitLabel: "25 €/unité",
         kind: "qty",
@@ -172,25 +188,33 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
       },
       {
         id: "setup",
-        label: "Installation et désinstallation",
+        label: "Installation complète (mise en place du lieu et du matériel)",
         unit: 150,
         unitLabel: "150 € le forfait",
         kind: "toggle",
       },
       {
         id: "dressing",
-        label: "Dressage",
+        label: "Dressage des tables (nappes, assiettes, verres et couverts)",
         unit: 250,
         unitLabel: "250 € le forfait",
+        kind: "toggle",
+        help: "Compris si la vaisselle est louée avec la cheffe.",
+      },
+      {
+        id: "maitreHotel",
+        label: "Maître d’hôtel (coordonne l’équipe et le lieu jusqu’à la fin de soirée)",
+        unit: 160,
+        unitLabel: "160 € le forfait",
         kind: "toggle",
       },
       {
         id: "waste",
-        label: "Gestion des déchets alimentaires (hors verre)",
+        label: "Gestion des déchets alimentaires",
         unit: 50,
         unitLabel: "50 € le forfait",
         kind: "toggle",
-        help: "Incluse par défaut. À décocher uniquement si votre lieu de réception conserve les déchets alimentaires.",
+        help: "Incluse dans le devis par défaut. À décocher uniquement si votre lieu de réception conserve les déchets alimentaires.",
       },
     ],
   },
@@ -204,10 +228,10 @@ const dishKitPrices: Record<DishKit, number> = {
 };
 const dishKitLabels: Record<DishKit, string> = {
   none: "Aucune",
-  essentiel: "Essentiel (2 assiettes, 1 verre à eau, 1 verre à vin, couverts)",
+  essentiel: "Essentiel (2 assiettes, verre à eau, verre à vin, couverts)",
   complet:
     "Complet (3 assiettes, 1 verre à eau, 1 verre à vin, 1 verre à champagne, couverts)",
-  prestige: "Prestige (3 assiettes, sous-plat perlé, 3 verres, couverts)",
+  prestige: "Prestige (Kit Complet + sous-plat perlé)",
 };
 
 function optionAmount(
@@ -232,10 +256,9 @@ export default function PricingCalculator() {
   const [formula, setFormula] = useState<Formula>("buffet");
   const [guests, setGuests] = useState(MIN_GUESTS.buffet);
   const [guestsText, setGuestsText] = useState<string | null>(null);
-  const [service, setService] = useState<Service>("avec-vin");
+  const [service, setService] = useState<Service>("sans-vin");
   const [children, setChildren] = useState(0);
   const [providers, setProviders] = useState(0);
-  const [extraPieces, setExtraPieces] = useState(0);
   const [optionValues, setOptionValues] = useState<Record<string, number>>(
     { waste: 1 },
   );
@@ -248,7 +271,6 @@ export default function PricingCalculator() {
       setService(services[next][0].value);
       const nextMin = MIN_GUESTS[next];
       setGuests((current) => (current < nextMin ? nextMin : current));
-      if (next !== "brunch" && next !== "aperitifs") setExtraPieces(0);
       setGuestError("");
     };
     window.addEventListener("cuillere:formula", syncFormula);
@@ -330,24 +352,19 @@ export default function PricingCalculator() {
   if (children)
     optionLines.push({
       id: "children",
-      label: `${children} repas enfant${children > 1 ? "s" : ""} (20 €/pers.)`,
-      amount: children * 20,
+      label: `${children} repas enfant${children > 1 ? "s" : ""} (${CHILD_PRICE} €/pers.)`,
+      amount: children * CHILD_PRICE,
     });
   if (providers)
     optionLines.push({
       id: "providers",
-      label: `${providers} repas prestataire${providers > 1 ? "s" : ""} (20 €/pers.)`,
-      amount: providers * 20,
-    });
-  if ((formula === "brunch" || formula === "aperitifs") && extraPieces)
-    optionLines.push({
-      id: "extraPieces",
-      label: `${extraPieces} pièce${extraPieces > 1 ? "s" : ""} supplémentaire${extraPieces > 1 ? "s" : ""} au-delà des 10 incluses (2,50 €/pièce)`,
-      amount: extraPieces * 2.5,
+      label: `${providers} repas prestataire${providers > 1 ? "s" : ""} (${PROVIDER_PRICE} €/pers.)`,
+      amount: providers * PROVIDER_PRICE,
     });
   for (const category of OPTION_CATEGORIES) {
     for (const def of category.options) {
       const value = optionValues[def.id] || 0;
+      if (def.id === "dressing" && dishKit !== "none") continue;
       const amount = optionAmount(def, value, guests, totalGuests);
       if (amount <= 0) continue;
       const qtyPart = def.kind === "qty" ? `${value} ${def.qtyLabel} · ` : "";
@@ -379,7 +396,6 @@ export default function PricingCalculator() {
     if (guests < nextMin) {
       setGuests(nextMin);
     }
-    if (next !== "brunch" && next !== "aperitifs") setExtraPieces(0);
     setGuestError("");
     window.dispatchEvent(
       new CustomEvent<Formula>("cuillere:formula", { detail: next }),
@@ -447,7 +463,6 @@ export default function PricingCalculator() {
     setService(services.buffet[0].value);
     setChildren(0);
     setProviders(0);
-    setExtraPieces(0);
     setOptionValues({ waste: 1 });
     setDishKit("none");
     setGuestError("");
@@ -492,12 +507,12 @@ export default function PricingCalculator() {
               <option value="buffet">Buffet</option>
               <option value="plateau">Plateau</option>
               <option value="assiette">Service à l’assiette</option>
-              <option value="aperitifs">Apéritifs & vin d’honneur</option>
+              <option value="aperitifs">Cocktail dînatoire & vin d’honneur</option>
               <option value="brunch">Brunch Signature</option>
             </select>
           </label>
           <label>
-            <span>Niveau de service</span>
+            <span>Vin d’honneur</span>
             <select
               value={service}
               disabled={formula === "brunch"}
@@ -510,27 +525,6 @@ export default function PricingCalculator() {
               ))}
             </select>
           </label>
-          {(formula === "brunch" || formula === "aperitifs") && (
-            <label>
-              <span>Pièces supplémentaires</span>
-              <input
-                type="number"
-                min="0"
-                max="1000"
-                inputMode="numeric"
-                value={extraPieces}
-                onChange={(e) =>
-                  setExtraPieces(
-                    Math.min(1000, Math.max(0, Number(e.target.value) || 0)),
-                  )
-                }
-              />
-              <small className="calculator-field-help">
-                10 pièces incluses par personne, réparties comme vous voulez
-                entre salé et sucré · 2,50 €/pièce au-delà.
-              </small>
-            </label>
-          )}
         </div>
         <div className="calculator-controls-row calculator-controls-row--people">
           <label>
@@ -570,7 +564,7 @@ export default function PricingCalculator() {
               }
             />
             <small className="calculator-field-help">
-              Repas adapté aux 5-12 ans · 20 €/personne.
+              Enfants de 5 à 12 ans · 25 €/personne.
             </small>
           </label>
           <label>
@@ -588,7 +582,7 @@ export default function PricingCalculator() {
               }
             />
             <small className="calculator-field-help">
-              Photographe, DJ, vidéaste… · 20 €/personne.
+              Photographe, DJ, wedding planner… · 30 €/personne.
             </small>
           </label>
         </div>
@@ -608,7 +602,7 @@ export default function PricingCalculator() {
           <span>Ajouter des options</span>
           <small>
             {optionLines.length === 0
-              ? "Fromages, boissons, vaisselle, mobilier…"
+              ? "Boissons, fromages, vaisselle, mobilier…"
               : optionLines.length === 1
                 ? `${optionLines[0].label.replace(/ \([^)]*\)\s*$/, "")}${optionLines[0].id === "waste" ? " — sélectionné par défaut" : ""} · ${optionLines[0].amount.toLocaleString("fr-FR", { minimumFractionDigits: optionLines[0].amount % 1 ? 2 : 0 })} €`
                 : `${optionLines.length} options sélectionnées · ${optionsTotal.toLocaleString("fr-FR", { minimumFractionDigits: optionsTotal % 1 ? 2 : 0 })} €`}
@@ -695,8 +689,9 @@ export default function PricingCalculator() {
             </div>
           ))}
           <p className="calculator-option-note">
-            Camion frigorifique, photographe, vidéaste, DJ, décorateur et
-            wedding planner : sur devis, à discuter directement avec nous.
+            Camion frigorifique (location + km), photographe, vidéaste, DJ,
+            décorateur et wedding planner : sur devis. Barbecue Party (60 €/pers.)
+            et Chef à domicile (dès 95 €/pers.) : demandez votre devis.
           </p>
         </div>
       </details>

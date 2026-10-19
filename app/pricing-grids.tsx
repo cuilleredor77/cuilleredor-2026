@@ -38,7 +38,7 @@ export default function PricingGrids() {
       <div className="pricing-grids">
         <div className="pricing-grids-heading">
           <strong>Grille tarifaire complète</strong>
-          <p>Comparez les tranches de convives et les niveaux de service.</p>
+          <p>Comparez les tranches de convives et ajoutez le vin d’honneur si besoin.</p>
         </div>
         <details data-formule="buffet" open={openFormula === "buffet"}>
           <summary
@@ -47,42 +47,39 @@ export default function PricingGrids() {
               toggle("buffet");
             }}
           >
-            {summary("01", "Buffet", "À partir de 35 € · 10 à 199 convives")}
+            {summary("01", "Buffet", "35 à 45 € · dès 30 convives")}
           </summary>
           <div className="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Convives</th>
+                  <th>Prix par adulte</th>
                   <th>Avec vin d’honneur</th>
-                  <th>Sans vin d’honneur</th>
-                  <th>Sans service</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>10 à 199</td>
+                  <td>30 à 199</td>
                   <td>45 €</td>
-                  <td>40 €</td>
-                  <td>35 €</td>
+                  <td>50 €</td>
                 </tr>
                 <tr>
                   <td>200 à 349</td>
                   <td>40 €</td>
-                  <td>35 €</td>
-                  <td>30 €</td>
+                  <td>45 €</td>
                 </tr>
                 <tr>
                   <td>350 et +</td>
                   <td>35 €</td>
-                  <td>30 €</td>
-                  <td>25 €</td>
+                  <td>40 €</td>
                 </tr>
               </tbody>
             </table>
             <p className="pricing-tier-note">
-              Tarifs dégressifs pour les grandes réceptions. Le tarif de 25 €
-              s’applique à partir de 350 convives, sans service.
+              Prix par adulte, service compris. Enfant de 5 à 12 ans : 25 €.
+              Prestataire : 30 €. Le palier se calcule sur le total des
+              convives (adultes, enfants et prestataires).
             </p>
           </div>
         </details>
@@ -93,32 +90,32 @@ export default function PricingGrids() {
               toggle("plateau");
             }}
           >
-            {summary("02", "Plateau", "Dès 35 € · avec ou sans vin d’honneur")}
+            {summary("02", "Plateau", "40 à 50 € · dès 30 convives")}
           </summary>
           <div className="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Convives</th>
+                  <th>Prix par adulte</th>
                   <th>Avec vin d’honneur</th>
-                  <th>Sans vin d’honneur</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>10 à 199</td>
+                  <td>30 à 199</td>
                   <td>50 €</td>
-                  <td>45 €</td>
+                  <td>55 €</td>
                 </tr>
                 <tr>
                   <td>200 à 349</td>
                   <td>45 €</td>
-                  <td>40 €</td>
+                  <td>50 €</td>
                 </tr>
                 <tr>
                   <td>350 et +</td>
                   <td>40 €</td>
-                  <td>35 €</td>
+                  <td>45 €</td>
                 </tr>
               </tbody>
             </table>
@@ -134,7 +131,7 @@ export default function PricingGrids() {
             {summary(
               "03",
               "Service à l’assiette",
-              "Dès 60 € · avec ou sans vin d’honneur",
+              "60 à 70 € · dès 30 convives",
             )}
           </summary>
           <div className="table-wrap">
@@ -142,27 +139,32 @@ export default function PricingGrids() {
               <thead>
                 <tr>
                   <th>Convives</th>
+                  <th>Prix par adulte</th>
                   <th>Avec vin d’honneur</th>
-                  <th>Sans vin d’honneur</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>10 à 199</td>
+                  <td>30 à 199</td>
                   <td>70 €</td>
-                  <td>65 €</td>
+                  <td>75 €</td>
                 </tr>
                 <tr>
                   <td>200 à 349</td>
                   <td>65 €</td>
-                  <td>60 €</td>
+                  <td>70 €</td>
                 </tr>
                 <tr>
                   <td>350 et +</td>
-                  <td colSpan={2}>Sur demande</td>
+                  <td>60 €</td>
+                  <td>65 €</td>
                 </tr>
               </tbody>
             </table>
+            <p className="pricing-tier-note">
+              Entrée ou dessert en plus : 5 €/pers. (avocat surprise sur glace
+              carbonique : 8 €/pers.).
+            </p>
           </div>
         </details>
         <details data-formule="aperitifs" open={openFormula === "aperitifs"}>
@@ -174,14 +176,14 @@ export default function PricingGrids() {
           >
             {summary(
               "04",
-              "Apéritifs & vin d’honneur",
-              "25 € par personne · dès 30 convives",
+              "Cocktail dînatoire & vin d’honneur",
+              "25 € par personne · dès 50 convives",
             )}
           </summary>
           <div className="fixed-price-detail">
             <div>
               <span>Comprend</span>
-              <p>10 créations salées et sucrées · 4 cocktails signature</p>
+              <p>10 pièces salées ou sucrées au choix · cocktails en option (10 €/litre)</p>
             </div>
             <strong>
               25 € <small>par personne</small>
@@ -201,22 +203,60 @@ export default function PricingGrids() {
             {summary(
               "05",
               "Brunch Signature",
-              "30 € par personne · dès 30 convives",
+              "35 € par personne · dès 50 convives",
             )}
           </summary>
           <div className="fixed-price-detail">
             <div>
               <span>Comprend</span>
               <p>
-                Viennoiseries · pièces salées et sucrées · œufs · fruits ·
-                boissons
+                Viennoiseries · pancakes · œufs · boissons chaudes et froides ·
+                10 pièces salées ou sucrées au choix
               </p>
             </div>
             <strong>
-              30 € <small>par personne</small>
+              35 € <small>par personne</small>
             </strong>
             <a href="#formulaire-brunch">
               Demander un devis brunch <ArrowRight size={16} />
+            </a>
+          </div>
+        </details>
+        <details data-formule="barbecue">
+          <summary>{summary("06", "Barbecue Party", "60 € par personne")}</summary>
+          <div className="fixed-price-detail">
+            <div>
+              <span>Comprend</span>
+              <p>
+                Grillades cuites en direct, salades, accompagnements et 5 pièces
+                à grignoter · lieu autorisant les barbecues
+              </p>
+            </div>
+            <strong>
+              60 € <small>par personne</small>
+            </strong>
+            <a href="#devis">
+              Demander un devis barbecue <ArrowRight size={16} />
+            </a>
+          </div>
+        </details>
+        <details data-formule="chef">
+          <summary>
+            {summary("07", "Chef à domicile", "Dès 95 € · dès 20 couverts")}
+          </summary>
+          <div className="fixed-price-detail">
+            <div>
+              <span>Tout est compris</span>
+              <p>
+                Amuse-bouche, entrée, plat, dessert, vaisselle, nappage et
+                service · hors déplacement
+              </p>
+            </div>
+            <strong>
+              dès 95 € <small>par personne</small>
+            </strong>
+            <a href="#devis">
+              Demander un devis chef à domicile <ArrowRight size={16} />
             </a>
           </div>
         </details>
