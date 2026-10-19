@@ -6474,3 +6474,7 @@ html[data-commercial-formula="buffet"] .formula-menu-list>[data-menu-formula="bu
   .catalogue-preview{grid-template-columns:1fr}
   .catalogue-preview-pages{order:-1}
 }
+
+.formula-catalogue-link{display:inline-flex;align-items:center;gap:6px;margin:0 0 16px 16px;font-size:.82rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);text-decoration:underline;text-underline-offset:4px}
+.formula-catalogue-link:hover{color:var(--ink)}
+.catalogue-heading p a{color:inherit;text-decoration:underline;text-underline-offset:3px}
