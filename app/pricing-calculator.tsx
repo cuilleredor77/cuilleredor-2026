@@ -41,6 +41,10 @@ const MIN_GUESTS: Record<Formula, number> = {
   barbecue: 30,
   chef: 20,
 };
+const BELOW_MIN_WHATSAPP =
+  "https://wa.me/33783748971?text=Bonjour%20Cuill%C3%A8re%20d%27Or%2C%20mon%20%C3%A9v%C3%A9nement%20compte%20moins%20d%27invit%C3%A9s%20que%20le%20minimum%20du%20catalogue.%20Est-ce%20possible%20%3F";
+const BELOW_MIN_MAILTO =
+  "mailto:contact@cuilleredor.fr?subject=Demande%20pour%20un%20petit%20%C3%A9v%C3%A9nement&body=Bonjour%2C%0A%0AMon%20%C3%A9v%C3%A9nement%20compte%20moins%20d%27invit%C3%A9s%20que%20le%20minimum%20du%20catalogue.%20Est-ce%20possible%20%3F%0A%0ADate%20%3A%0ALieu%20%3A%0ANombre%20d%27invit%C3%A9s%20%3A%0AFormule%20souhait%C3%A9e%20%3A";
 const CHILD_PRICE = 25;
 const PROVIDER_PRICE = 30;
 const HONOR_WINE_SUPPLEMENT = 5;
@@ -253,6 +257,8 @@ export default function PricingCalculator() {
   );
   const [dishKit, setDishKit] = useState<DishKit>("none");
   const [guestError, setGuestError] = useState("");
+  const [guestsText, setGuestsText] = useState<string | null>(null);
+  const [guestsFocused, setGuestsFocused] = useState(false);
   useEffect(() => {
     const syncFormula = (event: Event) => {
       const next = (event as CustomEvent<Formula>).detail;
@@ -399,20 +405,31 @@ export default function PricingCalculator() {
     );
   }
   function changeGuests(rawValue: string) {
+    setGuestsText(rawValue);
+    if (rawValue.trim() === "") {
+      setGuestError("");
+      return;
+    }
     const value = Number(rawValue);
-    if (!Number.isFinite(value) || value < minGuests) {
-      setGuests(minGuests);
-      setGuestError(`Le minimum est de ${minGuests} adultes.`);
-    } else if (value > 1000) {
+    if (!Number.isFinite(value)) return;
+    if (value > 1000) {
       setGuests(1000);
+      setGuestsText("1000");
       setGuestError(
         "Le maximum du simulateur est de 1 000 adultes. Au-delà, contactez-nous.",
       );
-    } else {
-      setGuests(Math.floor(value));
-      setGuestError("");
+      return;
     }
+    setGuests(Math.max(0, Math.floor(value)));
+    setGuestError("");
   }
+  function commitGuests() {
+    setGuestsFocused(false);
+    setGuestsText(null);
+    if (guests < 1) setGuests(minGuests);
+  }
+  const belowMin = guests > 0 && guests < minGuests;
+  const showBelowMin = belowMin && (!guestsFocused || guests >= 10);
   function requestQuote(event: React.MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
     const choice = formula === "brunch" ? "brunch" : "event";
@@ -446,6 +463,7 @@ export default function PricingCalculator() {
   function resetCalculator() {
     setFormula("buffet");
     setGuests(MIN_GUESTS.buffet);
+    setGuestsText(null);
     setService(services.buffet[0].value);
     setChildren(0);
     setProviders(0);
@@ -523,21 +541,41 @@ export default function PricingCalculator() {
             <span>Adultes</span>
             <input
               type="number"
-              min={minGuests}
+              min="1"
               max="1000"
               inputMode="numeric"
-              value={guests}
+              value={guestsText ?? guests}
               onChange={(e) => changeGuests(e.target.value)}
+              onFocus={() => setGuestsFocused(true)}
+              onBlur={commitGuests}
               aria-invalid={Boolean(guestError)}
               aria-describedby="adultes-aide"
             />
             <small
               id="adultes-aide"
               className={
-                guestError ? "calculator-field-error" : "calculator-field-help"
+                guestError
+                  ? "calculator-field-error"
+                  : showBelowMin
+                    ? "calculator-field-warning"
+                    : "calculator-field-help"
               }
             >
-              {guestError || `Entre ${minGuests} et 1 000 adultes.`}
+              {guestError ||
+                (showBelowMin ? (
+                  <>
+                    Moins de {minGuests} adultes : contactez-nous directement
+                    sur{" "}
+                    <a href={BELOW_MIN_WHATSAPP} target="_blank" rel="noreferrer">
+                      WhatsApp
+                    </a>{" "}
+                    ou par{" "}
+                    <a href={BELOW_MIN_MAILTO}>e-mail</a> pour étudier la
+                    possibilité.
+                  </>
+                ) : (
+                  `Entre ${minGuests} et 1 000 adultes.`
+                ))}
             </small>
           </label>
           {!isChef && (
