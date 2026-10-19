@@ -10,7 +10,14 @@ relectrice (`REVIEW_EMAIL`) avec un bouton « Envoyer au client » → e-mail au
 Étapes suivantes : (2) signature électronique gratuite sur la page du devis (prévenir Huguette à la signature),
 (3) acompte (virement + QR, option carte), relances, lien avec le fichier de suivi.
 
-## Ce qui est fait (testé en local, NON déployé, NON poussé)
+## État au 19/10/2026 (soir)
+EN LIGNE sur cuilleredor.fr et fusionné dans `main` (46e0fe5) : formulaire natif, chaîne automatique (Resend,
+expéditeur contact@cuilleredor.fr, relecture + réponses sur cuilleredor4@gmail.com), espace /admin (mot de passe
+choisi par l'utilisatrice), migrations D1 0001 + 0002 appliquées en production, liseuse intégrée (public/liseuse,
+surimpression au clic), parcours simplifié en 3 étapes. Reste : test réel de bout en bout (aucune demande en
+production à ce jour), étapes 2 (signature) et 3 (acompte).
+
+## Ce qui est fait
 - `lib/quote.ts` : moteur de devis (tarifs catalogue, paliers 30/200/350, vin d'honneur +5 €, enfants 25 €,
   prestataires 30 €, déchets 50 €, km 1,90 €, acompte 30 %, solde J-2 mois reporté au lundi si week-end,
   règlement intégral si événement < 60 jours, caution 250 €, nom de fichier `CDO_AAAAMMJJ_Type_NOM_Prénom_Devis_Contrat`).
