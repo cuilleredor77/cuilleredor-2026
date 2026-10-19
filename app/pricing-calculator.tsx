@@ -16,16 +16,16 @@ type DishKit = "none" | "essentiel" | "complet" | "prestige";
 
 const services: Record<Formula, Array<{ value: Service; label: string }>> = {
   buffet: [
-    { value: "avec-vin", label: "Avec vin d’honneur" },
     { value: "sans-vin", label: "Sans vin d’honneur" },
+    { value: "avec-vin", label: "Avec vin d’honneur (+ 5 €/pers.)" },
   ],
   plateau: [
-    { value: "avec-vin", label: "Avec vin d’honneur" },
     { value: "sans-vin", label: "Sans vin d’honneur" },
+    { value: "avec-vin", label: "Avec vin d’honneur (+ 5 €/pers.)" },
   ],
   assiette: [
-    { value: "avec-vin", label: "Avec vin d’honneur" },
     { value: "sans-vin", label: "Sans vin d’honneur" },
+    { value: "avec-vin", label: "Avec vin d’honneur (+ 5 €/pers.)" },
   ],
   aperitifs: [{ value: "avec-vin", label: "Vin d’honneur inclus" }],
   brunch: [{ value: "sans-vin", label: "Brunch Signature" }],
@@ -245,7 +245,7 @@ export default function PricingCalculator() {
   const [mobileBarVisible, setMobileBarVisible] = useState(false);
   const [formula, setFormula] = useState<Formula>("buffet");
   const [guests, setGuests] = useState(MIN_GUESTS.buffet);
-  const [service, setService] = useState<Service>("avec-vin");
+  const [service, setService] = useState<Service>("sans-vin");
   const [children, setChildren] = useState(0);
   const [providers, setProviders] = useState(0);
   const [optionValues, setOptionValues] = useState<Record<string, number>>(
