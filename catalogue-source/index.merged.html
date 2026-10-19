@@ -3729,3 +3729,11 @@
   /* mobile / tablette : le logo centré du pied de page chevauche le texte de rubrique -> on le masque */
   @media screen and (max-width:1100px){ .running-footer .rf-logo{ display:none; } }
 </style>
+
+<style>
+  /* sommaire mobile / tablette : la colonne de la liste occupe toute la largeur restante (plus de vide à droite) */
+  @media screen and (max-width:1100px){
+    #sommaire{ grid-template-columns:14% minmax(0,1fr); }
+    #sommaire .sm-list{ padding-right:6cqi; }
+  }
+</style>
