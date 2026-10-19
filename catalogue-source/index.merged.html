@@ -357,7 +357,7 @@
     <div class="cover-content">
       <div class="cover-top">
         <p class="eyebrow cover-eyebrow" style="color:var(--gold-bright);">Service traiteur événementiel</p>
-        <h1 class="cover-title" style="font-size:calc(9.4cqi*var(--fs,1)); line-height:.98; color:var(--ink-contrast); margin-top:1.1cqi;">Catalogue de<br/>prestations</h1>
+        <h1 class="cover-title" style="font-size:calc(9.4cqi*var(--fs,1)); line-height:.98; color:var(--ink-contrast); margin-top:1.1cqi;">Catalogue<br/><span class="cover-title-2">de prestations</span></h1>
         <p class="cover-year" style="font-family:var(--heading-font); font-style:italic; font-size:calc(3.4cqi*var(--fs,1)); color:var(--gold-bright); margin-top:1.4cqi;">2027 · 2028</p>
       </div>
       <div class="cover-bottom">
@@ -2005,7 +2005,7 @@
     <div class="cover-content">
       <div class="cover-top">
         <p class="eyebrow cover-eyebrow" style="color:var(--gold-bright);">Event catering service</p>
-        <h1 class="cover-title" style="font-size:calc(9.4cqi*var(--fs,1)); line-height:.98; color:var(--ink-contrast); margin-top:1.1cqi;">Services<br/>catalogue</h1>
+        <h1 class="cover-title" style="font-size:calc(9.4cqi*var(--fs,1)); line-height:.98; color:var(--ink-contrast); margin-top:1.1cqi;">Services<br/><span class="cover-title-2">catalogue</span></h1>
         <p class="cover-year" style="font-family:var(--heading-font); font-style:italic; font-size:calc(3.4cqi*var(--fs,1)); color:var(--gold-bright); margin-top:1.4cqi;">2027 · 2028</p>
       </div>
       <div class="cover-bottom">
@@ -3761,5 +3761,54 @@
     /* zones tactiles : 44 px de haut minimum */
     a.toc-row, a.solid, .cta-abs a, .cta-line a, .cta-line .btn, .pick{ min-height:44px; display:flex; align-items:center; }
     .pick{ padding-top:4px; padding-bottom:4px; }
+  }
+</style>
+
+<style>
+  /* ============ COUVERTURE « magazine » (charte C) : titre en bas à gauche, sommaire en bandeau, filet doré ============ */
+  .book[data-style="c"] #cover .frame{ position:absolute; inset:0; padding:0 !important; display:block; }
+  .book[data-style="c"] #cover .frame::after{ content:""; position:absolute; inset:2.6cqi; border:1px solid rgba(212,175,55,.5); pointer-events:none; z-index:3; }
+  .book[data-style="c"] #cover .scrim-t{ display:block; background:linear-gradient(to bottom, rgba(8,8,6,.72), rgba(8,8,6,0) 26%); }
+  .book[data-style="c"] #cover .scrim-b{ background:linear-gradient(to top, rgba(8,8,6,.95) 0%, rgba(8,8,6,.82) 24%, rgba(8,8,6,.3) 46%, rgba(8,8,6,0) 62%); }
+  .book[data-style="c"] #cover .cover-top-row{ position:absolute; left:7.4cqi; right:7.4cqi; top:6cqi; z-index:4; }
+  .book[data-style="c"] #cover .cover-tagline{ display:block; position:absolute; left:7.4cqi; top:15.2cqi; z-index:4; margin:0; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.15cqi*var(--fs,1)); letter-spacing:.28em; text-transform:uppercase; color:var(--gold-bright); }
+  .book[data-style="c"] #cover .cover-tagline::before{ content:""; display:block; width:5cqi; height:1px; background:var(--gold-bright); margin-bottom:1.2cqi; }
+  .book[data-style="c"] #cover .cover-vertical{ display:block; position:absolute; right:6.1cqi; top:50%; z-index:4; margin:0; writing-mode:vertical-rl; transform:translateY(-50%) rotate(180deg); font-family:Arial,Helvetica,sans-serif; font-size:calc(1.1cqi*var(--fs,1)); letter-spacing:.46em; text-transform:uppercase; color:rgba(255,255,255,.78); }
+  /* titre : grande typo, aligné à gauche */
+  .book[data-style="c"] #cover .cover-content{ position:static; display:block; padding:0; }
+  .book[data-style="c"] #cover .cover-top{ position:absolute; left:7.4cqi; right:14cqi; bottom:23.5cqi; z-index:4; max-width:none; text-align:left; }
+  .book[data-style="c"] #cover .cover-eyebrow{ margin:0 0 2cqi; color:var(--gold-bright) !important; letter-spacing:.32em; text-align:left; }
+  .book[data-style="c"] #cover .cover-title{ text-align:left !important; margin:0 !important; font-size:calc(12.4cqi*var(--fs,1)) !important; line-height:.95 !important; letter-spacing:-.02em; font-weight:500; }
+  .book[data-style="c"] #cover .cover-title-2{ display:block; font-style:italic; font-weight:400; font-size:.56em; letter-spacing:0; color:rgba(255,255,255,.92); margin-top:.18em; }
+  .book[data-style="c"] #cover .cover-year{ text-align:left !important; margin:2.4cqi 0 0 !important; display:flex; align-items:center; gap:2cqi; letter-spacing:.2em; font-style:normal !important; }
+  .book[data-style="c"] #cover .cover-year::after{ content:""; flex:0 0 14cqi; height:1px; background:var(--gold-bright); opacity:.8; }
+  /* plus de pavé de texte : on garde la ligne d'accroche et les contacts */
+  .book[data-style="c"] #cover .cover-bottom{ position:static; max-width:none; }
+  .book[data-style="c"] #cover .cover-bottom .body-copy, .book[data-style="c"] #cover .cover-hairline{ display:none !important; }
+  .book[data-style="c"] #cover .cover-contact-row{ position:absolute; left:7.4cqi; right:14cqi; bottom:5.6cqi; z-index:4; justify-content:flex-start; gap:3.4cqi; letter-spacing:.14em; text-transform:none; }
+  .book[data-style="c"] #cover .cover-contact-row span:nth-child(2){ display:inline; }
+  /* « dans ce numéro » : les 5 formules en bandeau numéroté */
+  .book[data-style="c"] #cover .cover-teasers{ display:grid; grid-template-columns:repeat(5,1fr); position:absolute; left:7.4cqi; right:14cqi; bottom:11.4cqi; z-index:4; counter-reset:cv; border-top:1px solid rgba(255,255,255,.28); }
+  .book[data-style="c"] #cover .cover-teasers > div{ counter-increment:cv; padding:1.6cqi 1.2cqi 0 0; border-left:0; }
+  .book[data-style="c"] #cover .cover-teasers > div::before{ content:"0" counter(cv); display:block; font-family:var(--heading-font); font-style:italic; font-size:calc(1.5cqi*var(--fs,1)); color:var(--gold-bright); margin-bottom:.5cqi; }
+  .book[data-style="c"] #cover .cover-teasers b{ display:block; font-family:Arial,Helvetica,sans-serif; font-size:calc(1.12cqi*var(--fs,1)); font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#fff; line-height:1.3; }
+  .book[data-style="c"] #cover .cover-teasers span{ display:block; margin-top:.4cqi; font-size:calc(1.02cqi*var(--fs,1)); color:rgba(255,255,255,.7); line-height:1.35; }
+  .book[data-style="c"] #cover .cover-dots{ display:none; }
+  @media screen and (max-width:1100px){
+    .book[data-style="c"] #cover .cover-title{ font-size:calc(11cqi*var(--fs,1)) !important; }
+    /* téléphone / tablette : mêmes proportions fines que sur tablette (petites capitales aérées, rien de gras ni de massif) */
+    .book[data-style="c"] #cover .cover-tagline{ --fs:1; font-size:clamp(8px,2.2cqi,10px) !important; letter-spacing:.2em; white-space:nowrap; top:16cqi; }
+    .book[data-style="c"] #cover .cover-vertical{ display:none; }
+    .book[data-style="c"] #cover .cover-eyebrow{ --fs:1; font-size:clamp(8px,2.1cqi,10px) !important; letter-spacing:.3em; }
+    .book[data-style="c"] #cover .cover-top{ right:7.4cqi; bottom:29cqi; }
+    .book[data-style="c"] #cover .cover-year{ font-size:calc(3.2cqi*var(--fs,1)) !important; }
+    .book[data-style="c"] #cover .cover-teasers{ right:7.4cqi; bottom:13.4cqi; display:flex; flex-wrap:wrap; gap:1.4cqi 3.6cqi; padding-top:2.4cqi; }
+    .book[data-style="c"] #cover .cover-teasers > div{ padding:0; display:flex; gap:1.2cqi; align-items:baseline; }
+    .book[data-style="c"] #cover .cover-teasers > div::before{ margin:0; font-size:clamp(8.5px,2.3cqi,10px); }
+    .book[data-style="c"] #cover .cover-teasers b{ font-size:clamp(8px,2.2cqi,9.5px); font-weight:600; letter-spacing:.07em; white-space:nowrap; color:rgba(255,255,255,.92); }
+    .book[data-style="c"] #cover .cover-teasers span{ display:none; }
+    .book[data-style="c"] #cover .cover-contact-row{ right:7.4cqi; bottom:6.2cqi; flex-wrap:nowrap; justify-content:space-between; gap:2cqi; --fs:1; }
+    .book[data-style="c"] #cover .cover-contact-row a{ font-size:clamp(8.5px,2.3cqi,10px) !important; letter-spacing:.1em; opacity:.9; }
+    .book[data-style="c"] #cover .cover-contact-row span:nth-child(3){ display:none; }
   }
 </style>
