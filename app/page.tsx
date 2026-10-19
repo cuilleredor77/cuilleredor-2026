@@ -851,6 +851,21 @@ export default function Home() {
             <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf" download>
               PDF English
             </a>
+            <br />
+            Pour imprimer :{" "}
+            <a
+              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR-HD-impression.pdf"
+              download
+            >
+              PDF haute définition (18 Mo)
+            </a>{" "}
+            ·{" "}
+            <a
+              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN-HD-print.pdf"
+              download
+            >
+              English HD
+            </a>
           </p>
         </div>
         <a
