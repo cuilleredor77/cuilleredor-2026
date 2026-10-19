@@ -137,9 +137,9 @@ const offers = [
     firstLabel: "Composition",
     firstValue: "2 viandes · 2 poissons · 4 accompagnements · 1 légume",
     secondLabel: "Tarifs",
-    secondValue: "Tarifs dégressifs pour les grandes réceptions",
-    price: "à partir de 35 €",
-    suffix: "/ personne · 10 à 199 convives",
+    secondValue: "Tarifs dégressifs pour les grandes réceptions · vin d’honneur en option (+ 5 €)",
+    price: "35 à 45 €",
+    suffix: "/ personne · dès 30 convives",
     cta: "Choisir le buffet",
   },
   {
@@ -154,8 +154,8 @@ const offers = [
     firstValue: "2 viandes · 2 poissons · 4 accompagnements · 1 légume",
     secondLabel: "Idéal pour",
     secondValue: "Réception élégante avec un service fluide",
-    price: "35 à 50 €",
-    suffix: "/ personne",
+    price: "40 à 50 €",
+    suffix: "/ personne · dès 30 convives",
     cta: "Choisir le plateau",
   },
   {
@@ -171,23 +171,23 @@ const offers = [
     secondLabel: "Idéal pour",
     secondValue: "Mariage, dîner de gala et réception formelle",
     price: "60 à 70 €",
-    suffix: "/ personne",
+    suffix: "/ personne · dès 30 convives",
     cta: "Choisir le service à l’assiette",
   },
   {
     number: "04",
-    title: "Apéritifs",
-    tone: "Cocktail",
+    title: "Cocktail dînatoire & vin d’honneur",
+    tone: "Festif & gourmand",
     image: "/hero-bouchee",
     imageAlt: "Création apéritive Cuillère d’Or",
     description:
-      "Dix pièces salées et sucrées et quatre cocktails signature pour ouvrir votre réception.",
+      "Dix pièces apéritives salées ou sucrées au choix, pour ouvrir votre réception ou en faire un cocktail dînatoire.",
     firstLabel: "Comprend",
-    firstValue: "10 pièces individuelles · 4 cocktails",
-    secondLabel: "Idéal pour",
-    secondValue: "Vin d’honneur, cocktail et événement d’entreprise",
+    firstValue: "10 pièces individuelles au choix",
+    secondLabel: "En option",
+    secondValue: "Cocktails signature : 10 € le litre, environ 4 convives par litre",
     price: "25 €",
-    suffix: "/ personne · dès 30 convives",
+    suffix: "/ personne · dès 50 convives",
     cta: "Choisir les apéritifs",
   },
   {
@@ -197,16 +197,52 @@ const offers = [
     image: "/brunch/brunch-signature",
     imageAlt: "Brunch Signature Cuillère d’Or",
     description:
-      "Une formule complète, salée et sucrée, pour prolonger les retrouvailles en toute simplicité.",
+      "Une table généreuse et sans chichi : une base commune pour tous, puis dix pièces salées ou sucrées à composer selon vos envies.",
     firstLabel: "Comprend",
     firstValue:
-      "Viennoiseries · pièces salées et sucrées · œufs · fruits · boissons",
+      "Viennoiseries · pancakes · œufs · boissons chaudes et froides · 10 pièces au choix",
     secondLabel: "Idéal pour",
     secondValue: "Lendemains de mariage et réceptions familiales en journée",
-    price: "30 €",
-    suffix: "/ personne · dès 30 convives",
+    price: "35 €",
+    suffix: "/ personne · dès 50 convives",
     cta: "Choisir le brunch",
     href: "#formulaire-brunch",
+  },
+  {
+    number: "06",
+    title: "Barbecue Party",
+    tone: "Convivial & festif",
+    image: "/barbecue-party",
+    imageAlt: "Viande braisée de la formule Barbecue Party",
+    description:
+      "Des grillades généreuses cuites en direct, dans une ambiance décontractée, pour les beaux jours.",
+    firstLabel: "Au programme",
+    firstValue:
+      "5 pièces à grignoter · salades · brochettes, bar braisé, merguez ou chipolata · riz, plantain, pain",
+    secondLabel: "Idéal pour",
+    secondValue: "Anniversaires, fêtes de famille et repas entre amis",
+    price: "60 €",
+    suffix: "/ personne · lieu autorisant les barbecues",
+    cta: "Demander un devis barbecue",
+    href: "#devis",
+  },
+  {
+    number: "07",
+    title: "Chef à domicile",
+    tone: "Haut de gamme",
+    image: "/chef-domicile",
+    imageAlt: "Plat dressé par la cheffe Huguette pour un dîner à domicile",
+    description:
+      "Une offre clé en main chez vous : la cheffe et son équipe apportent la cuisine, la vaisselle, le nappage et le service.",
+    firstLabel: "Tout est compris",
+    firstValue:
+      "Amuse-bouche · entrée, plat, dessert à l’assiette · art de la table · service",
+    secondLabel: "Idéal pour",
+    secondValue: "Dîner privé chez vous, dès 20 couverts, hors déplacement",
+    price: "dès 95 €",
+    suffix: "/ personne · dès 20 couverts",
+    cta: "Demander un devis chef à domicile",
+    href: "#devis",
   },
 ];
 
@@ -424,12 +460,12 @@ const faqItems = [
   {
     question: "Quelle formule choisir pour mon événement ?",
     answer:
-      "Comparez les 5 formules dans la section « Nos formules » : chacune précise son ambiance et son budget. Si vous hésitez entre deux options, écrivez-nous sur WhatsApp. Nous vous conseillerons selon le nombre de convives et le style de votre réception.",
+      "Comparez les 7 formules dans la section « Nos formules » : chacune précise son ambiance et son budget. Si vous hésitez entre deux options, écrivez-nous sur WhatsApp. Nous vous conseillerons selon le nombre de convives et le style de votre réception.",
   },
   {
     question: "À partir de combien de convives intervenez-vous ?",
     answer:
-      "Nos prestations sont accessibles à partir de 10 participants, adultes, enfants et prestataires compris (30 convives minimum pour le vin d’honneur et le Brunch Signature).",
+      "Avec service, nos prestations démarrent à 30 convives, adultes, enfants et prestataires compris. Minimums : 50 convives pour le vin d’honneur seul ou le Brunch Signature seul, et 20 couverts pour le Chef à domicile.",
   },
   {
     question: "Comment réserver une date ?",
@@ -440,21 +476,22 @@ const faqItems = [
     question: "Quelles sont les conditions de paiement ?",
     answer: "",
     lines: [
-      "Acompte : 30 % à la signature",
+      "Acompte : 30 % à la signature du devis",
       "Solde : 70 % deux mois avant l’événement",
       "Événement dans moins de 60 jours : règlement intégral à la signature",
+      "Caution : 250 €, versée avec le solde et restituée après l’événement, sauf dommage, casse ou perte de matériel",
       "Virement bancaire ou espèces",
     ],
   },
   {
     question: "Quelle est la politique d’annulation ?",
     answer:
-      "Toute annulation doit être formulée par écrit. Plus de 90 jours avant l’événement, l’acompte reste acquis. Entre 30 et 90 jours, 50 % du montant total est dû. À moins de 30 jours, la totalité de la prestation est due.",
+      "Toute annulation doit être formulée par écrit. Plus de 90 jours avant l’événement, les sommes versées restent acquises. Entre 90 et 30 jours, 50 % du montant total est dû. À moins de 30 jours, la totalité de la prestation est due. Si l’annulation vient de Cuillère d’Or (hors force majeure), vous êtes intégralement remboursé.",
   },
   {
     question: "Que comprend le vin d’honneur ?",
     answer:
-      "Le vin d’honneur comprend 10 pièces cocktail salées et sucrées, 4 cocktails signature au choix et le service pendant toute sa durée.",
+      "Le vin d’honneur comprend 10 pièces apéritives salées ou sucrées au choix. Il s’ajoute à un repas pour 5 € par personne, ou se réserve seul à 25 € par personne dès 50 convives. Les cocktails signature sont proposés en option, à 10 € le litre (environ 4 convives par litre).",
   },
   {
     question: "Le menu peut-il être personnalisé ?",
@@ -469,7 +506,7 @@ const faqItems = [
   {
     question: "Quand transmettre le déroulé de l’événement ?",
     answer:
-      "Idéalement 4 à 6 semaines avant la réception : horaires clés, plan de table si nécessaire, animations, discours et temps forts. Des ajustements restent possibles jusqu’à deux semaines avant l’événement.",
+      "Idéalement 4 à 6 semaines avant la réception : horaires clés, plan de table si nécessaire, animations, discours et temps forts. Les horaires sont confirmés 14 jours avant. À partir de J − 60, le nombre de convives est figé : il ne peut plus être revu à la baisse, uniquement à la hausse. Au-delà de 30 minutes de dépassement, 80 € par heure entamée et par serveur.",
   },
   {
     question: "Intervenez-vous dans tous les types de lieux ?",
@@ -479,12 +516,17 @@ const faqItems = [
   {
     question: "Comment sont calculés les frais de déplacement ?",
     answer:
-      "Ils sont calculés au départ de Vert-Saint-Denis, sur la base de 1,70 € par kilomètre aller-retour, puis présentés sur une ligne distincte du devis. Les prestations hors Île-de-France et à l’international sont étudiées sur demande.",
+      "Ils sont calculés au départ de Vert-Saint-Denis, sur la base de 1,90 € par kilomètre aller-retour (péages et stationnement compris), puis présentés sur une ligne distincte du devis. Au-delà de 250 km, des frais de logement s’ajoutent, à définir avec la cheffe. Les prestations hors Île-de-France et à l’international sont étudiées sur demande.",
   },
   {
     question: "Comment se déroule une dégustation ?",
     answer:
-      "La dégustation se réserve sur rendez-vous au restaurant Chez Lina, à Brunoy, et permet de goûter une sélection représentative, d’affiner le menu et d’échanger avec la cheffe. Elle est proposée à 70 € par personne, non déductibles du devis final.",
+      "La dégustation se réserve sur rendez-vous au restaurant Chez Lina, à Brunoy, et permet de goûter une sélection représentative, d’affiner le menu et d’échanger avec la cheffe. Elle est proposée à 70 € par personne, non déductible du devis final, en session partagée de 2 à 10 personnes (1 h à 1 h 30), entre 15 h et 18 h ou après 21 h. Au menu : apéritif de la cheffe (5 pièces) puis repas de votre choix. Annulation possible jusqu’à 48 h avant.",
+  },
+  {
+    question: "Peut-on privatiser le restaurant Chez Lina ?",
+    answer:
+      "Oui. Le restaurant Chez Lina (29 rue de Montgeron, Brunoy) et son extérieur se louent pour tout événement privé, avec ou sans prestation Cuillère d’Or ou Chez Lina. La privatisation se fait sur devis. Le restaurant est ouvert du mardi au vendredi de 11 h 45 à 14 h 45 et de 18 h 45 à 23 h 45, le samedi de 11 h 45 à 23 h 45 sans interruption, et fermé le dimanche et le lundi.",
   },
 ];
 const FAQ_VISIBLE_COUNT = 5;
@@ -542,7 +584,7 @@ export default function Home() {
           />
         </div>
         <div className="hero-content">
-          <p className="eyebrow">Service traiteur · Catalogue 2026</p>
+          <p className="eyebrow">Service traiteur · Catalogue 2027-2028</p>
           <h1>
             <span className="sr-only">
               Traiteur événementiel en Île-de-France —{" "}
@@ -571,7 +613,7 @@ export default function Home() {
           </div>
           <div className="hero-facts">
             <span>
-              <Users size={20} aria-hidden="true" /> Dès 10 convives
+              <Users size={20} aria-hidden="true" /> Dès 30 convives
             </span>
             <span>
               <MapPin size={20} aria-hidden="true" /> Île-de-France · ailleurs
@@ -703,23 +745,29 @@ export default function Home() {
               <div className="offer-price">
                 {offer.price} <small>{offer.suffix}</small>
               </div>
-              <a
-                href="#carte"
-                data-formula-target="menu"
-                data-select-formula={
-                  (
-                    {
-                      "01": "buffet",
-                      "02": "plateau",
-                      "03": "assiette",
-                      "04": "aperitifs",
-                      "05": "brunch",
-                    } as Record<string, string>
-                  )[offer.number]
-                }
-              >
-                {offer.cta} <ArrowRight size={16} />
-              </a>
+              {offer.number === "06" || offer.number === "07" ? (
+                <a href="#devis">
+                  {offer.cta} <ArrowRight size={16} />
+                </a>
+              ) : (
+                <a
+                  href="#carte"
+                  data-formula-target="menu"
+                  data-select-formula={
+                    (
+                      {
+                        "01": "buffet",
+                        "02": "plateau",
+                        "03": "assiette",
+                        "04": "aperitifs",
+                        "05": "brunch",
+                      } as Record<string, string>
+                    )[offer.number]
+                  }
+                >
+                  {offer.cta} <ArrowRight size={16} />
+                </a>
+              )}
             </div>
           </article>
         ))}
@@ -794,8 +842,8 @@ export default function Home() {
                     <div>
                       <strong>Apéritifs & vin d’honneur</strong>
                       <small>
-                        10 pièces au choix · salées ou sucrées · 4 cocktails
-                        signature
+                        10 pièces au choix · salées ou sucrées · cocktails en
+                        option
                       </small>
                     </div>
                     <b aria-hidden="true">+</b>
@@ -1013,7 +1061,7 @@ export default function Home() {
                     <span>05</span>
                     <div>
                       <strong>Brunch Signature</strong>
-                      <small>Une formule complète, salée et sucrée</small>
+                      <small>Une base généreuse et 10 pièces au choix</small>
                     </div>
                     <b aria-hidden="true">+</b>
                   </summary>
@@ -1051,11 +1099,12 @@ export default function Home() {
                               loading="lazy"
                             />
                             <ul>
-                              <li>Viennoiseries et pièces sucrées</li>
-                              <li>Pièces salées</li>
-                              <li>Œufs</li>
-                              <li>Fruits frais de saison</li>
-                              <li>Boissons chaudes et jus de fruits</li>
+                              <li>Pain, beurre et confitures</li>
+                              <li>Mini viennoiseries (croissants, pains au chocolat)</li>
+                              <li>Pancakes, toppings au choix (Nutella, confiture, caramel)</li>
+                              <li>Œufs brouillés ou au plat</li>
+                              <li>Thé, café, chocolat chaud, eaux, jus d’orange et de pomme</li>
+                              <li>10 pièces au choix, salées ou sucrées</li>
                             </ul>
                           </div>
                         </details>
@@ -1258,6 +1307,7 @@ export default function Home() {
             Demander un devis <ArrowRight size={16} />
           </a>
           <nav className="footer-legal" aria-label="Informations légales">
+            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf">Catalogue PDF</a>
             <a href="/mentions-legales">Mentions légales</a>
             <a href="/politique-confidentialite">Confidentialité</a>
           </nav>
