@@ -30,13 +30,38 @@ interface ExecutionContext {
 // without needing a nonce.
 const SECURITY_HEADERS: Record<string, string> = {
   "content-security-policy":
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-src https://docs.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://tracker.metricool.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tracker.metricool.com; font-src 'self'; frame-src https://docs.google.com; connect-src 'self' https://tracker.metricool.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'",
   "x-content-type-options": "nosniff",
   "x-frame-options": "SAMEORIGIN",
   "referrer-policy": "strict-origin-when-cross-origin",
   "permissions-policy": "geolocation=(), camera=(), microphone=(), payment=()",
   "strict-transport-security": "max-age=63072000; includeSubDomains",
 };
+
+// Une seule adresse officielle : https://cuilleredor.fr. Les autres adresses
+// qui servent ce worker (www, http, adresse technique workers.dev) renvoient
+// une redirection 301 vers la même page sur l'adresse officielle.
+const CANONICAL_HOST = "cuilleredor.fr";
+const REDIRECTED_HOSTS = new Set([
+  "cuilleredor.fr",
+  "www.cuilleredor.fr",
+  "cuilleredor-2026.cuilleredor4.workers.dev",
+]);
+
+// Le passage http -> https n'est décidé que si Cloudflare confirme que le
+// visiteur est en http (en-tête cf-visitor) : sans cette confirmation, une
+// requête https vue en http par un proxy bouclerait sur elle-même.
+function isPlainHttpVisit(request: Request, url: URL): boolean {
+  const visitor = request.headers.get("cf-visitor") ?? "";
+  return url.protocol === "http:" && /"scheme"\s*:\s*"http"/.test(visitor);
+}
+
+function canonicalRedirect(request: Request, url: URL): Response | null {
+  if (!REDIRECTED_HOSTS.has(url.hostname)) return null;
+  if (url.hostname === CANONICAL_HOST && !isPlainHttpVisit(request, url)) return null;
+  const target = `https://${CANONICAL_HOST}${url.pathname}${url.search}`;
+  return new Response(null, { status: 301, headers: { location: target } });
+}
 
 function withSecurityHeaders(response: Response): Response {
   const headers = new Headers(response.headers);
@@ -53,6 +78,11 @@ function withSecurityHeaders(response: Response): Response {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    if (import.meta.env.PROD) {
+      const redirect = canonicalRedirect(request, url);
+      if (redirect) return redirect;
+    }
 
     // The dev server (vite serving unbundled source files) doesn't set
     // production-grade content-type headers, so `nosniff` + CSP there break

@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 
-type Formula = "buffet" | "plateau" | "assiette" | "aperitifs" | "brunch";
+type Formula =
+  | "buffet"
+  | "plateau"
+  | "assiette"
+  | "aperitifs"
+  | "brunch"
+  | "barbecue"
+  | "chef";
 
 export default function PricingGrids() {
   const [openFormula, setOpenFormula] = useState<Formula | null>("buffet");
@@ -38,7 +45,7 @@ export default function PricingGrids() {
       <div className="pricing-grids">
         <div className="pricing-grids-heading">
           <strong>Grille tarifaire complète</strong>
-          <p>Comparez les tranches de convives et ajoutez le vin d’honneur si besoin.</p>
+          <p>Comparez les tranches de convives et les niveaux de service.</p>
         </div>
         <details data-formule="buffet" open={openFormula === "buffet"}>
           <summary
@@ -54,8 +61,8 @@ export default function PricingGrids() {
               <thead>
                 <tr>
                   <th>Convives</th>
-                  <th>Prix par adulte</th>
-                  <th>Avec vin d’honneur</th>
+                  <th>Sans vin d’honneur</th>
+                  <th>Avec vin d’honneur (+ 5 €)</th>
                 </tr>
               </thead>
               <tbody>
@@ -77,9 +84,8 @@ export default function PricingGrids() {
               </tbody>
             </table>
             <p className="pricing-tier-note">
-              Prix par adulte, service compris. Enfant de 5 à 12 ans : 25 €.
-              Prestataire : 30 €. Le palier se calcule sur le total des
-              convives (adultes, enfants et prestataires).
+              Prix par adulte, service compris. Tarifs dégressifs selon le
+              nombre total de convives (adultes, enfants et prestataires).
             </p>
           </div>
         </details>
@@ -97,8 +103,8 @@ export default function PricingGrids() {
               <thead>
                 <tr>
                   <th>Convives</th>
-                  <th>Prix par adulte</th>
-                  <th>Avec vin d’honneur</th>
+                  <th>Sans vin d’honneur</th>
+                  <th>Avec vin d’honneur (+ 5 €)</th>
                 </tr>
               </thead>
               <tbody>
@@ -128,19 +134,15 @@ export default function PricingGrids() {
               toggle("assiette");
             }}
           >
-            {summary(
-              "03",
-              "Service à l’assiette",
-              "60 à 70 € · dès 30 convives",
-            )}
+            {summary("03", "Service à l’assiette", "60 à 70 € · dès 30 convives")}
           </summary>
           <div className="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Convives</th>
-                  <th>Prix par adulte</th>
-                  <th>Avec vin d’honneur</th>
+                  <th>Sans vin d’honneur</th>
+                  <th>Avec vin d’honneur (+ 5 €)</th>
                 </tr>
               </thead>
               <tbody>
@@ -161,10 +163,6 @@ export default function PricingGrids() {
                 </tr>
               </tbody>
             </table>
-            <p className="pricing-tier-note">
-              Entrée ou dessert en plus : 5 €/pers. (avocat surprise sur glace
-              carbonique : 8 €/pers.).
-            </p>
           </div>
         </details>
         <details data-formule="aperitifs" open={openFormula === "aperitifs"}>
@@ -176,14 +174,14 @@ export default function PricingGrids() {
           >
             {summary(
               "04",
-              "Cocktail dînatoire & vin d’honneur",
+              "Apéritifs & vin d’honneur",
               "25 € par personne · dès 50 convives",
             )}
           </summary>
           <div className="fixed-price-detail">
             <div>
               <span>Comprend</span>
-              <p>10 pièces salées ou sucrées au choix · cocktails en option (10 €/litre)</p>
+              <p>10 pièces salées ou sucrées au choix · cocktails en option</p>
             </div>
             <strong>
               25 € <small>par personne</small>
@@ -210,8 +208,8 @@ export default function PricingGrids() {
             <div>
               <span>Comprend</span>
               <p>
-                Viennoiseries · pancakes · œufs · boissons chaudes et froides ·
-                10 pièces salées ou sucrées au choix
+                Base commune (viennoiseries, pancakes, œufs, boissons) + 10
+                pièces salées ou sucrées au choix
               </p>
             </div>
             <strong>
@@ -222,42 +220,48 @@ export default function PricingGrids() {
             </a>
           </div>
         </details>
-        <details data-formule="barbecue">
-          <summary>{summary("06", "Barbecue Party", "60 € par personne")}</summary>
+        <details data-formule="barbecue" open={openFormula === "barbecue"}>
+          <summary
+            onClick={(event) => {
+              event.preventDefault();
+              toggle("barbecue");
+            }}
+          >
+            {summary("06", "Barbecue Party", "60 € par personne · dès 30 convives")}
+          </summary>
           <div className="fixed-price-detail">
             <div>
               <span>Comprend</span>
               <p>
-                Grillades cuites en direct, salades, accompagnements et 5 pièces
-                à grignoter · lieu autorisant les barbecues
+                5 pièces à grignoter · salades · grillades · accompagnements.
+                Le lieu doit autoriser les barbecues.
               </p>
             </div>
             <strong>
               60 € <small>par personne</small>
             </strong>
-            <a href="#devis">
-              Demander un devis barbecue <ArrowRight size={16} />
-            </a>
           </div>
         </details>
-        <details data-formule="chef">
-          <summary>
-            {summary("07", "Chef à domicile", "Dès 95 € · dès 20 couverts")}
+        <details data-formule="chef" open={openFormula === "chef"}>
+          <summary
+            onClick={(event) => {
+              event.preventDefault();
+              toggle("chef");
+            }}
+          >
+            {summary("07", "Chef à domicile", "Dès 95 € par personne · dès 20 couverts")}
           </summary>
           <div className="fixed-price-detail">
             <div>
-              <span>Tout est compris</span>
+              <span>Comprend</span>
               <p>
                 Amuse-bouche, entrée, plat, dessert, vaisselle, nappage et
-                service · hors déplacement
+                service inclus. Hors frais de déplacement.
               </p>
             </div>
             <strong>
               dès 95 € <small>par personne</small>
             </strong>
-            <a href="#devis">
-              Demander un devis chef à domicile <ArrowRight size={16} />
-            </a>
           </div>
         </details>
       </div>

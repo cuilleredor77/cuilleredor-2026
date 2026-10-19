@@ -6,7 +6,7 @@ const SITE_URL = import.meta.env.PROD
   : "http://localhost:5173";
 const TITLE = "Cuillère d’Or | Traiteur événementiel - Catalogue 2027-2028";
 const DESCRIPTION =
-  "Composez votre réception avec Cuillère d’Or : vin d’honneur, buffet, plateau, service à l’assiette, Brunch Signature, Barbecue Party et Chef à domicile. Tarifs 2027-2028 et devis personnalisé.";
+  "Composez votre réception avec Cuillère d’Or : vin d’honneur, buffet, plateau, service à l’assiette et Brunch Signature. Tarifs 2027-2028 et devis personnalisé.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -64,7 +64,7 @@ const LOCAL_BUSINESS_JSON_LD = {
   priceRange: "€€-€€€",
   sameAs: [
     "https://www.instagram.com/cuillere.dor/",
-    "https://www.tiktok.com/@cuilleredorr",
+    "https://www.tiktok.com/@cuillere.dor",
   ],
 };
 
@@ -82,6 +82,14 @@ export default function RootLayout({
             __html: JSON.stringify(LOCAL_BUSINESS_JSON_LD),
           }}
         />
+        {import.meta.env.PROD && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html:
+                'function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"d576cb5ae7dc29c4d9299a828efc26a4"})});',
+            }}
+          />
+        )}
         {children}
       </body>
     </html>
