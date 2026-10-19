@@ -553,6 +553,7 @@ export default function Home() {
           <a href="#formules">Nos formules</a>
           <a href="#carte">La carte</a>
           <a href="#tarifs">Tarifs</a>
+          <a href="#feuilleter">Catalogue</a>
         </nav>
         <a className="header-cta" href="#calculateur">
           <span className="header-cta-long">Estimer ma réception</span>
@@ -567,6 +568,7 @@ export default function Home() {
             <a href="#formules">Nos formules</a>
             <a href="#carte">La carte</a>
             <a href="#tarifs">Tarifs</a>
+            <a href="#feuilleter">Feuilleter le catalogue</a>
             <a href="#devis">Demander un devis directement</a>
           </nav>
         </details>
@@ -771,6 +773,69 @@ export default function Home() {
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="catalogue-preview section-pad" id="feuilleter">
+        <div className="catalogue-preview-copy">
+          <p className="eyebrow dark">Catalogue 2027-2028</p>
+          <h2>
+            Feuilletez notre
+            <br />
+            <em>catalogue.</em>
+          </h2>
+          <p>
+            Parcourez en ligne toutes nos prestations, page après page : plats,
+            tarifs, options et conditions. Cochez vos plats préférés, puis
+            téléchargez le catalogue ou votre sélection en PDF.
+          </p>
+          <div className="catalogue-preview-actions">
+            <a
+              className="button button-gold"
+              href="https://catalogue.cuilleredor.fr"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Feuilleter le catalogue <ArrowRight size={17} />
+            </a>
+            <a
+              className="button button-dark"
+              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf"
+              download
+            >
+              Télécharger le PDF
+            </a>
+          </div>
+          <p className="catalogue-preview-note">
+            Disponible en français et en anglais (bouton FR / EN dans le
+            catalogue en ligne) ·{" "}
+            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf" download>
+              PDF English
+            </a>
+          </p>
+        </div>
+        <a
+          className="catalogue-preview-pages"
+          href="https://catalogue.cuilleredor.fr"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Ouvrir le catalogue en ligne"
+        >
+          {[
+            ["couverture", "Couverture du catalogue Cuillère d’Or 2027-2028"],
+            ["formules", "Page des formules du catalogue"],
+            ["tarifs", "Page des tarifs du catalogue"],
+          ].map(([name, alt]) => (
+            <img
+              key={name}
+              src={`/catalogue-apercu-${name}.webp`}
+              width="911"
+              height="1287"
+              alt={alt}
+              loading="lazy"
+              decoding="async"
+            />
+          ))}
+        </a>
       </section>
 
       <section className="catalogue section-pad" id="carte">

@@ -6456,3 +6456,21 @@ html[data-commercial-formula="buffet"] .formula-menu-list>[data-menu-formula="bu
     padding: 0 10px 10px;
   }
 }
+
+/* Feuilleter le catalogue */
+.catalogue-preview{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(28px,5vw,72px);align-items:center;background:var(--cream,#eee6d2)}
+.catalogue-preview h2{margin:0 0 18px;font-size:clamp(2.8rem,5vw,5rem);line-height:.98}
+.catalogue-preview-copy p{max-width:520px;line-height:1.65}
+.catalogue-preview-actions{display:flex;flex-wrap:wrap;gap:12px;margin:26px 0 14px}
+.catalogue-preview-note{font-size:.85rem;color:var(--muted)}
+.catalogue-preview-note a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.catalogue-preview-pages{display:flex;justify-content:center;align-items:center;gap:0;padding:12px 0}
+.catalogue-preview-pages img{width:31%;height:auto;box-shadow:0 14px 34px rgba(20,15,5,.28);border:1px solid var(--line);background:#fff;transition:transform .25s ease}
+.catalogue-preview-pages img:nth-child(1){transform:rotate(-4deg) translateX(10%);z-index:1}
+.catalogue-preview-pages img:nth-child(2){transform:translateY(-4%);z-index:3;width:34%}
+.catalogue-preview-pages img:nth-child(3){transform:rotate(4deg) translateX(-10%);z-index:2}
+.catalogue-preview-pages:hover img:nth-child(2){transform:translateY(-8%)}
+@media (max-width:860px){
+  .catalogue-preview{grid-template-columns:1fr}
+  .catalogue-preview-pages{order:-1}
+}
