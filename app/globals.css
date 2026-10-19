@@ -6897,3 +6897,13 @@ html[data-selected-formula="chef"]
     height: 82vh;
   }
 }
+.native-form-radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 22px;
+}
+.quote-required {
+  margin-top: 8px !important;
+  color: #775a19 !important;
+  font-weight: 600;
+}

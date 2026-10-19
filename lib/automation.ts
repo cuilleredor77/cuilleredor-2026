@@ -9,6 +9,8 @@ import {
   formatEUR,
   parseQuote,
   quoteAlerts,
+  serviceModeLabel,
+  weddingPlannerLabel,
   type RequestRow,
 } from "./quote";
 
@@ -93,6 +95,9 @@ async function notifyReviewer(row: RequestRow, origin: string): Promise<void> {
     `${row.client_name} · ${row.client_email} · ${row.client_phone}`,
     `${row.event_type} le ${when}${row.event_place ? ` à ${row.event_place}` : ""}`,
     quote.summary,
+    `Prestation : ${serviceModeLabel(row.service_mode)}`,
+    row.budget ? `Budget indiqué : ${row.budget}` : "",
+    `Wedding planner : ${weddingPlannerLabel(row.wedding_planner)}${row.vendors_found ? ` · Prestataires déjà trouvés : ${row.vendors_found}` : ""}`,
     `Total ${formatEUR(totals.total)}${row.km ? ` (dont ${row.km} km AR)` : ""}`,
     row.selection_text ? `Plats choisis : ${row.selection_text}` : "",
     row.message ? `Message : ${row.message}` : "",

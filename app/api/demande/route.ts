@@ -2,6 +2,8 @@ import { db, json, newToken } from "../../../lib/server";
 import { isFormulaKey } from "../../../lib/quote";
 import { prepareAndNotify } from "../../../lib/automation";
 
+const SERVICE_MODES = ["service", "livraison", "emporter"];
+
 // Demande de devis envoyée depuis le site (formulaire natif). Publique, donc validée strictement.
 const clamp = (value: unknown, max: number) =>
   typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -46,8 +48,8 @@ export async function POST(request: Request) {
     .prepare(
       `INSERT INTO requests (token, created_at, updated_at, status, source, client_name, client_email, client_phone,
         event_type, event_date, event_place, formula, adults, children, providers, honor_wine, budget,
-        estimate_json, selection_text, message)
-       VALUES (?, ?, ?, 'nouvelle', 'site', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        estimate_json, selection_text, message, service_mode, wedding_planner, vendors_found)
+       VALUES (?, ?, ?, 'nouvelle', 'site', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       token, now, now, name, email, phone,
@@ -63,6 +65,9 @@ export async function POST(request: Request) {
       estimateJson,
       clamp(body.selection, 4000),
       clamp(body.message, 2000),
+      SERVICE_MODES.includes(clamp(body.serviceMode, 20)) ? clamp(body.serviceMode, 20) : "service",
+      ["oui", "non", "recherche"].includes(clamp(body.weddingPlanner, 20)) ? clamp(body.weddingPlanner, 20) : "",
+      clamp(body.vendorsFound, 300),
     )
     .run();
   // Devis calculé et relectrice prévenue tout de suite ; un échec ici n'empêche pas la demande d'être enregistrée.

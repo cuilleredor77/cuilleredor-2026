@@ -155,6 +155,9 @@ export type RequestRow = {
   quote_version: number;
   sent_at: string | null;
   internal_notes: string;
+  service_mode: string; // service | livraison | emporter
+  wedding_planner: string; // oui | non | recherche | ""
+  vendors_found: string;
 };
 
 export type EstimateOption = { id: string; label: string; amount: number };
@@ -531,6 +534,15 @@ export function quoteAlerts(req: RequestRow, quote: Quote, totals: Totals): stri
   if (!req.event_place) out.push("Lieu de l’événement manquant.");
   else if (!req.km) out.push("Frais de déplacement non calculés (adresse introuvable) : à compléter dans l’éditeur.");
   if (key === "chef") out.push("Chef à domicile : tarif à confirmer.");
+  if (req.service_mode && req.service_mode !== "service") out.push(`${serviceModeLabel(req.service_mode)} : le tarif de la formule inclut le service, à adapter.`);
   if (quote.lines.some((l) => !(l.price > 0) || !(l.qty > 0))) out.push("Une ligne a une quantité ou un prix à zéro.");
   return out;
+}
+
+export function serviceModeLabel(mode: string): string {
+  return mode === "livraison" ? "Livraison sans service" : mode === "emporter" ? "À emporter" : "Avec service sur place";
+}
+
+export function weddingPlannerLabel(value: string): string {
+  return value === "oui" ? "déjà trouvé" : value === "recherche" ? "en recherche" : value === "non" ? "pas prévu" : "non précisé";
 }

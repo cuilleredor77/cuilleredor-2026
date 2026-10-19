@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import {
   FORMULAS, FORMULA_KEYS, OPTION_PRESETS, clientEmail, computeTotals, formatDateFR, formatDateShort,
-  formatEUR, lineTotal, presetToLine, quoteAlerts, type Quote, type QuoteLine, type RequestRow,
+  formatEUR, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
 const STATUS: Array<[string, string]> = [
@@ -136,13 +136,14 @@ export default function Editor() {
                 </span>
               </label>
             </div>
-            {req.message || req.selection_text || req.budget ? (
+            {(
               <div className="adm-client">
-                {req.budget ? <p><b>Budget indiqué :</b> {req.budget} €</p> : null}
+                <p><b>Prestation :</b> {serviceModeLabel(req.service_mode)} · <b>Wedding planner :</b> {weddingPlannerLabel(req.wedding_planner)}{req.vendors_found ? <> · <b>Prestataires trouvés :</b> {req.vendors_found}</> : null}</p>
+                {req.budget ? <p><b>Budget indiqué :</b> {req.budget.replace(/\s*€\s*$/, "")} €</p> : null}
                 {req.message ? <p><b>Message du client :</b> {req.message}</p> : null}
                 {req.selection_text ? <p><b>Plats choisis :</b> {req.selection_text}</p> : null}
               </div>
-            ) : null}
+            )}
             <label className="wide">Notes internes (non visibles du client)
               <textarea rows={2} value={req.internal_notes} onChange={(e) => setField("internal_notes", e.target.value)} />
             </label>

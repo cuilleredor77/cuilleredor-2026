@@ -97,6 +97,13 @@ function buildFormUrl(baseUrl: string, choice: Choice, estimate: Estimate | null
   return `${baseUrl}?${params.toString()}`;
 }
 
+type ServiceMode = "service" | "livraison" | "emporter";
+const SERVICE_MODES: Array<[ServiceMode, string]> = [
+  ["service", "Avec service sur place"],
+  ["livraison", "Livraison sans service"],
+  ["emporter", "À emporter (retrait sur place)"],
+];
+
 type Fields = {
   name: string;
   email: string;
@@ -109,7 +116,10 @@ type Fields = {
   children: string;
   providers: string;
   honorWine: boolean;
+  serviceMode: ServiceMode;
   budget: string;
+  weddingPlanner: string;
+  vendorsFound: string;
   selection: string;
   message: string;
   website: string;
@@ -128,7 +138,10 @@ function fieldsFrom(choice: Choice, estimate: Estimate | null, previous?: Fields
     children: "0",
     providers: "0",
     honorWine: true,
+    serviceMode: "service",
     budget: "",
+    weddingPlanner: "",
+    vendorsFound: "",
     selection: "",
     message: "",
     website: "",
@@ -162,6 +175,8 @@ function NativeForm({
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   useEffect(() => {
+    // Le simulateur peut envoyer une nouvelle estimation à tout moment : on la reporte sans effacer ce qui est déjà saisi.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFields((current) => fieldsFrom(choice, estimate, current));
   }, [choice, estimate]);
 
@@ -260,6 +275,20 @@ function NativeForm({
             ))}
           </select>
         </label>
+        {showHonorWine && (
+          <label className="native-form-check native-form-wide">
+            <input type="checkbox" checked={fields.honorWine} onChange={(e) => set("honorWine", e.target.checked)} />
+            Avec vin d’honneur
+          </label>
+        )}
+        <div className="native-form-wide native-form-radios" role="radiogroup" aria-label="Type de prestation">
+          {SERVICE_MODES.map(([value, label]) => (
+            <label key={value} className="native-form-check">
+              <input type="radio" name="serviceMode" value={value} checked={fields.serviceMode === value} onChange={() => set("serviceMode", value)} />
+              {label}
+            </label>
+          ))}
+        </div>
         <label>
           Adultes *
           <input required type="number" min={1} max={5000} inputMode="numeric" value={fields.adults} onChange={(e) => set("adults", e.target.value)} />
@@ -272,15 +301,22 @@ function NativeForm({
           Prestataires (DJ, photographe…)
           <input type="number" min={0} max={5000} inputMode="numeric" value={fields.providers} onChange={(e) => set("providers", e.target.value)} />
         </label>
-        {showHonorWine && (
-          <label className="native-form-check">
-            <input type="checkbox" checked={fields.honorWine} onChange={(e) => set("honorWine", e.target.checked)} />
-            Avec vin d’honneur
-          </label>
-        )}
         <label>
           Enveloppe budgétaire
           <input placeholder="ex. 6 000 €" value={fields.budget} onChange={(e) => set("budget", e.target.value)} />
+        </label>
+        <label>
+          Wedding planner
+          <select value={fields.weddingPlanner} onChange={(e) => set("weddingPlanner", e.target.value)}>
+            <option value="">—</option>
+            <option value="oui">Oui, déjà trouvé</option>
+            <option value="recherche">En recherche</option>
+            <option value="non">Non, pas prévu</option>
+          </select>
+        </label>
+        <label>
+          Autres prestataires déjà trouvés
+          <input placeholder="ex. lieu, DJ, photographe" value={fields.vendorsFound} onChange={(e) => set("vendorsFound", e.target.value)} />
         </label>
       </fieldset>
 
@@ -398,21 +434,6 @@ export default function QuoteChooser({
         </div>
       )}
 
-      <div className="quote-help">
-        <div>
-          <MessageCircle size={22} />
-          <p>
-            <strong>Vous hésitez sur la formule ?</strong>
-            <span>
-              Posez-nous votre question avant de compléter la demande.
-            </span>
-          </p>
-        </div>
-        <a href={whatsapp} target="_blank" rel="noreferrer">
-          Demander conseil sur WhatsApp <ArrowRight size={16} />
-        </a>
-      </div>
-
       <div
         className="selected-form"
         id={isEvent ? "formulaire-evenement" : "formulaire-brunch"}
@@ -425,6 +446,10 @@ export default function QuoteChooser({
               {estimate
                 ? `Votre estimation ${estimate.formula} est conservée pendant votre demande.`
                 : "Indiquez la date, le lieu, les convives et la formule envisagée."}
+            </p>
+            <p className="quote-required">
+              Cette demande est indispensable pour démarrer les échanges : elle nous
+              donne vos coordonnées et tout ce qu’il faut pour préparer votre devis.
             </p>
           </div>
         </div>
@@ -472,6 +497,21 @@ export default function QuoteChooser({
           </button>
         </p>
       </div>
+      <div className="quote-help">
+        <div>
+          <MessageCircle size={22} />
+          <p>
+            <strong>Une question sur votre demande ?</strong>
+            <span>
+              Envoyez d’abord le formulaire, puis écrivez-nous : nous aurons votre dossier sous les yeux.
+            </span>
+          </p>
+        </div>
+        <a href={whatsapp} target="_blank" rel="noreferrer">
+          Nous écrire sur WhatsApp <ArrowRight size={16} />
+        </a>
+      </div>
+
       <p className="quote-reassurance">
         Réponse sous 48 à 72 h · Sans engagement · Vos informations servent
         uniquement à traiter votre demande.
