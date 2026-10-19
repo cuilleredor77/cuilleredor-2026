@@ -58,6 +58,14 @@ const EVENT_TYPES = [
   "Autre",
 ];
 
+// Dernière estimation du simulateur (gardée même si le formulaire n'est pas encore affiché).
+let liveEstimate: Estimate | null = null;
+if (typeof window !== "undefined") {
+  window.addEventListener("cuillere:estimate", (event) => {
+    liveEstimate = (event as CustomEvent<Estimate>).detail;
+  });
+}
+
 function guestsLine(estimate: Estimate) {
   return `${estimate.adults} adulte${estimate.adults > 1 ? "s" : ""} · ${estimate.children} enfant${estimate.children > 1 ? "s" : ""} · ${estimate.providers} prestataire${estimate.providers > 1 ? "s" : ""}`;
 }
@@ -393,7 +401,7 @@ export default function QuoteChooser({
 
   useEffect(() => {
     const selectFromLocation = () => {
-      setEstimate(null);
+      setEstimate(liveEstimate);
       if (window.location.hash === "#formulaire-brunch") choose("brunch");
       if (window.location.hash === "#formulaire-evenement") choose("event");
     };
@@ -405,11 +413,18 @@ export default function QuoteChooser({
       choose(detail.choice);
       setEstimate(detail.estimate || null);
     };
+    const followCalculator = (event: Event) => {
+      const detail = (event as CustomEvent<Estimate>).detail;
+      choose(detail.formulaId === "brunch" ? "brunch" : "event");
+      setEstimate(detail);
+    };
     selectFromLocation();
+    window.addEventListener("cuillere:estimate", followCalculator);
     window.addEventListener("hashchange", selectFromLocation);
     window.addEventListener("popstate", selectFromLocation);
     window.addEventListener("cuillere:quote", selectFromCalculator);
     return () => {
+      window.removeEventListener("cuillere:estimate", followCalculator);
       window.removeEventListener("hashchange", selectFromLocation);
       window.removeEventListener("popstate", selectFromLocation);
       window.removeEventListener("cuillere:quote", selectFromCalculator);

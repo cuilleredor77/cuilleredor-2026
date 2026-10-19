@@ -447,30 +447,39 @@ export default function PricingCalculator() {
   const minGuestsLabel = isChef
     ? `${minGuests} convives`
     : `${minGuests} convives au total`;
+  const estimate = {
+    formulaId: formula,
+    formula: formulaNames[formula],
+    adults: guests,
+    children,
+    providers,
+    totalGuests,
+    serviceId: service,
+    service: selectedService,
+    options: optionLines,
+    optionsTotal,
+    total: estimatedTotal,
+  };
+  // Dès que la personne a touché au simulateur, le formulaire de demande reprend ses chiffres (sans attendre le bouton).
+  const estimateKey = JSON.stringify(estimate);
+  const firstEstimate = useRef(true);
+  useEffect(() => {
+    if (firstEstimate.current) {
+      firstEstimate.current = false;
+      return;
+    }
+    window.dispatchEvent(
+      new CustomEvent("cuillere:estimate", { detail: JSON.parse(estimateKey) }),
+    );
+  }, [estimateKey]);
+
   function requestQuote(event: React.MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
     const choice = formula === "brunch" ? "brunch" : "event";
     const hash =
       choice === "brunch" ? "#formulaire-brunch" : "#formulaire-evenement";
     window.dispatchEvent(
-      new CustomEvent("cuillere:quote", {
-        detail: {
-          choice,
-          estimate: {
-            formulaId: formula,
-            formula: formulaNames[formula],
-            adults: guests,
-            children,
-            providers,
-            totalGuests,
-            serviceId: service,
-            service: selectedService,
-            options: optionLines,
-            optionsTotal,
-            total: estimatedTotal,
-          },
-        },
-      }),
+      new CustomEvent("cuillere:quote", { detail: { choice, estimate } }),
     );
     window.history.pushState(null, "", hash);
     document
