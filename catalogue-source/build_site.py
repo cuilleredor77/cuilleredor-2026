@@ -142,6 +142,10 @@ for old,new_ in NAMES.items():
 open(OUT+'/_headers','w').write('/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n/images/*\n  Cache-Control: public, max-age=2592000\n/pdf/*\n  Cache-Control: public, max-age=86400\n')
 open(OUT+'/LISEZ-MOI.txt','w',encoding='utf8').write("Catalogue Cuillère d'Or 2027-2028 — site statique\nDéposer ce dossier entier sur Cloudflare Pages (Workers & Pages > Create > Pages > Upload assets).\nindex.html = catalogue ; images/ ; pdf/ = téléchargements ; _headers = cache.\n")
 
+# liseuse « feuilletage » : ../catalogue-site/liseuse/ (voir build_liseuse.py)
+import build_liseuse; build_liseuse.build()
+open(OUT+'/_headers','a').write('/liseuse/pages/*\n  Cache-Control: public, max-age=31536000, immutable\n')
+
 # supprime les fichiers parasites macOS (._*, .DS_Store) créés par le volume externe
 for r,_,fs in os.walk(OUT):
     for f in fs:
