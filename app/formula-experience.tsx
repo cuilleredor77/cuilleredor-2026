@@ -20,6 +20,14 @@ export default function FormulaExperience() {
         .forEach((panel) => {
           panel.open = panel.dataset.menuFormula === formula;
         });
+      // la carte de la formule choisie reste en surbrillance au-dessus de son menu
+      document
+        .querySelectorAll<HTMLElement>(".offers-picker .offer-card")
+        .forEach((card) => {
+          if (card.dataset.selectFormula === formula)
+            card.setAttribute("aria-current", "true");
+          else card.removeAttribute("aria-current");
+        });
     };
 
     const onFormula = (event: Event) => {
@@ -45,7 +53,10 @@ export default function FormulaExperience() {
       const target = document.getElementById(
         link.dataset.formulaTarget === "menu" ? "carte" : "calculateur",
       );
-      if (target && target.getBoundingClientRect().top > 80) {
+      // menu : on ne descend que s'il n'est pas déjà bien visible sous les cartes
+      const limit =
+        link.dataset.formulaTarget === "menu" ? window.innerHeight * 0.7 : 80;
+      if (target && target.getBoundingClientRect().top > limit) {
         target.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     };
