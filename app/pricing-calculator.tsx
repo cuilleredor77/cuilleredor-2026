@@ -393,6 +393,11 @@ export default function PricingCalculator() {
     });
 
   const optionsTotal = optionLines.reduce((sum, line) => sum + line.amount, 0);
+  // « Ajouter des options » ne compte que les vraies options (pas le vin d'honneur, les enfants ni les prestataires)
+  const extraLines = optionLines.filter(
+    (line) => !["honorWine", "children", "providers"].includes(line.id),
+  );
+  const extrasTotal = extraLines.reduce((sum, line) => sum + line.amount, 0);
   const estimatedTotal =
     mealTotal === null ? null : mealTotal + optionsTotal;
   const selectedService =
@@ -656,11 +661,11 @@ export default function PricingCalculator() {
         <summary>
           <span>Ajouter des options</span>
           <small>
-            {optionLines.length === 0
+            {extraLines.length === 0
               ? "Fromages, boissons, vaisselle, mobilier…"
-              : optionLines.length === 1
-                ? `${optionLines[0].label.replace(/ \([^)]*\)\s*$/, "")}${optionLines[0].id === "waste" ? " — sélectionné par défaut" : ""} · ${optionLines[0].amount.toLocaleString("fr-FR", { minimumFractionDigits: optionLines[0].amount % 1 ? 2 : 0 })} €`
-                : `${optionLines.length} options sélectionnées · ${optionsTotal.toLocaleString("fr-FR", { minimumFractionDigits: optionsTotal % 1 ? 2 : 0 })} €`}
+              : extraLines.length === 1
+                ? `${extraLines[0].label.replace(/ \([^)]*\)\s*$/, "")}${extraLines[0].id === "waste" ? " — sélectionné par défaut" : ""} · ${extraLines[0].amount.toLocaleString("fr-FR", { minimumFractionDigits: extraLines[0].amount % 1 ? 2 : 0 })} €`
+                : `${extraLines.length} options sélectionnées · ${extrasTotal.toLocaleString("fr-FR", { minimumFractionDigits: extrasTotal % 1 ? 2 : 0 })} €`}
           </small>
           <b aria-hidden="true">+</b>
         </summary>
@@ -790,7 +795,7 @@ export default function PricingCalculator() {
             }
             onClick={requestQuote}
           >
-            Recevoir mon devis <ArrowRight size={17} />
+            Enregistrer et recevoir mon devis <ArrowRight size={17} />
           </a>
           <a className="calculator-secondary-link" href="#carte">
             Voir les plats <ArrowRight size={17} />
@@ -802,7 +807,7 @@ export default function PricingCalculator() {
           <li>
             <span>
               {guests} adulte{guests > 1 ? "s" : ""} × {isChef ? "dès " : ""}
-              {price} €/pers. · {selectedService}
+              {price} €/pers.
             </span>
             <span>
               {mealTotal!.toLocaleString("fr-FR", { minimumFractionDigits: mealTotal! % 1 ? 2 : 0 })}{" "}

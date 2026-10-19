@@ -7121,3 +7121,5 @@ body:has(.calculator-mobile-bar.is-visible) .back-to-top {
   .quote-option { padding: 18px 16px; }
   .quote-option button { width: 100%; justify-content: center; }
 }
+
+.quote-inline:empty, .quote-inline:has(> .quote-chooser:empty) { margin-top: 0; }

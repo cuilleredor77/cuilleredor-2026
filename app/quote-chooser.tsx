@@ -407,22 +407,6 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
 
   return (
     <div className="quote-chooser">
-      {!open && (
-        <div className="quote-option">
-          <div>
-            <strong>Enregistrer mon estimation et recevoir mon devis personnalisé par e-mail</strong>
-            <p>
-              Quelques informations suffisent pour chiffrer votre devis : il
-              reprend l’estimation ci-dessus, avec le contrat prêt à signer.
-              Sans engagement.
-            </p>
-          </div>
-          <button type="button" onClick={() => setOpen(true)}>
-            Enregistrer et recevoir mon devis <ArrowRight size={16} />
-          </button>
-        </div>
-      )}
-
       {open && (
       <div
         className="selected-form"
@@ -488,10 +472,12 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
         </p>
       </div>
       )}
-      <p className="quote-reassurance">
-        Devis en ligne · Sans engagement · Vos informations servent
-        uniquement à traiter votre demande.
-      </p>
+      {open && (
+        <p className="quote-reassurance">
+          Devis en ligne · Sans engagement · Vos informations servent
+          uniquement à traiter votre demande.
+        </p>
+      )}
     </div>
   );
 }
