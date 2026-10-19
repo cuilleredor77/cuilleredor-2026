@@ -1,13 +1,14 @@
 # Reprise du chantier « Devis automatique » (étape 1)
 
-Dernière mise à jour : 19/10/2026. Branche de travail : `feat/devis-auto` (dossier de session
-`.claude/worktrees/cuillere-dor-catalogue-2026-c181b7`). Base : `origin/main` = `claude/site-review-097a64`.
+Dernière mise à jour : 19/10/2026. Branche de travail : `feat/devis-auto` (dossier dédié
+`.claude/worktrees/devis-auto` ; l'ancien dossier `cuillere-dor-catalogue-2026-c181b7` a été repris par une autre session sur `fix/catalogue-textes`). Base : `origin/main` = `claude/site-review-097a64`.
 
 ## Objectif
-Sortir Huguette du goulot des devis : une demande arrive → un devis + contrat est généré avec les tarifs du
-catalogue 2027-2028 → Huguette vérifie, ajuste et envoie (Gmail pré-rempli). Étapes suivantes : (2) signature
-électronique gratuite sur la page du devis, (3) acompte (virement + QR, option carte), relances, lien avec le
-fichier de suivi.
+Huguette sort complètement de la boucle des devis (décision du 19/10/2026) : elle n'intervient qu'à la signature
+ou pour closer. Chaîne : demande sur le site → km + devis calculés automatiquement → e-mail « Devis prêt » à la
+relectrice (`REVIEW_EMAIL`) avec un bouton « Envoyer au client » → e-mail au client (copie cachée à la relectrice).
+Étapes suivantes : (2) signature électronique gratuite sur la page du devis (prévenir Huguette à la signature),
+(3) acompte (virement + QR, option carte), relances, lien avec le fichier de suivi.
 
 ## Ce qui est fait (testé en local, NON déployé, NON poussé)
 - `lib/quote.ts` : moteur de devis (tarifs catalogue, paliers 30/200/350, vin d'honneur +5 €, enfants 25 €,
@@ -26,20 +27,31 @@ fichier de suivi.
   poste sur `/api/demande`, pré-rempli par l'estimation du simulateur (formule, convives, vin d'honneur), champ
   « plats choisis » à coller depuis le catalogue, champ piège anti-robots ; formulaire Google conservé en secours
   (bouton en cas d'échec + lien sous le formulaire). Testé en local (envoi, ligne en D1, mobile 375 px sans défilement).
-- `public/robots.txt` : `/admin`, `/devis/`, `/api/` interdits.
+- `public/robots.txt` : `/admin`, `/devis/`, `/api/`, `/envoyer/` interdits.
+- Chaîne automatique (`lib/automation.ts`, `lib/geo.ts`) : `/api/demande` calcule les km (Nominatim + OSRM, nouvel
+  essai avec la commune seule si l'adresse est inconnue), génère le devis (statut `devis_pret`) et envoie l'e-mail
+  « Devis prêt / À vérifier » (points d'alerte : date < 60 j, sous le minimum, km introuvables, Chef, etc. + rappel
+  de vérifier que la date est libre). Bouton « Envoyer au client » = page `/envoyer/[token]?k=…` (clé HMAC liée à
+  `ADMIN_PASSWORD`, envoi seulement par un formulaire POST, donc un aperçu du lien n'envoie rien). L'éditeur `/admin/[id]`
+  a aussi « Envoyer au client maintenant » (Gmail gardé en secours). Envoi via Resend (`RESEND_API_KEY`) ;
+  `RESEND_API_KEY=log` dans `.dev.vars` affiche les e-mails dans la console au lieu de les envoyer.
+  Testé en local : demande → e-mail relectrice → envoi client → statut « envoyé » ; mauvaise clé refusée (403/404).
 
 ## Reste à faire (dans l'ordre)
-1. ~~Formulaire natif~~ et 2. ~~robots.txt~~ : faits le 19/10/2026.
-   À décider avant la mise en ligne : AUCUNE notification n'est envoyée à Huguette quand une demande arrive
-   (elle doit ouvrir `/admin`). Prévoir un e-mail de notification (ex. via un service d'envoi type Resend/Brevo).
-3. Déploiement : `npx wrangler d1 migrations apply cuilleredor-devis --remote`, puis le mot de passe de l'espace
-   privé (à choisir par Huguette, 8 caractères minimum) : `npx wrangler secret put ADMIN_PASSWORD`, puis `npm run deploy`.
+1. ~~Formulaire natif~~, 2. ~~robots.txt~~, ~~notification + envoi en 1 clic~~ : faits le 19/10/2026.
+3. Déploiement : migration D1 `--remote` FAITE le 19/10/2026. Reste, dans l'ordre :
+   a. Compte Resend (l'utilisatrice le crée), domaine `cuilleredor.fr` vérifié (enregistrements DNS donnés par Resend),
+      clé API : `npx wrangler secret put RESEND_API_KEY`.
+   b. Variables `MAIL_FROM` (ex. `Cuillère d'Or <devis@cuilleredor.fr>`) et `REVIEW_EMAIL` (adresse de la relectrice)
+      dans `wrangler.jsonc` (`vars`) ou en secrets.
+   c. Mot de passe de l'espace privé (choisi par l'utilisatrice, 8 caractères min.) : `npx wrangler secret put ADMIN_PASSWORD`.
+   d. `npm run deploy` (met en ligne le nouveau formulaire : à faire seulement après a, b, c).
 4. Test de bout en bout en production avec une fausse demande (puis suppression).
 5. Étape 2 : signature électronique « simple » (lien unique, code reçu par e-mail, horodatage, empreinte SHA-256,
    PDF signé avec page de preuve, classement Drive). Étape 3 : acompte (IBAN + nom exact du titulaire + QR de
    virement EPC, option carte/PayPal), relances automatiques, synchronisation avec le suivi.
-6. Calcul des km : l'adresse de test « Château de Beauclair, Morville-en-Beauce » a répondu « introuvable » ;
-   vérifier Nominatim (limites, adresse partielle) et prévoir une saisie manuelle claire.
+6. Calcul des km : « Château de Beauclair, Morville-en-Beauce » trouvé via la commune (122,9 km AR). Si rien n'est
+   trouvé, le devis part sans ligne de déplacement et l'e-mail de relecture le signale.
 
 ## Points à faire valider par Huguette (texte juridique et tarifs, ne pas changer sans accord)
 - Contrat art. 4.4 : « nombre de convives confirmé 30 jours avant » alors que le catalogue dit « figé à J-60 ».

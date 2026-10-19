@@ -11,7 +11,17 @@ type D1Statement = {
 };
 export type D1 = { prepare: (sql: string) => D1Statement };
 
-type AppEnv = { DB?: D1; ADMIN_PASSWORD?: string };
+type AppEnv = {
+  DB?: D1;
+  ADMIN_PASSWORD?: string;
+  RESEND_API_KEY?: string; // clé du service d'envoi d'e-mails (secret)
+  MAIL_FROM?: string; // ex. « Cuillère d’Or <devis@cuilleredor.fr> »
+  REVIEW_EMAIL?: string; // qui reçoit « Devis prêt » et relit avant envoi
+};
+
+export function setting(name: "RESEND_API_KEY" | "MAIL_FROM" | "REVIEW_EMAIL"): string {
+  return ((env as unknown as AppEnv)[name] || "").trim();
+}
 
 export function db(): D1 {
   const binding = (env as unknown as AppEnv).DB;
@@ -94,6 +104,17 @@ export async function isAdmin(request: Request): Promise<boolean> {
   const [expires, signature] = match.slice(COOKIE.length + 1).split(".");
   if (!expires || !signature || Number(expires) < Date.now()) return false;
   return safeEqual(signature, await sign(expires, secret));
+}
+
+/** Clé du lien « Envoyer au client » reçu par e-mail (liée au devis, invalide si le mot de passe change). */
+export async function approvalKey(token: string): Promise<string | null> {
+  const secret = adminPassword();
+  return secret ? (await sign(`send:${token}`, secret)).slice(0, 32) : null;
+}
+
+export async function checkApprovalKey(token: string, key: string): Promise<boolean> {
+  const expected = await approvalKey(token);
+  return !!expected && safeEqual(expected, key);
 }
 
 export function json(data: unknown, init: ResponseInit = {}): Response {

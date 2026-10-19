@@ -3,5 +3,6 @@ Allow: /
 Disallow: /admin
 Disallow: /devis/
 Disallow: /api/
+Disallow: /envoyer/
 
 Sitemap: https://cuilleredor.fr/sitemap.xml

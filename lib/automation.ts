@@ -1,0 +1,137 @@
+// Chaîne automatique : demande reçue → devis calculé → e-mail « devis prêt » à la relectrice → envoi au client en 1 clic.
+import { approvalKey, db, getRequestById, setting } from "./server";
+import { roundTripKm } from "./geo";
+import {
+  buildDefaultQuote,
+  clientEmail,
+  computeTotals,
+  formatDateFR,
+  formatEUR,
+  parseQuote,
+  quoteAlerts,
+  type RequestRow,
+} from "./quote";
+
+const REPLY_TO = "cuilleredor4@gmail.com";
+const AVAILABILITY = "Avant d’envoyer : vérifie que la date est libre (l’e-mail au client dit « Nous sommes disponibles à cette date »).";
+
+type Mail = { to: string; subject: string; text: string; html?: string; bcc?: string; replyTo?: string };
+
+/** Envoi via Resend. Sans clé configurée, ne fait rien (le devis reste visible dans /admin). */
+export async function sendMail(mail: Mail): Promise<{ ok: boolean; error?: string }> {
+  const key = setting("RESEND_API_KEY");
+  const from = setting("MAIL_FROM");
+  if (!key || !from) return { ok: false, error: "Envoi d’e-mails non configuré (RESEND_API_KEY / MAIL_FROM)." };
+  if (key === "log") {
+    // Test local : l'e-mail est affiché dans la console au lieu d'être envoyé.
+    console.log(`[mail simulé] à ${mail.to}${mail.bcc ? ` (cci ${mail.bcc})` : ""} — ${mail.subject}\n${mail.text}`);
+    return { ok: true };
+  }
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
+      body: JSON.stringify({
+        from,
+        to: [mail.to],
+        bcc: mail.bcc ? [mail.bcc] : undefined,
+        reply_to: mail.replyTo || REPLY_TO,
+        subject: mail.subject,
+        text: mail.text,
+        html: mail.html,
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return { ok: false, error: `Resend ${res.status} : ${(await res.text()).slice(0, 200)}` };
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, error: `Resend injoignable : ${String(error).slice(0, 120)}` };
+  }
+}
+
+const esc = (s: string) =>
+  s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] as string);
+
+/** Calcule les km et le devis d'une nouvelle demande, puis prévient la relectrice. Ne lève jamais d'erreur. */
+export async function prepareAndNotify(id: number, origin: string): Promise<void> {
+  try {
+    let row = await getRequestById(id);
+    if (!row) return;
+    let km = row.km;
+    if (!km && row.event_place.length >= 4) {
+      const distance = await roundTripKm(row.event_place);
+      if (!("error" in distance)) km = distance.km;
+    }
+    const quote = buildDefaultQuote({ ...row, km, quote_json: "" });
+    await db()
+      .prepare(
+        `UPDATE requests SET updated_at = ?, km = ?, quote_json = ?, quote_version = quote_version + 1, status = 'devis_pret'
+         WHERE id = ? AND quote_json = ''`,
+      )
+      .bind(new Date().toISOString(), km, JSON.stringify(quote), id)
+      .run();
+    row = await getRequestById(id);
+    if (row) await notifyReviewer(row, origin);
+  } catch (error) {
+    console.error("prepareAndNotify", id, error);
+  }
+}
+
+async function notifyReviewer(row: RequestRow, origin: string): Promise<void> {
+  const to = setting("REVIEW_EMAIL");
+  if (!to) return;
+  const quote = parseQuote(row);
+  const totals = computeTotals(quote, row.event_date);
+  const alerts = quoteAlerts(row, quote, totals);
+  const key = await approvalKey(row.token);
+  const sendUrl = key ? `${origin}/envoyer/${row.token}?k=${key}` : "";
+  const viewUrl = `${origin}/devis/${row.token}`;
+  const editUrl = `${origin}/admin/${row.id}`;
+  const when = row.event_date ? formatDateFR(row.event_date, true) : "date inconnue";
+  const subject = `${alerts.length ? "⚠️ À vérifier" : "✅ Devis prêt"} — ${row.client_name}, ${row.event_type} du ${when} — ${formatEUR(totals.total)}`;
+  const facts = [
+    `${row.client_name} · ${row.client_email} · ${row.client_phone}`,
+    `${row.event_type} le ${when}${row.event_place ? ` à ${row.event_place}` : ""}`,
+    quote.summary,
+    `Total ${formatEUR(totals.total)}${row.km ? ` (dont ${row.km} km AR)` : ""}`,
+    row.selection_text ? `Plats choisis : ${row.selection_text}` : "",
+    row.message ? `Message : ${row.message}` : "",
+  ].filter(Boolean);
+  const text = [
+    ...facts,
+    "",
+    alerts.length ? `À vérifier :\n- ${alerts.join("\n- ")}` : "Aucun point bloquant détecté.",
+    AVAILABILITY,
+    "",
+    sendUrl ? `Envoyer au client tel quel : ${sendUrl}` : "",
+    `Voir le devis : ${viewUrl}`,
+    `Modifier : ${editUrl}`,
+  ].join("\n");
+  const button = (href: string, label: string, gold = false) =>
+    `<a href="${esc(href)}" style="display:inline-block;margin:4px 8px 4px 0;padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold;${gold ? "background:#d4ae2a;color:#0a0a0a" : "border:1px solid #775a19;color:#775a19"}">${label}</a>`;
+  const html = `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.5;color:#1a1a1a">
+${facts.map((f) => `<p style="margin:0 0 6px">${esc(f)}</p>`).join("")}
+${alerts.length ? `<div style="margin:14px 0;padding:12px 14px;background:#fff7e0;border:1px solid #e9c83e;border-radius:6px"><b>À vérifier</b><ul style="margin:6px 0 0;padding-left:18px">${alerts.map((a) => `<li>${esc(a)}</li>`).join("")}</ul></div>` : `<p style="color:#2e6b2e">Aucun point bloquant détecté.</p>`}
+<p style="color:#5e5e5e">${esc(AVAILABILITY)}</p>
+<p style="margin-top:16px">${sendUrl ? button(sendUrl, "Envoyer au client", true) : ""}${button(viewUrl, "Voir le devis")}${button(editUrl, "Modifier")}</p>
+</div>`;
+  const result = await sendMail({ to, subject, text, html });
+  if (!result.ok) console.error("notifyReviewer", row.id, result.error);
+}
+
+/** Envoie le devis au client (copie cachée à la relectrice) et marque la demande « envoyée ». */
+export async function sendQuoteToClient(row: RequestRow, origin: string): Promise<{ ok: boolean; error?: string }> {
+  if (!row.quote_json) return { ok: false, error: "Le devis n’est pas encore calculé." };
+  if (!row.client_email) return { ok: false, error: "E-mail du client manquant." };
+  const quote = parseQuote(row);
+  const totals = computeTotals(quote, row.event_date);
+  const { subject, body } = clientEmail(row, quote, totals, `${origin}/devis/${row.token}`);
+  const result = await sendMail({ to: row.client_email, subject, text: body, bcc: setting("REVIEW_EMAIL") || undefined });
+  if (!result.ok) return result;
+  const now = new Date().toISOString();
+  await db()
+    .prepare("UPDATE requests SET status = 'envoye', sent_at = ?, updated_at = ? WHERE id = ?")
+    .bind(now, now, row.id)
+    .run();
+  return { ok: true };
+}

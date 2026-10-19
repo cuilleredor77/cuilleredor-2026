@@ -485,3 +485,52 @@ export function quoteFileName(req: RequestRow): string {
     .filter(Boolean)
     .join("_");
 }
+
+// ---------- E-mail au client et points à vérifier (partagés par l'éditeur et l'envoi automatique) ----------
+
+export function firstName(full: string) {
+  const parts = full.trim().split(/\s+/);
+  return parts.find((p) => /[a-zà-ÿ]/.test(p)) || parts[0] || "";
+}
+
+export function clientEmail(req: RequestRow, quote: Quote, totals: Totals, link: string): { subject: string; body: string } {
+  const dateShort = req.event_date ? formatDateShort(req.event_date) : "";
+  const subject = `Votre devis Cuillère d’Or — ${req.event_type} du ${dateShort} — ${req.client_name}`;
+  const body = [
+    `Bonjour ${firstName(req.client_name)},`,
+    "",
+    `Merci pour votre demande pour votre ${req.event_type.toLowerCase()} du ${req.event_date ? formatDateFR(req.event_date, true) : ""}${req.event_place ? ` à ${req.event_place}` : ""}. Nous sommes disponibles à cette date.`,
+    "",
+    "Vous trouverez votre devis et votre contrat à cette adresse (bouton « Télécharger en PDF » pour les enregistrer) :",
+    link,
+    "",
+    `• ${quote.summary}`,
+    `• Total : ${formatEUR(totals.total)}`,
+    totals.fullAtSignature
+      ? `• Règlement intégral à la signature : ${formatEUR(totals.total)}`
+      : `• Acompte de 30 % à la signature : ${formatEUR(totals.deposit)} — solde de ${formatEUR(totals.balance)} au plus tard le ${formatDateFR(totals.balanceDue)}`,
+    `• Devis valable jusqu’au ${formatDateFR(totals.validUntil)}`,
+    "",
+    "Pour réserver votre date, il vous suffit de nous retourner le contrat signé : nous vous communiquerons alors nos coordonnées bancaires pour l’acompte.",
+    "",
+    "Bien cordialement,",
+    "Cheffe Huguette — 07 83 74 89 71 | cuilleredor4@gmail.com",
+  ].join("\n");
+  return { subject, body };
+}
+
+/** Points à vérifier avant d'envoyer le devis au client. */
+export function quoteAlerts(req: RequestRow, quote: Quote, totals: Totals): string[] {
+  const out: string[] = [];
+  const key: FormulaKey = isFormulaKey(req.formula) ? req.formula : "buffet";
+  if (!req.client_email) out.push("E-mail du client manquant.");
+  if (!req.event_date) out.push("Date de l’événement manquante.");
+  else if (daysBetween(todayISO(), req.event_date) < 0) out.push("La date de l’événement est dépassée.");
+  else if (totals.fullAtSignature) out.push("Événement dans moins de 2 mois : règlement intégral à la signature.");
+  if (req.adults < FORMULAS[key].min) out.push(`Moins que le minimum de la formule (${FORMULAS[key].min} convives) : à valider avant d’envoyer.`);
+  if (!req.event_place) out.push("Lieu de l’événement manquant.");
+  else if (!req.km) out.push("Frais de déplacement non calculés (adresse introuvable) : à compléter dans l’éditeur.");
+  if (key === "chef") out.push("Chef à domicile : tarif à confirmer.");
+  if (quote.lines.some((l) => !(l.price > 0) || !(l.qty > 0))) out.push("Une ligne a une quantité ou un prix à zéro.");
+  return out;
+}

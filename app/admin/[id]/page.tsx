@@ -3,19 +3,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, computeTotals, daysBetween, formatDateFR, formatDateShort,
-  formatEUR, lineTotal, presetToLine, todayISO, type FormulaKey, type Quote, type QuoteLine, type RequestRow,
+  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, clientEmail, computeTotals, formatDateFR, formatDateShort,
+  formatEUR, lineTotal, presetToLine, quoteAlerts, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
 const STATUS: Array<[string, string]> = [
   ["nouvelle", "Nouvelle"], ["en_cours", "En cours"], ["devis_pret", "Devis prêt"], ["envoye", "Envoyé"],
   ["signe", "Signé"], ["acompte", "Acompte reçu"], ["archivee", "Archivée"],
 ];
-
-function firstName(full: string) {
-  const parts = full.trim().split(/\s+/);
-  return parts.find((p) => /[a-zà-ÿ]/.test(p)) || parts[0] || "";
-}
 
 export default function Editor() {
   const { id } = useParams<{ id: string }>();
@@ -36,20 +31,7 @@ export default function Editor() {
   useEffect(() => { load(); }, [load]);
 
   const totals = useMemo(() => (quote && req ? computeTotals(quote, req.event_date) : null), [quote, req]);
-  const alerts = useMemo(() => {
-    if (!req || !quote || !totals) return [];
-    const out: string[] = [];
-    const key = (FORMULA_KEYS as string[]).includes(req.formula) ? (req.formula as FormulaKey) : "buffet";
-    if (!req.client_email) out.push("E-mail du client manquant.");
-    if (!req.event_date) out.push("Date de l’événement manquante.");
-    else if (daysBetween(todayISO(), req.event_date) < 0) out.push("La date de l’événement est dépassée.");
-    else if (totals.fullAtSignature) out.push("Événement dans moins de 2 mois : règlement intégral à la signature.");
-    if (req.adults < FORMULAS[key].min) out.push(`Moins que le minimum de la formule (${FORMULAS[key].min} convives) : à valider avant d’envoyer.`);
-    if (!req.km && req.event_place) out.push("Frais de déplacement non calculés : cliquez sur « Calculer les km ».");
-    if (!req.event_place) out.push("Lieu de l’événement manquant.");
-    if (quote.lines.some((l) => !(l.price > 0) || !(l.qty > 0))) out.push("Une ligne a une quantité ou un prix à zéro.");
-    return out;
-  }, [req, quote, totals]);
+  const alerts = useMemo(() => (req && quote && totals ? quoteAlerts(req, quote, totals) : []), [req, quote, totals]);
 
   if (!req || !quote || !totals) return <p className="adm-muted">Chargement…</p>;
 
@@ -86,34 +68,24 @@ export default function Editor() {
     setMsg(`${data.km} km aller-retour (${data.oneWay} km l’aller) — pensez à régénérer les lignes pour intégrer le déplacement.`);
   }
 
+  async function sendNow() {
+    if (dirty && !(await save())) return;
+    if (!confirm(`Envoyer le devis à ${req!.client_email} ?`)) return;
+    setBusy(true); setMsg("");
+    const res = await fetch(`/api/admin/requests/${id}/send`, { method: "POST" });
+    const data = await res.json();
+    setBusy(false);
+    if (!res.ok) { setMsg(data.error || "Envoi impossible."); return; }
+    setReq(data.request); setMail(false); setMsg("Devis envoyé au client ✓");
+  }
+
   async function preview() {
     if (dirty && !(await save())) return;
     window.open(`/devis/${req!.token}`, "_blank");
   }
 
   const link = `${typeof window !== "undefined" ? window.location.origin : ""}/devis/${req.token}`;
-  const dateShort = req.event_date ? formatDateShort(req.event_date) : "";
-  const subject = `Votre devis Cuillère d’Or — ${req.event_type} du ${dateShort} — ${req.client_name}`;
-  const body = [
-    `Bonjour ${firstName(req.client_name)},`,
-    "",
-    `Merci pour votre demande pour votre ${req.event_type.toLowerCase()} du ${req.event_date ? formatDateFR(req.event_date, true) : ""}${req.event_place ? ` à ${req.event_place}` : ""}. Nous sommes disponibles à cette date.`,
-    "",
-    "Vous trouverez votre devis et votre contrat à cette adresse (bouton « Télécharger en PDF » pour les enregistrer) :",
-    link,
-    "",
-    `• ${quote.summary}`,
-    `• Total : ${formatEUR(totals.total)}`,
-    totals.fullAtSignature
-      ? `• Règlement intégral à la signature : ${formatEUR(totals.total)}`
-      : `• Acompte de 30 % à la signature : ${formatEUR(totals.deposit)} — solde de ${formatEUR(totals.balance)} au plus tard le ${formatDateFR(totals.balanceDue)}`,
-    `• Devis valable jusqu’au ${formatDateFR(totals.validUntil)}`,
-    "",
-    "Pour réserver votre date, il vous suffit de nous retourner le contrat signé : nous vous communiquerons alors nos coordonnées bancaires pour l’acompte.",
-    "",
-    "Bien cordialement,",
-    "Cheffe Huguette — 07 83 74 89 71 | cuilleredor4@gmail.com",
-  ].join("\n");
+  const { subject, body } = clientEmail(req, quote, totals, link);
   const gmail = `https://mail.google.com/mail/?view=cm&fs=1&authuser=cuilleredor4%40gmail.com&to=${encodeURIComponent(req.client_email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
   return (
@@ -236,13 +208,14 @@ export default function Editor() {
         <div className="adm-modal" onClick={() => setMail(false)}>
           <div className="adm-card adm-mail" onClick={(e) => e.stopPropagation()}>
             <h2>E-mail au client</h2>
-            <p className="adm-muted">Relisez, puis ouvrez Gmail : le message est pré-rempli, vous n’avez plus qu’à cliquer sur « Envoyer ».</p>
+            <p className="adm-muted">Relisez, puis « Envoyer au client maintenant » (copie cachée dans votre boîte). Gmail reste possible en secours.</p>
             <p><b>À :</b> {req.client_email || <em>(adresse manquante)</em>}</p>
             <p><b>Objet :</b> {subject}</p>
             <pre className="adm-pre">{body}</pre>
             <div className="adm-actions">
               <button className="adm-btn" onClick={() => navigator.clipboard.writeText(body)}>Copier le texte</button>
-              <a className="adm-btn adm-gold" href={gmail} target="_blank" rel="noreferrer">Ouvrir dans Gmail ↗</a>
+              <button className="adm-btn adm-gold" disabled={busy || !!req.sent_at} onClick={sendNow}>{req.sent_at ? "Déjà envoyé ✓" : "Envoyer au client maintenant"}</button>
+              <a className="adm-btn" href={gmail} target="_blank" rel="noreferrer">Ouvrir dans Gmail ↗</a>
               <button className="adm-btn" onClick={async () => { if (await save({ markSent: true })) setMail(false); }}>✔ C’est envoyé : marquer comme envoyé</button>
               <button className="adm-btn" onClick={() => setMail(false)}>Fermer</button>
             </div>

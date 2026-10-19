@@ -1,5 +1,6 @@
 import { db, json, newToken } from "../../../lib/server";
 import { isFormulaKey } from "../../../lib/quote";
+import { prepareAndNotify } from "../../../lib/automation";
 
 // Demande de devis envoyée depuis le site (formulaire natif). Publique, donc validée strictement.
 const clamp = (value: unknown, max: number) =>
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
 
   const now = new Date().toISOString();
   const token = newToken();
-  await db()
+  const inserted = await db()
     .prepare(
       `INSERT INTO requests (token, created_at, updated_at, status, source, client_name, client_email, client_phone,
         event_type, event_date, event_place, formula, adults, children, providers, honor_wine, budget,
@@ -64,5 +65,8 @@ export async function POST(request: Request) {
       clamp(body.message, 2000),
     )
     .run();
+  // Devis calculé et relectrice prévenue tout de suite ; un échec ici n'empêche pas la demande d'être enregistrée.
+  const id = inserted.meta.last_row_id;
+  if (id) await prepareAndNotify(id, new URL(request.url).origin);
   return json({ ok: true });
 }
