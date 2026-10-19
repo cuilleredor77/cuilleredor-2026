@@ -508,16 +508,17 @@ const faqItems = [
     question: "Quelles sont les conditions de paiement ?",
     answer: "",
     lines: [
-      "Acompte : 30 % à la signature",
+      "Acompte : 30 % à la signature du devis",
       "Solde : 70 % deux mois avant l’événement",
       "Événement dans moins de 60 jours : règlement intégral à la signature",
+      "Caution : 250 €, versée avec le solde et restituée après l’événement, sauf dommage, casse ou perte de matériel",
       "Virement bancaire ou espèces",
     ],
   },
   {
     question: "Quelle est la politique d’annulation ?",
     answer:
-      "Toute annulation doit être formulée par écrit. Plus de 90 jours avant l’événement, l’acompte reste acquis. Entre 30 et 90 jours, 50 % du montant total est dû. À moins de 30 jours, la totalité de la prestation est due.",
+      "Toute annulation doit être formulée par écrit. Plus de 90 jours avant l’événement, les sommes versées restent acquises. Entre 90 et 30 jours, 50 % du montant total est dû. À moins de 30 jours, la totalité de la prestation est due. Si l’annulation vient de Cuillère d’Or (hors force majeure), vous êtes intégralement remboursé.",
   },
   {
     question: "Que comprend le vin d’honneur ?",
@@ -547,7 +548,7 @@ const faqItems = [
   {
     question: "Comment sont calculés les frais de déplacement ?",
     answer:
-      "Ils sont calculés au départ de Vert-Saint-Denis, sur la base de 1,70 € par kilomètre aller-retour, puis présentés sur une ligne distincte du devis. Les prestations hors Île-de-France et à l’international sont étudiées sur demande.",
+      "Ils sont calculés au départ de Vert-Saint-Denis, sur la base de 1,90 € par kilomètre aller-retour (péages et stationnement compris), puis présentés sur une ligne distincte du devis. Au-delà de 250 km, des frais de logement s’ajoutent, à définir avec la cheffe. Les prestations hors Île-de-France et à l’international sont étudiées sur demande.",
   },
   {
     question: "Proposez-vous d’autres formules (Barbecue Party, Chef à domicile) ?",
@@ -562,7 +563,12 @@ const faqItems = [
   {
     question: "Comment se déroule une dégustation ?",
     answer:
-      "La dégustation se réserve sur rendez-vous au restaurant Chez Lina, à Brunoy, et permet de goûter une sélection représentative, d’affiner le menu et d’échanger avec la cheffe. Elle est proposée à 70 € par personne, non déductibles du devis final.",
+      "La dégustation se réserve sur rendez-vous au restaurant Chez Lina, à Brunoy, et permet de goûter une sélection représentative, d’affiner le menu et d’échanger avec la cheffe. Elle est proposée à 70 € par personne, non déductible du devis final, en session partagée de 2 à 10 personnes (1 h à 1 h 30), entre 15 h et 18 h ou après 21 h. Au menu : apéritif de la cheffe (5 pièces) puis repas de votre choix. Annulation possible jusqu’à 48 h avant.",
+  },
+  {
+    question: "Peut-on privatiser le restaurant Chez Lina ?",
+    answer:
+      "Oui. Le restaurant Chez Lina (29 rue de Montgeron, Brunoy) et son extérieur se louent pour tout événement privé, avec ou sans prestation Cuillère d’Or ou Chez Lina. La privatisation se fait sur devis. Le restaurant est ouvert du mardi au vendredi de 11 h 45 à 14 h 45 et de 18 h 45 à 23 h 45, le samedi de 11 h 45 à 23 h 45 sans interruption, et fermé le dimanche et le lundi.",
   },
 ];
 const FAQ_VISIBLE_COUNT = 5;
@@ -1452,6 +1458,7 @@ export default function Home() {
             Demander un devis <ArrowRight size={16} />
           </a>
           <nav className="footer-legal" aria-label="Informations légales">
+            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf">Catalogue PDF</a>
             <a href="/mentions-legales">Mentions légales</a>
             <a href="/politique-confidentialite">Confidentialité</a>
           </nav>
