@@ -543,7 +543,7 @@ export function quoteAlerts(req: RequestRow, quote: Quote, totals: Totals): stri
   const out: string[] = [];
   const key: FormulaKey = isFormulaKey(req.formula) ? req.formula : "buffet";
   if (!req.client_email) out.push("E-mail du client manquant.");
-  if (!req.event_date) out.push("Date de l’événement manquante.");
+  if (!req.event_date) out.push("Date de l’événement manquante : le mail demande la date et ne confirme pas la disponibilité.");
   else if (daysBetween(todayISO(), req.event_date) < 0) out.push("La date de l’événement est dépassée.");
   else if (totals.fullAtSignature) out.push("Événement dans moins de 2 mois : règlement intégral à la signature.");
   if (req.adults < FORMULAS[key].min) out.push(`Moins que le minimum de la formule (${FORMULAS[key].min} convives) : à valider avant d’envoyer.`);
@@ -587,8 +587,12 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
   const dateLong = req.event_date ? formatDateFR(req.event_date) : "";
   const type = (req.event_type || "événement").toLowerCase();
   const docs = withContract ? "votre devis ainsi que le contrat de prestation" : "votre devis";
-  const subject = `${withContract ? "Votre devis et contrat" : "Votre devis"} Cuillère d’Or — ${req.event_type} du ${req.event_date ? formatDateShort(req.event_date) : ""} — ${req.client_name}`;
-  const intro1 = `Merci pour votre demande. Nous vous confirmons notre disponibilité pour votre ${type}${dateLong ? ` du ${dateLong}` : ""}${req.event_place ? ` (${req.event_place})` : ""}.`;
+  // Sans date valable (vide ou déjà passée), on ne peut pas confirmer la disponibilité : on la demande.
+  const knownDate = Boolean(req.event_date) && req.event_date >= quote.issuedOn;
+  const subject = `${withContract ? "Votre devis et contrat" : "Votre devis"} Cuillère d’Or — ${req.event_type}${knownDate ? ` du ${formatDateShort(req.event_date)}` : ""} — ${req.client_name}`;
+  const intro1 = knownDate
+    ? `Merci pour votre demande. Nous vous confirmons notre disponibilité pour votre ${type} du ${dateLong}${req.event_place ? ` (${req.event_place})` : ""}.`
+    : `Merci pour votre demande pour votre ${type}${req.event_place ? ` (${req.event_place})` : ""}. La date de l’événement ne nous est pas parvenue : pourriez-vous nous l’indiquer ? Tant que nous ne la connaissons pas, nous ne pouvons pas vous confirmer notre disponibilité.`;
   // Sans lien : le devis (et le contrat) part en pièce jointe PDF.
   const intro2 = link
     ? `Vous trouverez ${docs} en ligne, téléchargeable${withContract ? "s" : ""} en PDF :`
@@ -600,9 +604,9 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
   });
   const infos = [
     `Validité du devis : 30 jours (jusqu’au ${formatDateFR(totals.validUntil)}).`,
-    totals.fullAtSignature
+    totals.fullAtSignature && knownDate
       ? `Confirmation : l’événement ayant lieu dans moins de deux mois, la réservation sera effective après signature${withContract ? " du contrat" : ""} et règlement de la totalité, soit ${formatEUR(totals.total)}, accompagné de la caution de ${formatEUR(totals.caution)} (en prévention de retard, restituée si aucun retard constaté).`
-      : `Confirmation : la réservation sera effective après signature${withContract ? " du contrat" : " du devis"} et versement d’un acompte de 30 %, soit ${formatEUR(totals.deposit)}. Le solde restant de ${formatEUR(totals.balance)} sera à régler au plus tard le ${formatDateFR(totals.balanceDue)}, accompagné de la caution de ${formatEUR(totals.caution)} (en prévention de retard, restituée si aucun retard constaté).`,
+      : `Confirmation : la réservation sera effective après signature${withContract ? " du contrat" : " du devis"} et versement d’un acompte de 30 %, soit ${formatEUR(knownDate ? totals.deposit : round2(totals.total * PRICES.depositRate))}. Le solde restant de ${formatEUR(knownDate ? totals.balance : round2(totals.total - round2(totals.total * PRICES.depositRate)))} sera à régler ${totals.balanceDue && knownDate ? `au plus tard le ${formatDateFR(totals.balanceDue)}` : "au plus tard deux mois avant l’événement"}, accompagné de la caution de ${formatEUR(totals.caution)} (en prévention de retard, restituée si aucun retard constaté).`,
     withContract ? "Règlement par virement : les coordonnées bancaires figurent dans le contrat." : "",
   ].filter(Boolean);
   const reread = withContract
