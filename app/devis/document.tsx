@@ -226,7 +226,8 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         <ul>
           <li>Virement bancaire sur le compte Qonto de Cuillère d’Or :
             <div className="dv-rib">
-              <div><span>Titulaire</span><b>EI-MVUNDA-KILOLA HUGUETTE / CUILLERE D OR<br />8 allée des Bois, 77240 Vert-Saint-Denis</b></div>
+              <div><span>Titulaire</span><b>EI-MVUNDA-KILOLA HUGUETTE / CUILLERE D OR</b></div>
+              <div><span>Adresse</span><b>8 allée des Bois, 77240 Vert-Saint-Denis</b></div>
               <div><span>IBAN</span><b>FR76 1695 8000 0103 6634 1336 613</b></div>
               <div><span>BIC</span><b>QNTOFRP1XXX</b></div>
               <div><span>Banque</span><b>Qonto (Olinda SAS), 18 rue de Navarin, 75009 Paris</b></div>
@@ -317,8 +318,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
 
         <h3>ARTICLE 9 — DROIT À L’IMAGE</h3>
         <p>Les photographies et vidéos des réalisations culinaires de Cuillère d’Or et des séquences de l’événement pourront être utilisées à des fins de communication, sans limitation de durée.</p>
-        <p>Le Client autorise ou refuse ce droit :</p>
-        <p className="dv-choices"><span className="dv-tick" aria-hidden="true" /> J’accepte <span className="dv-tick" aria-hidden="true" /> Je refuse</p>
+        <p className="dv-choices">Le Client autorise ou refuse ce droit : <span className="dv-tick" aria-hidden="true" /> <b>J’accepte</b> <span className="dv-tick" aria-hidden="true" /> <b>Je refuse</b></p>
 
         <p className="dv-fait">Fait à Vert-Saint-Denis, le {issued}</p>
         <div className="dv-sign">
