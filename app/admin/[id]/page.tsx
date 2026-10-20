@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import {
   FORMULAS, FORMULA_KEYS, OPTION_PRESETS, travelLast, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
@@ -44,6 +44,8 @@ export default function Editor() {
   const [agenda, setAgenda] = useState<{ count: number; titles: string[]; off: string[] } | null>(null);
   const [negative, setNegative] = useState(false);
   const [unavailableQuote, setUnavailableQuote] = useState(false);
+  // Version du mail modifiée à la main dans l’aperçu (null = modèle proposé).
+  const [edited, setEdited] = useState<{ subject: string; html: string; text: string } | null>(null);
   const [agendaStatus, setAgendaStatus] = useState<"" | "loading" | "off" | "error" | "ok">("");
   const eventDate = req?.event_date || "";
   useEffect(() => {
@@ -126,7 +128,7 @@ export default function Editor() {
     if (!confirm(`Envoyer le devis à ${req!.client_email} ${warn} ?`)) return;
     setBusy(true); setMsg("");
     const attachments = files.map(({ filename, content }) => ({ filename, content }));
-    const res = await fetch(`/api/admin/requests/${id}/send`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ withContract, attachments, unavailable: unavailableQuote }) });
+    const res = await fetch(`/api/admin/requests/${id}/send`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ withContract, attachments, unavailable: unavailableQuote, custom: edited }) });
     const data = await res.json();
     setBusy(false);
     if (!res.ok) { setMsg(data.error || "Envoi impossible."); return; }
@@ -148,7 +150,8 @@ export default function Editor() {
   const fullLink = `${origin}/devis/${req.token}`;
   const quoteLink = `${fullLink}?doc=devis`;
   const link = withContract ? fullLink : quoteLink;
-  const { subject, html, text } = negative ? unavailableEmail(req) : charterEmail(req, quote, totals, "", withContract, unavailableQuote);
+  const model = negative ? unavailableEmail(req) : charterEmail(req, quote, totals, "", withContract, unavailableQuote);
+  const { subject, html, text } = edited ?? model;
   // Gmail ne reçoit que l’objet par l’adresse : le corps mis en forme se colle (Cmd+V) après « Copier l’e-mail mis en forme ».
   const gmail = `https://mail.google.com/mail/?view=cm&fs=1&authuser=cuilleredor4%40gmail.com&to=${encodeURIComponent(req.client_email)}&su=${encodeURIComponent(subject)}`;
   async function copyFormatted() {
@@ -334,8 +337,7 @@ export default function Editor() {
               <button className={negative ? "on" : ""} onClick={() => { setNegative(true); setUnavailableQuote(false); setCopied(""); }}>Indisponible</button>
             </div>
             <p><b>À :</b> {req.client_email || <em>(adresse manquante)</em>}</p>
-            <p><b>Objet :</b> {subject}</p>
-            <div className="adm-mailpreview" dangerouslySetInnerHTML={{ __html: html }} />
+            <MailEditor model={model} edited={edited} onChange={setEdited} />
             {copied ? <p className="adm-note">{copied}</p> : null}
             {!negative ? <div className="adm-attach">
               <label className="adm-btn">📎 Ajouter une pièce jointe<input type="file" multiple accept=".pdf,image/*,.doc,.docx" hidden onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} /></label>
@@ -369,4 +371,33 @@ const DEPOT = "8+All.+des+Bois,+77240+Vert-Saint-Denis,+France";
 
 function mapsLink(place: string): string {
   return `https://www.google.com/maps/dir/${DEPOT}/${encodeURIComponent(place.trim())}/${DEPOT}/`;
+}
+
+/** Aperçu du mail modifiable : on clique dans le texte pour l’adapter avant de le copier ou de l’envoyer. */
+function MailEditor({ model, edited, onChange }: {
+  model: { subject: string; html: string; text: string };
+  edited: { subject: string; html: string; text: string } | null;
+  onChange: (v: { subject: string; html: string; text: string } | null) => void;
+}) {
+  const box = useRef<HTMLDivElement>(null);
+  // Changement de modèle (devis, contrat, indisponible…) : on repart du texte proposé.
+  useEffect(() => {
+    if (box.current) box.current.innerHTML = model.html;
+    onChange(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [model.html]);
+  const current = edited ?? model;
+  const update = (subject = current.subject) => onChange({ subject, html: box.current?.innerHTML || "", text: box.current?.innerText || "" });
+  return (
+    <>
+      <label className="adm-mailsubject"><b>Objet :</b>
+        <input value={current.subject} onChange={(e) => update(e.target.value)} />
+      </label>
+      <div className="adm-mailpreview adm-editable" contentEditable suppressContentEditableWarning ref={box} onInput={() => update()} />
+      <p className="adm-muted adm-mailhint">
+        ✏️ Clique dans le texte pour le modifier avant de le copier ou de l’envoyer.
+        {edited ? <> · <button type="button" className="adm-linkbtn" onClick={() => { if (box.current) box.current.innerHTML = model.html; onChange(null); }}>↺ Revenir au modèle</button></> : null}
+      </p>
+    </>
+  );
 }

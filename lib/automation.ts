@@ -195,14 +195,15 @@ export async function markSheetSent(row: RequestRow): Promise<void> {
 }
 
 /** Envoie le devis au client (copie cachée à la relectrice) et marque la demande « envoyée ». */
-export async function sendQuoteToClient(row: RequestRow, origin: string, withContract = true, attachments: MailAttachment[] = [], unavailable = false): Promise<{ ok: boolean; error?: string }> {
+export async function sendQuoteToClient(row: RequestRow, origin: string, withContract = true, attachments: MailAttachment[] = [], unavailable = false, custom?: { subject: string; html: string; text: string } | null): Promise<{ ok: boolean; error?: string }> {
   if (!row.quote_json) return { ok: false, error: "Le devis n’est pas encore calculé." };
   if (!row.client_email) return { ok: false, error: "E-mail du client manquant." };
   const quote = parseQuote(row);
   const totals = computeTotals(quote, row.event_date);
   const link = `${origin}/devis/${row.token}${withContract ? "" : "?doc=devis"}`;
   // Avec pièces jointes, le mail dit « ci-joint en PDF » ; sans, il garde le lien en ligne.
-  const { subject, html, text } = charterEmail(row, quote, totals, attachments.length ? "" : link, withContract, unavailable);
+  // Mail modifié à la main dans l’admin : on envoie exactement cette version.
+  const { subject, html, text } = custom?.html ? custom : charterEmail(row, quote, totals, attachments.length ? "" : link, withContract, unavailable);
   const result = await sendMail({ to: row.client_email, subject, text, html, bcc: setting("REVIEW_EMAIL") || undefined, attachments });
   if (!result.ok) return result;
   const now = new Date().toISOString();
