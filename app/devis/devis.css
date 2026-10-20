@@ -70,9 +70,9 @@
 .dv-head { display: grid; grid-template-columns: minmax(0, 40%) minmax(0, 60%); gap: 24px; align-items: start; border-bottom: 0; padding-bottom: 0; margin-bottom: 14px; }
 .dv-brand img { width: 220px; max-width: 100%; height: auto; display: block; }
 .dv-brand p { margin: 10px 0 0; font-size: 12px; line-height: 1.5; color: #333; }
-.dv-page .dv-client { width: 100%; min-width: 0; border-collapse: collapse; margin: 0; border: 1px solid #d4b96a; table-layout: fixed; }
+.dv-page .dv-client { width: 100%; min-width: 0; border-collapse: collapse; margin: 0; border: 1px solid #d4b96a; table-layout: auto; }
 .dv-page .dv-client thead th { background: #8b6914; color: #fff; text-align: center; font-size: 14px; letter-spacing: 0.04em; padding: 7px 10px; width: auto; border: 0; }
-.dv-page .dv-client tbody th { background: #fbf5e6; color: #1a1a1a; font-size: 12.5px; width: 40%; padding: 4px 10px; border-bottom: 1px solid #d4b96a; border-right: 1px solid #d4b96a; white-space: normal; overflow-wrap: anywhere; }
+.dv-page .dv-client tbody th { background: #fbf5e6; color: #1a1a1a; font-size: 12.5px; width: 1%; padding: 4px 10px; border-bottom: 1px solid #d4b96a; border-right: 1px solid #d4b96a; white-space: nowrap; overflow-wrap: anywhere; }
 .dv-page .dv-client tbody td { background: #fbf5e6; font-size: 12.5px; width: auto; padding: 4px 10px; border-bottom: 1px solid #d4b96a; white-space: normal; overflow-wrap: anywhere; }
 .dv-lines th.c, .dv-lines td.c { text-align: center; }
 .dv-lines td.dv-check { width: 26px; padding-left: 4px; padding-right: 4px; color: #8b6914; }
