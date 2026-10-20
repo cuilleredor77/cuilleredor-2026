@@ -54,8 +54,8 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
       {/* ================= DEVIS ================= */}
       <section className="dv-page">
         <header className="dv-head">
-          <img src="/logo-cuillere-dor-800.png" alt="Cuillère d’Or" width={260} />
           <div className="dv-title">DEVIS POUR</div>
+          <img src="/logo-cuillere-dor-800.png" alt="Cuillère d’Or" width={260} />
         </header>
         <div className="dv-company">
           8 Allée des Bois, 77240 Vert-Saint-Denis · Tél : 07 83 74 89 71 · contact@cuilleredor.fr · SIRET : 889 933 800 00019
