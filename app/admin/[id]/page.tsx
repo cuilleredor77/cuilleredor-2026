@@ -280,10 +280,9 @@ export default function Editor() {
   );
 }
 
-const DEPOT = "8 Allée des Bois, 77240 Vert-Saint-Denis";
+// Même lien que la formule « Lien itinéraire » du Google Sheet : dépôt → lieu → dépôt (Google affiche les km aller-retour).
+const DEPOT = "8+All.+des+Bois,+77240+Vert-Saint-Denis,+France";
 
-/** « Lien itinéraire » comme dans le Google Sheet : dépôt → lieu → dépôt, Google affiche directement les km aller-retour. */
 function mapsLink(place: string): string {
-  const stop = (s: string) => encodeURIComponent(s.trim()).replace(/%20/g, "+");
-  return `https://www.google.com/maps/dir/${stop(DEPOT)}/${stop(place)}/${stop(DEPOT)}/`;
+  return `https://www.google.com/maps/dir/${DEPOT}/${encodeURIComponent(place.trim())}/${DEPOT}/`;
 }
