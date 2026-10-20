@@ -75,6 +75,8 @@
 .dv-page .dv-client tbody th { background: #fbf5e6; color: #1a1a1a; font-size: 12.5px; width: 1%; padding: 4px 10px; border-bottom: 1px solid #d4b96a; border-right: 1px solid #d4b96a; white-space: nowrap; overflow-wrap: anywhere; }
 .dv-page .dv-client tbody td { background: #fbf5e6; font-size: 12.5px; width: auto; padding: 4px 10px; border-bottom: 1px solid #d4b96a; white-space: normal; overflow-wrap: anywhere; }
 .dv-lines th.c, .dv-lines td.c { text-align: center; }
+/* Quantité + unité sur une seule ligne (« 183,3 km AR »). */
+.dv-lines tbody td:first-child { white-space: nowrap; }
 .dv-lines td.dv-check { width: 26px; padding-left: 4px; padding-right: 4px; color: #8b6914; }
 .dv-lines td.b { font-weight: 700; }
 .dv-lines th { border-right: 1px solid #555; }
