@@ -141,3 +141,12 @@
 .adm-sep small { font-size: 11.5px; color: #8a7a55; }
 .adm-sep.active { outline: 2px dashed #d4b96a; }
 .adm-sep.over { background: #ead9a8; }
+.adm-sendblocks { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 12px; }
+.adm-sendblock { border: 1px solid #e3ddcc; border-radius: 10px; padding: 12px 14px; display: grid; gap: 10px; align-content: start; background: #fdfbf6; }
+.adm-sendblock h3 { margin: 0; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: #8b6914; }
+.adm-sendblock p { margin: 0; font-size: 12.5px; }
+.adm-steps { display: flex; flex-wrap: wrap; gap: 8px; }
+.adm-sendblock .adm-attach { margin: 0; }
+.adm-send { justify-self: start; }
+.adm-mailfoot { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; border-top: 1px solid #ece6d4; padding-top: 10px; }
+@media (max-width: 760px) { .adm-sendblocks { grid-template-columns: 1fr; } }

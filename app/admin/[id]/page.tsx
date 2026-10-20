@@ -409,23 +409,34 @@ export default function Editor() {
             <p><b>À :</b> {req.client_email || <em>(adresse manquante)</em>}</p>
             <MailEditor model={model} edited={edited} onChange={setEdited} />
             {copied ? <p className="adm-note">{copied}</p> : null}
-            {!negative ? <div className="adm-attach">
-              <label className="adm-btn">📎 Ajouter une pièce jointe<input type="file" multiple accept=".pdf,image/*,.doc,.docx" hidden onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} /></label>
-              {files.length ? (
-                <ul>{files.map((f, i) => <li key={i}>{f.filename} <span className="adm-muted">({Math.max(1, Math.round(f.size / 1024))} Ko)</span> <button className="adm-x" onClick={() => setFiles(files.filter((_, j) => j !== i))} aria-label="Retirer">✕</button></li>)}</ul>
-              ) : <span className="adm-muted">Pour l’envoi direct : télécharge le PDF (bouton 3) puis ajoute-le ici.</span>}
-            </div> : null}
-            <div className="adm-actions">
-              <button className="adm-btn adm-gold" onClick={copyFormatted}>1. Copier l’e-mail mis en forme</button>
-              <a className="adm-btn adm-gold" href={gmail} target="_blank" rel="noopener noreferrer">2. Ouvrir Gmail (destinataire + objet) ↗</a>
+            <div className="adm-sendblocks">
+              <section className="adm-sendblock">
+                <h3>Envoyer avec Gmail</h3>
+                <div className="adm-steps">
+                  {!negative ? <a className="adm-btn adm-gold" href={link} target="_blank" rel="noopener noreferrer">1. Télécharger le PDF ↗</a> : null}
+                  <button className="adm-btn adm-gold" onClick={copyFormatted}>{negative ? "1" : "2"}. Copier l’e-mail</button>
+                  <a className="adm-btn adm-gold" href={gmail} target="_blank" rel="noopener noreferrer">{negative ? "2" : "3"}. Ouvrir Gmail ↗</a>
+                </div>
+                <p className="adm-muted">Dans Gmail : colle le texte (Cmd + V){!negative ? ", joins le PDF" : ""}, puis envoie.</p>
+              </section>
+              {!negative ? (
+                <section className="adm-sendblock">
+                  <h3>Ou envoyer directement depuis le site</h3>
+                  <div className="adm-attach">
+                    <label className="adm-btn">📎 Pièce jointe<input type="file" multiple accept=".pdf,image/*,.doc,.docx" hidden onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} /></label>
+                    {files.length ? (
+                      <ul>{files.map((f, i) => <li key={i}>{f.filename} <span className="adm-muted">({Math.max(1, Math.round(f.size / 1024))} Ko)</span> <button className="adm-x" onClick={() => setFiles(files.filter((_, j) => j !== i))} aria-label="Retirer">✕</button></li>)}</ul>
+                    ) : <span className="adm-muted">Joins le PDF téléchargé (étape 1).</span>}
+                  </div>
+                  <button className="adm-btn adm-gold adm-send" disabled={busy || !!req.sent_at} onClick={sendNow}>{req.sent_at ? "Déjà envoyé ✓" : "✉ Envoyer au client"}</button>
+                </section>
+              ) : null}
+            </div>
+            <div className="adm-mailfoot">
               {negative ? (
-                <button className="adm-btn" onClick={async () => { if (await save({ status: "abandonnee" })) { setReq({ ...req, status: "abandonnee" }); setMail(false); } }}>✔ C’est envoyé : classer en Abandonnée</button>
+                <button className="adm-btn" onClick={async () => { if (await save({ status: "abandonnee" })) { setReq({ ...req, status: "abandonnee" }); setMail(false); } }}>✔ Envoyé depuis Gmail : classer en Abandonnée</button>
               ) : (
-                <>
-                  <a className="adm-btn adm-gold" href={link} target="_blank" rel="noopener noreferrer">3. Télécharger le PDF à joindre ↗</a>
-                  <button className="adm-btn" disabled={busy || !!req.sent_at} onClick={sendNow}>{req.sent_at ? "Déjà envoyé ✓" : "Envoyer directement depuis le site"}</button>
-                  <button className="adm-btn" onClick={async () => { if (await save({ markSent: true })) setMail(false); }}>✔ C’est envoyé : marquer comme envoyé</button>
-                </>
+                <button className="adm-btn" onClick={async () => { if (await save({ markSent: true })) setMail(false); }}>✔ Envoyé depuis Gmail : marquer comme envoyé</button>
               )}
               <button className="adm-btn" onClick={() => setMail(false)}>Fermer</button>
             </div>
