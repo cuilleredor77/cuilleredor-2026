@@ -216,6 +216,9 @@ export default function Editor() {
           <h1>{req.client_name || "Demande sans nom"}</h1>
           <p className="adm-origin">
             Origine : <b>{SOURCE_LABEL[req.source] || req.source}</b> · reçue le <b>{receivedAt(req.created_at)}</b>{req.sent_at ? ` · envoyé le ${receivedAt(req.sent_at)}` : ""}
+            {req.source === "mariages_net" && /Répondre : (https:\/\/\S+)/.test(req.internal_notes) ? (
+              <> · <a href={req.internal_notes.match(/Répondre : (https:\/\/\S+)/)![1]} target="_blank" rel="noopener noreferrer">💬 Répondre sur Mariages.net ↗</a></>
+            ) : null}
             {req.source === "google_sheet" && sheetFinder ? (
               <> · <a href={`${sheetFinder}?email=${encodeURIComponent(req.client_email)}&date=${req.event_date}`} target="_blank" rel="noopener noreferrer">📄 Demande initiale ↗</a></>
             ) : null}
