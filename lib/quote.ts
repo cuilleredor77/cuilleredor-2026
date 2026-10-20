@@ -333,6 +333,10 @@ export function buildDefaultQuote(req: RequestRow): Quote {
     }
   }
 
+  // Options cochées dans le Google Form (« Options : … ») : chacune devient une ligne chiffrée du catalogue.
+  const form = estimate || isChef ? { lines: [], message: req.message } : formOptions(req.message, adults, totalGuests);
+  lines.push(...form.lines);
+
   if (!isChef && wasteWanted) {
     lines.push({
       id: "dechets",
@@ -372,7 +376,7 @@ export function buildDefaultQuote(req: RequestRow): Quote {
     lines,
     issuedOn: todayISO(),
     summary: `${summaryFor(req)} — ${guestsText}`,
-    remarks: clientRemarks(req.message).slice(0, 280) || "—",
+    remarks: clientRemarks(form.message).slice(0, 280) || "—",
     note: "",
     includeComplementary: true,
   };
@@ -709,4 +713,43 @@ export function clientRemarks(text: string): string {
 export function agendaDayLink(date: string): string {
   const [y, m, d] = date.split("-");
   return `https://calendar.google.com/calendar/u/0/r/day/${y}/${Number(m)}/${Number(d)}?authuser=cuilleredor4%40gmail.com`;
+}
+
+// Options du Google Form → options du catalogue (libellés du formulaire, du plus précis au plus général).
+const FORM_OPTION_RULES: Array<{ test: RegExp; preset: string; qty?: (text: string) => number | undefined }> = [
+  { test: /kit vaisselle complet/i, preset: "kit-complet" },
+  { test: /prestige/i, preset: "kit-prestige" },
+  { test: /kit vaisselle essentiel|location de (la )?vaisselle/i, preset: "kit-essentiel" },
+  { test: /serviette en tissu/i, preset: "serviette" },
+  { test: /wedding.?cake|g[âa]teau/i, preset: "gateau" },
+  { test: /service (des )?boissons/i, preset: "serveurs", qty: (t) => Number(t.match(/(\d+)\s*serveurs?/i)?.[1]) || undefined },
+  { test: /mange.?debout/i, preset: "mange-debout", qty: (t) => Number(t.match(/(\d+)\s*mange|mange.?debouts?\s*x\s*(\d+)/i)?.slice(1).find(Boolean)) || undefined },
+  { test: /fromage/i, preset: "fromages" },
+  { test: /forfait soft/i, preset: "soft" },
+];
+
+/** Lignes du devis pour les options cochées dans le formulaire ; le message rendu ne garde que les options non reconnues. */
+export function formOptions(message: string, adults: number, totalGuests: number): { lines: QuoteLine[]; message: string } {
+  const lines: QuoteLine[] = [];
+  const kept = (message || "").split("\n").map((line) => {
+    const m = line.match(/^\s*Options\s*:\s*(.*)$/i);
+    if (!m) return line;
+    const rest: string[] = [];
+    // Les choix sont séparés par des virgules suivies d’une majuscule (les détails contiennent aussi des virgules).
+    for (const part of m[1].split(/,\s*(?=[A-ZÉÈÀÂ+])/).map((p) => p.trim()).filter(Boolean)) {
+      if (/menu prestataire/i.test(part)) continue; // déjà compté avec les prestataires
+      const rule = FORM_OPTION_RULES.find((r) => r.test.test(part));
+      const preset = rule && OPTION_PRESETS.find((p) => p.id === rule.preset);
+      if (!preset) { rest.push(part); continue; }
+      if (lines.some((l) => l.id === `form-${preset.id}`)) continue;
+      const line = presetToLine(preset, adults, totalGuests);
+      const qty = rule!.qty?.(part);
+      lines.push({ ...line, id: `form-${preset.id}`, qty: qty || line.qty });
+      // Une précision écrite par le client (« 2 serveurs pour les boissons ») reste visible.
+      const extra = part.includes(")") ? part.replace(/^.*\)\s*,?\s*/, "").trim() : "";
+      if (extra) rest.push(extra);
+    }
+    return rest.length ? `Options : ${rest.join(", ")}` : "";
+  });
+  return { lines, message: kept.filter(Boolean).join("\n") };
 }
