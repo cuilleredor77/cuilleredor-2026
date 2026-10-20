@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { FORMULAS, FORMULA_KEYS, formatDateShort, formatEUR, type FormulaKey } from "../../lib/quote";
+import { SOURCE_LABEL, receivedAt, useCallback, useEffect, useMemo, useState } from "react";
+import { FORMULAS, FORMULA_KEYS, SOURCE_LABEL, receivedAt, formatDateShort, formatEUR, type FormulaKey } from "../../lib/quote";
 
 type Item = {
   id: number; createdAt: string; source: string; status: string; name: string; email: string; phone: string;
@@ -174,19 +174,4 @@ function NewRequest({ onClose }: { onClose: () => void }) {
 // Comparaison sans accents ni majuscules (« Bénédicte » = « benedicte »).
 function norm(text: string): string {
   return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-}
-
-const SOURCE_LABEL: Record<string, string> = {
-  site: "Formulaire du site",
-  google_sheet: "Google Form",
-  manuel: "Saisie manuelle",
-};
-
-// Date et heure de réception, à l’heure de Paris (ex. « 20/10/2026 à 12h30 »).
-function receivedAt(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  const p = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }).formatToParts(d);
-  const g = (t: string) => p.find((x) => x.type === t)?.value || "";
-  return `${g("day")}/${g("month")}/${g("year")} à ${g("hour")}h${g("minute")}`;
 }

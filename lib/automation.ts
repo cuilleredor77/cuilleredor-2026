@@ -10,6 +10,8 @@ import {
   formatEUR,
   parseQuote,
   quoteAlerts,
+  receivedAt,
+  SOURCE_LABEL,
   serviceModeLabel,
   weddingPlannerLabel,
   type RequestRow,
@@ -114,6 +116,7 @@ async function notifyReviewer(row: RequestRow, origin: string): Promise<void> {
   const when = row.event_date ? formatDateFR(row.event_date, true) : "date inconnue";
   const subject = `📝 Nouvelle demande de devis à relire — ${row.client_name}, ${row.event_type} du ${when} — ${formatEUR(totals.total)}`;
   const facts = [
+    `Origine : ${SOURCE_LABEL[row.source] || row.source} · reçue le ${receivedAt(row.created_at)}`,
     `${row.client_name} · ${row.client_email} · ${row.client_phone}`,
     `${row.event_type} le ${when}${row.event_place ? ` à ${row.event_place}` : ""}`,
     quote.summary,

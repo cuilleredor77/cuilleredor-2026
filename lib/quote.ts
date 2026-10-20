@@ -634,3 +634,20 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
   ].join("\n");
   return { subject, html, text };
 }
+
+// ---------- Origine et heure de réception d’une demande ----------
+
+export const SOURCE_LABEL: Record<string, string> = {
+  site: "Formulaire du site",
+  google_sheet: "Google Form",
+  manuel: "Saisie manuelle",
+};
+
+// Date et heure de réception, à l’heure de Paris (ex. « 20/10/2026 à 12h30 »).
+export function receivedAt(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const p = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }).formatToParts(d);
+  const g = (t: string) => p.find((x) => x.type === t)?.value || "";
+  return `${g("day")}/${g("month")}/${g("year")} à ${g("hour")}h${g("minute")}`;
+}

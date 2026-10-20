@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, charterEmail, computeTotals, formatDateFR, formatDateShort,
+  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, SOURCE_LABEL, receivedAt, charterEmail, computeTotals, formatDateFR,
   formatEUR, isTravelPending, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
@@ -120,7 +120,7 @@ export default function Editor() {
         <div>
           <a href="/admin" className="adm-back">← Toutes les demandes</a>
           <h1>{req.client_name || "Demande sans nom"}</h1>
-          <p className="adm-muted">Reçue le {formatDateShort(req.created_at)} · source : {req.source}{req.sent_at ? ` · envoyé le ${formatDateShort(req.sent_at)}` : ""}</p>
+          <p className="adm-origin">Origine : <b>{SOURCE_LABEL[req.source] || req.source}</b> · reçue le <b>{receivedAt(req.created_at)}</b>{req.sent_at ? ` · envoyé le ${receivedAt(req.sent_at)}` : ""}</p>
         </div>
         <div className="adm-actions">
           <select value={req.status} onChange={(e) => { setReq({ ...req, status: e.target.value }); setDirty(true); }}>
