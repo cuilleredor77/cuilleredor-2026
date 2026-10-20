@@ -588,7 +588,10 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
   const docs = withContract ? "votre devis ainsi que le contrat de prestation" : "votre devis";
   const subject = `${withContract ? "Votre devis et contrat" : "Votre devis"} Cuillère d’Or — ${req.event_type} du ${req.event_date ? formatDateShort(req.event_date) : ""} — ${req.client_name}`;
   const intro1 = `Merci pour votre demande. Nous vous confirmons notre disponibilité pour votre ${type}${dateLong ? ` du ${dateLong}` : ""}${req.event_place ? ` (${req.event_place})` : ""}.`;
-  const intro2 = `Vous trouverez ${docs} en ligne, téléchargeable${withContract ? "s" : ""} en PDF :`;
+  // Sans lien : le devis (et le contrat) part en pièce jointe PDF.
+  const intro2 = link
+    ? `Vous trouverez ${docs} en ligne, téléchargeable${withContract ? "s" : ""} en PDF :`
+    : `Vous trouverez ci-joint ${docs} en PDF.`;
   const rows = quote.lines.map((l) => {
     const pending = isTravelPending(l);
     const qty = pending ? `${formatEUR(l.price)}/km AR` : `${String(l.qty).replace(".", ",")} ${l.unit} × ${formatEUR(l.price)}`;
@@ -612,7 +615,7 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
   const bold = (t: string) => esc(t).replace(/(\d[\d\s]*,\d\d\s?€)/g, "<strong>$1</strong>").replace(/(au plus tard le )([^,]+)/, "$1<strong>$2</strong>");
   const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#1a1a1a;max-width:680px">`
     + `<p>Bonjour ${esc(first)},</p><p>${esc(intro1)}</p>`
-    + `<p>${esc(intro2)} <a href="${link}" target="_blank" rel="noopener noreferrer">${withContract ? "voir mon devis et mon contrat" : "voir mon devis"}</a></p>`
+    + (link ? `<p>${esc(intro2)} <a href="${link}" target="_blank" rel="noopener noreferrer">${withContract ? "voir mon devis et mon contrat" : "voir mon devis"}</a></p>` : `<p>${esc(intro2)}</p>`)
     + `<p>Voici le récapitulatif de votre devis :</p>${table}`
     + `<p style="margin:0 0 6px"><strong>Informations complémentaires :</strong></p>`
     + `<ul style="margin:0 0 16px;padding-left:22px">${infos.map((t) => `<li style="margin-bottom:4px">${bold(t)}</li>`).join("")}</ul>`
@@ -620,7 +623,7 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
     + `<p>Je reste à votre entière disposition pour toute question ou ajustement.</p>`
     + `<p style="margin:18px 0 0">Bien cordialement,</p><p style="margin:2px 0 22px"><strong>Cuillère d’Or</strong></p>${EMAIL_SIGNATURE}</div>`;
   const text = [
-    `Bonjour ${first},`, "", intro1, "", `${intro2} ${link}`, "",
+    `Bonjour ${first},`, "", intro1, "", link ? `${intro2} ${link}` : intro2, "",
     "Voici le récapitulatif de votre devis :",
     ...rows.map((r) => `- ${r.label} : ${r.qty} = ${r.total}`),
     `TOTAL PRESTATIONS : ${formatEUR(totals.total)}`, "",

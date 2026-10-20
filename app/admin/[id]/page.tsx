@@ -89,7 +89,7 @@ export default function Editor() {
   const fullLink = `${origin}/devis/${req.token}`;
   const quoteLink = `${fullLink}?doc=devis`;
   const link = withContract ? fullLink : quoteLink;
-  const { subject, html, text } = charterEmail(req, quote, totals, link, withContract);
+  const { subject, html, text } = charterEmail(req, quote, totals, "", withContract);
   // Gmail ne reçoit que l’objet par l’adresse : le corps mis en forme se colle (Cmd+V) après « Copier l’e-mail mis en forme ».
   const gmail = `https://mail.google.com/mail/?view=cm&fs=1&authuser=cuilleredor4%40gmail.com&to=${encodeURIComponent(req.client_email)}&su=${encodeURIComponent(subject)}`;
   async function copyFormatted() {
@@ -246,6 +246,7 @@ export default function Editor() {
             <div className="adm-actions">
               <button className="adm-btn adm-gold" onClick={copyFormatted}>1. Copier l’e-mail mis en forme</button>
               <a className="adm-btn adm-gold" href={gmail} target="_blank" rel="noopener noreferrer">2. Ouvrir Gmail (destinataire + objet) ↗</a>
+              <a className="adm-btn adm-gold" href={link} target="_blank" rel="noopener noreferrer">3. Télécharger le PDF à joindre ↗</a>
               <button className="adm-btn" disabled={busy || !!req.sent_at} onClick={sendNow}>{req.sent_at ? "Déjà envoyé ✓" : "Envoyer directement depuis le site"}</button>
               <button className="adm-btn" onClick={async () => { if (await save({ markSent: true })) setMail(false); }}>✔ C’est envoyé : marquer comme envoyé</button>
               <button className="adm-btn" onClick={() => setMail(false)}>Fermer</button>
