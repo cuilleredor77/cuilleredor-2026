@@ -239,6 +239,7 @@ export default function Editor() {
                   <button type="button" className="adm-btn" onClick={computeKm}>Calculer les km</button>
                 </span>
               </label>
+              <div className="adm-row4">
               <label>Formule
                 <select value={req.formula} onChange={(e) => setField("formula", e.target.value)}>
                   {FORMULA_KEYS.map((k) => <option key={k} value={k}>{FORMULAS[k].label}</option>)}
@@ -247,6 +248,7 @@ export default function Editor() {
               <label>Adultes<input type="number" min={0} value={req.adults} onChange={(e) => setField("adults", Number(e.target.value))} /></label>
               <label>Enfants<input type="number" min={0} value={req.children} onChange={(e) => setField("children", Number(e.target.value))} /></label>
               <label>Prestataires<input type="number" min={0} value={req.providers} onChange={(e) => setField("providers", Number(e.target.value))} /></label>
+              </div>
               <label className="chk"><input type="checkbox" checked={Boolean(req.honor_wine)} onChange={(e) => setField("honor_wine", e.target.checked ? 1 : 0)} /> Avec vin d’honneur (buffet, plateau, assiette)</label>
             </div>
             {(
