@@ -18,7 +18,7 @@
 .adm-chip.on { background: #1a1a1a; color: #f7f4ec; border-color: #1a1a1a; }
 .adm-chip.on b { color: #d4af37; }
 .adm-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.adm-row { display: flex; justify-content: space-between; gap: 16px; background: #fff; border: 1px solid #e0d8c3; border-radius: 12px; padding: 14px 16px; text-decoration: none; color: inherit; }
+.adm-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 4px 16px; background: #fff; border: 1px solid #e0d8c3; border-radius: 12px; padding: 14px 16px; text-decoration: none; color: inherit; }
 .adm-row:hover { border-color: #b8932a; }
 .adm-main { display: grid; gap: 3px; min-width: 0; }
 .adm-main span { font-size: 13px; color: #555; }
@@ -69,8 +69,6 @@
   .adm-grid { grid-template-columns: 1fr; }
   .adm-line { grid-template-columns: 1fr 1fr; }
   .adm-line .t { grid-column: 1 / -1; }
-  .adm-row { flex-direction: column; }
-  .adm-side { text-align: left; }
   .adm-badge { justify-self: start; }
 }
 
@@ -87,3 +85,11 @@
 .adm-attach label { cursor: pointer; }
 .adm-attach ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .adm-x { border: 0; background: none; cursor: pointer; color: #a33; font-size: 13px; }
+.adm-l1 { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; color: #555; }
+.adm-l1 strong { color: #1a1a1a; font-size: 15px; }
+.adm-l2 { min-width: 0; font-size: 12.5px; color: #666; }
+.adm-total { text-align: right; white-space: nowrap; }
+.adm-row > .adm-badge { justify-self: end; }
+@media (max-width: 640px) {
+  .adm-l1 { white-space: normal; }
+}

@@ -55,6 +55,8 @@ export default function AdminHome() {
     return list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }, [items, filter, query]);
 
+  const showBadge = Boolean(query.trim()) || filter === "todo" || filter === "all";
+
   if (auth === "loading") return <p className="adm-muted">Chargement…</p>;
   if (auth === "login") return <Login onDone={load} />;
 
@@ -84,27 +86,29 @@ export default function AdminHome() {
         ))}
       </nav>
       {shown.length === 0 ? <p className="adm-muted">{query.trim() ? "Aucun client ne correspond à cette recherche." : "Aucune demande dans cette liste."}</p> : null}
+      {/* Le statut n’est utile que dans les listes qui en mélangent plusieurs. */}
       <ul className="adm-list">
         {shown.map((it) => {
           const wait = daysAgo(it.createdAt);
-          const late = TODO.includes(it.status) && wait >= 3;
+          const late = TODO.includes(it.status) && !it.sentAt && wait >= 3;
           const meta = FORMULAS[(FORMULA_KEYS as string[]).includes(it.formula) ? (it.formula as FormulaKey) : "buffet"];
           return (
             <li key={it.id}>
               <a href={`/admin/${it.id}`} className="adm-row">
-                <div className="adm-main">
-                  <strong>{it.name || "Sans nom"}</strong>
-                  <span>{it.eventType} · {it.eventDate ? formatDateShort(it.eventDate) : "date ?"} · {it.place || "lieu ?"}</span>
-                  <span className="adm-origin">{SOURCE_LABEL[it.source] || it.source} · reçue le {receivedAt(it.createdAt)}</span>
-                  <span>{meta.label} · {it.adults} adulte{it.adults > 1 ? "s" : ""}{it.children ? ` + ${it.children} enf.` : ""}{it.providers ? ` + ${it.providers} prest.` : ""}</span>
-                </div>
-                <div className="adm-side">
-                  <span className={`adm-badge s-${it.status}`}>{STATUS_LABEL[it.status] || it.status}</span>
-                  <b>{formatEUR(it.total)}</b>
-                  <small className={late ? "adm-late" : ""}>
-                    {it.sentAt ? `envoyé le ${formatDateShort(it.sentAt)}` : wait === 0 ? "reçue aujourd’hui" : `reçue il y a ${wait} j`}
-                  </small>
-                </div>
+                <span className="adm-l1">
+                  <strong>{it.name || "Sans nom"}</strong> — {it.eventType} · {it.eventDate ? formatDateShort(it.eventDate) : "date ?"} · {it.place || "lieu ?"}
+                </span>
+                <b className="adm-total">{formatEUR(it.total)}</b>
+                <span className="adm-l2">
+                  <span className="adm-origin">{SOURCE_LABEL[it.source] || it.source}</span>
+                  {" · "}
+                  <span className={late ? "adm-late" : ""}>
+                    reçue le {receivedAt(it.createdAt)}{it.sentAt ? "" : ` (${wait === 0 ? "aujourd’hui" : `il y a ${wait} j`})`}
+                  </span>
+                  {it.sentAt ? ` · envoyé le ${formatDateShort(it.sentAt)}` : ""}
+                  {" · "}{meta.label} · {it.adults} adulte{it.adults > 1 ? "s" : ""}{it.children ? ` + ${it.children} enf.` : ""}{it.providers ? ` + ${it.providers} prest.` : ""}
+                </span>
+                {showBadge ? <span className={`adm-badge s-${it.status}`}>{STATUS_LABEL[it.status] || it.status}</span> : <span />}
               </a>
             </li>
           );
