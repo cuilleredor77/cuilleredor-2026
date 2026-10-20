@@ -102,3 +102,6 @@
 .adm-relance { justify-self: end; padding: 4px 12px; font-size: 12px; }
 .adm-inline.adm-place { flex-wrap: nowrap; }
 .adm-inline.adm-place input { flex: 1 1 auto; width: auto; min-width: 0; }
+.adm-card > label.adm-check { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; margin: 10px 0; font-size: 13px; }
+.adm-card > label.adm-check input { width: 18px; height: 18px; min-height: 0; margin: 0; flex: 0 0 auto; }
+.adm-card > label.adm-check .adm-muted { font-weight: 500; }
