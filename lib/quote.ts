@@ -601,6 +601,9 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
       : `Confirmation : la réservation sera effective après signature${withContract ? " du contrat" : " du devis"} et versement d’un acompte de 30 %, soit ${formatEUR(totals.deposit)}. Le solde restant de ${formatEUR(totals.balance)} sera à régler au plus tard le ${formatDateFR(totals.balanceDue)}, accompagné de la caution de ${formatEUR(totals.caution)} (en prévention de retard, restituée si aucun retard constaté).`,
     withContract ? "Règlement par virement : les coordonnées bancaires figurent dans le contrat." : "",
   ].filter(Boolean);
+  const reread = withContract
+    ? "Nous vous invitons à bien relire et vérifier le devis et le contrat avant de les signer."
+    : "Nous vous invitons à bien relire et vérifier le devis avant de le signer.";
   const td = "padding:11px 14px;border-bottom:1px solid #e6dccb;font-size:14px";
   const table = `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:8px 0 18px;font-family:Arial,Helvetica,sans-serif">`
     + `<tr style="background:#0f1a14"><th style="padding:12px 14px;text-align:left;color:#c9a227;font-size:14px">Prestation</th><th style="padding:12px 14px;text-align:center;color:#c9a227;font-size:14px">Qté</th><th style="padding:12px 14px;text-align:right;color:#c9a227;font-size:14px">Total</th></tr>`
@@ -613,16 +616,18 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
     + `<p>Voici le récapitulatif de votre devis :</p>${table}`
     + `<p style="margin:0 0 6px"><strong>Informations complémentaires :</strong></p>`
     + `<ul style="margin:0 0 16px;padding-left:22px">${infos.map((t) => `<li style="margin-bottom:4px">${bold(t)}</li>`).join("")}</ul>`
+    + `<p>${esc(reread)}</p>`
     + `<p>Je reste à votre entière disposition pour toute question ou ajustement.</p>`
-    + `<p style="margin:18px 0 10px">Bien cordialement,</p>${EMAIL_SIGNATURE}</div>`;
+    + `<p style="margin:18px 0 0">Bien cordialement,</p><p style="margin:2px 0 22px"><strong>Cuillère d’Or</strong></p>${EMAIL_SIGNATURE}</div>`;
   const text = [
     `Bonjour ${first},`, "", intro1, "", `${intro2} ${link}`, "",
     "Voici le récapitulatif de votre devis :",
     ...rows.map((r) => `- ${r.label} : ${r.qty} = ${r.total}`),
     `TOTAL PRESTATIONS : ${formatEUR(totals.total)}`, "",
     "Informations complémentaires :", ...infos.map((t) => `- ${t}`), "",
+    reread, "",
     "Je reste à votre entière disposition pour toute question ou ajustement.", "",
-    "Bien cordialement,", "", "Cheffe Huguette MVUNDA — Cuillère d’Or, traiteur", "07 83 74 89 71 · contact@cuilleredor.fr · cuilleredor.fr",
+    "Bien cordialement,", "Cuillère d’Or", "", "Cheffe Huguette MVUNDA — Cuillère d’Or, traiteur", "07 83 74 89 71 · contact@cuilleredor.fr · cuilleredor.fr",
   ].join("\n");
   return { subject, html, text };
 }
