@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import {
   FORMULAS, FORMULA_KEYS, OPTION_PRESETS, travelLast, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
-  formatEUR, isTravelPending, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
+  formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
 const STATUS: Array<[string, string]> = [
@@ -264,7 +264,7 @@ export default function Editor() {
                     <input className="d" placeholder="Détail (facultatif)" value={line.detail || ""} onChange={(e) => setLine(i, { detail: e.target.value })} />
                   </div>
                   <input className="p" type="number" step="any" value={line.price} onChange={(e) => setLine(i, { price: Number(e.target.value) })} />
-                  <b className="s">{isTravelPending(line) ? "à chiffrer" : formatEUR(lineTotal(line))}</b>
+                  <b className="s">{isTravelPending(line) || isLodgingPending(line) ? "à chiffrer" : formatEUR(lineTotal(line))}</b>
                   <button className="x" aria-label="Supprimer la ligne" onClick={() => setQ({ lines: quote.lines.filter((_, idx) => idx !== i) })}>✕</button>
                 </div>
               ))}

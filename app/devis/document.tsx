@@ -6,6 +6,7 @@ import {
   formatDateShort,
   formatEUR,
   isTravelPending,
+  isLodgingPending,
   lineTotal,
   parseQuote,
   type RequestRow,
@@ -101,8 +102,8 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
                         <td className="c">{isTravelPending(line) ? "—" : fmtQty(line.qty)} {line.unit}</td>
                         <td className="c dv-check">☑</td>
                         <td>{line.label}</td>
-                        <td className="r dv-pu">{formatEUR(line.price)}{isTravelPending(line) ? "/km" : ""}</td>
-                        <td className="r b">{isTravelPending(line) ? "à chiffrer" : formatEUR(lineTotal(line))}</td>
+                        <td className="r dv-pu">{isLodgingPending(line) ? "—" : `${formatEUR(line.price)}${isTravelPending(line) ? "/km" : ""}`}</td>
+                        <td className="r b">{isTravelPending(line) || isLodgingPending(line) ? "à chiffrer" : formatEUR(lineTotal(line))}</td>
                       </tr>
                       {groupDetail(parts).map((g, i, all) => (
                         <tr key={i} className={`dv-sub dv-sub-group${i === all.length - 1 ? " dv-sub-last" : ""}`}>
@@ -203,7 +204,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         <ul>
           {quote.lines.map((line) => (
             <li key={line.id}>
-              {line.label} — {isTravelPending(line) ? `${formatEUR(line.price)} par km aller-retour, à chiffrer selon l’adresse du lieu` : `${fmtQty(line.qty)} ${line.unit} × ${formatEUR(line.price)} = ${formatEUR(lineTotal(line))}`}
+              {line.label} — {isLodgingPending(line) ? "à chiffrer" : isTravelPending(line) ? `${formatEUR(line.price)} par km aller-retour, à chiffrer selon l’adresse du lieu` : `${fmtQty(line.qty)} ${line.unit} × ${formatEUR(line.price)} = ${formatEUR(lineTotal(line))}`}
             </li>
           ))}
         </ul>

@@ -166,6 +166,17 @@ export const lineTotal = (line: QuoteLine) => round2(line.qty * line.price);
 
 /** Déplacement dont la distance n’est pas encore connue : affiché « à chiffrer ». */
 export const isTravelPending = (line: QuoteLine) => /d[ée]placement/i.test(line.label) && !(line.qty > 0);
+/** Frais de logement de l’équipe : ligne « à chiffrer » tant que le prix n’est pas saisi. */
+export const isLodgingPending = (line: QuoteLine) => /logement/i.test(line.label) && !(line.price > 0);
+export const LODGING_FROM_KM = 350;
+export const LODGING_LINE: QuoteLine = {
+  id: "logement",
+  qty: 1,
+  unit: "forfait",
+  label: "Frais de logement de l’équipe",
+  detail: "Lieu à plus de 350 km aller-retour : hébergement de l’équipe sur place",
+  price: 0,
+};
 
 export function tierPrice(formula: FormulaKey, totalGuests: number): number {
   const meta = FORMULAS[formula];
@@ -209,6 +220,7 @@ export const OPTION_PRESETS: OptionPreset[] = [
   { id: "sous-plat", label: "Sous-plat perlé", unit: "unité", price: 3, basis: "one" },
   { id: "mange-debout", label: "Mange-debout (housse et nappe incluses)", unit: "unité", price: 15, basis: "one" },
   { id: "chafing", label: "Réchaud de buffet (chafing dish)", unit: "unité", price: 25, basis: "one" },
+  { id: "logement", label: "Frais de logement de l’équipe", unit: "forfait", price: 0, basis: "one", detail: "Hébergement de l’équipe sur place (lieu éloigné)" },
   { id: "etuve", label: "Étuve professionnelle", unit: "forfait", price: 150, basis: "one" },
   { id: "degustation", label: "Dégustation au restaurant Chez Lina (non déductible du devis)", unit: "pers.", price: 70, basis: "one" },
 ];
@@ -348,6 +360,9 @@ export function buildDefaultQuote(req: RequestRow): Quote {
       price: PRICES.waste,
     });
   }
+
+  // Au-delà de 350 km aller-retour : logement de l’équipe, à chiffrer au cas par cas.
+  if (!isChef && req.km && req.km > LODGING_FROM_KM) lines.push({ ...LODGING_LINE });
 
   if (req.km && req.km > 0) {
     lines.push({
@@ -552,6 +567,8 @@ export function clientEmail(req: RequestRow, quote: Quote, totals: Totals, link:
 export function quoteAlerts(req: RequestRow, quote: Quote, totals: Totals): string[] {
   const out: string[] = [];
   const off = offPeriod(req.event_date);
+  if ((req.km || 0) > LODGING_FROM_KM && !quote.lines.some((l) => /logement/i.test(l.label))) out.push(`Lieu à ${req.km} km aller-retour (plus de ${LODGING_FROM_KM} km) : pense aux frais de logement de l’équipe.`);
+  if (quote.lines.some(isLodgingPending)) out.push("Frais de logement à chiffrer : saisis le montant dans la ligne « Frais de logement ».");
   if (off) out.push(`⛔ Huguette est OFF ce jour-là (${off.label}) : répondre avec « Indisponible » ou « Indispo + devis ».`);
   const key: FormulaKey = isFormulaKey(req.formula) ? req.formula : "buffet";
   if (!req.client_email) out.push("E-mail du client manquant.");
@@ -573,7 +590,7 @@ export function quoteAlerts(req: RequestRow, quote: Quote, totals: Totals): stri
     );
   }
   if (req.service_mode && req.service_mode !== "service") out.push(`${serviceModeLabel(req.service_mode)} : le tarif de la formule inclut le service, à adapter.`);
-  if (quote.lines.some((l) => !(l.price > 0) || !(l.qty > 0))) out.push("Une ligne a une quantité ou un prix à zéro.");
+  if (quote.lines.some((l) => !isLodgingPending(l) && !isTravelPending(l) && (!(l.price > 0) || !(l.qty > 0)))) out.push("Une ligne a une quantité ou un prix à zéro.");
   return out;
 }
 
@@ -634,8 +651,8 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
     ? `Vous trouverez ${docs} en ligne, téléchargeable${withContract ? "s" : ""} en PDF :`
     : `Vous trouverez ci-joint ${docs} en PDF.`;
   const rows = quote.lines.map((l) => {
-    const pending = isTravelPending(l);
-    const qty = pending ? `${formatEUR(l.price)}/km AR` : `${String(l.qty).replace(".", ",")} ${l.unit} × ${formatEUR(l.price)}`;
+    const pending = isTravelPending(l) || isLodgingPending(l);
+    const qty = isTravelPending(l) ? `${formatEUR(l.price)}/km AR` : isLodgingPending(l) ? "—" : `${String(l.qty).replace(".", ",")} ${l.unit} × ${formatEUR(l.price)}`;
     return { label: l.label, qty, total: pending ? "à chiffrer" : formatEUR(lineTotal(l)) };
   });
   const infos = [
