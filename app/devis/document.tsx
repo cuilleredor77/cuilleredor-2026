@@ -71,7 +71,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
                 <td>{fmtQty(line.qty)} {line.unit}</td>
                 <td>
                   ☑ {line.label}
-                  {line.detail ? <ul className="dv-detail">{line.detail.split(" · ").map((part) => <li key={part}>{part}</li>)}</ul> : null}
+                  {line.detail ? <ul className="dv-detail">{line.detail.split(" · ").map((part, i) => <li key={i} className={/ :$/.test(part) ? "dv-detail-h" : /^\d+\./.test(part) ? "dv-detail-n" : undefined}>{part}</li>)}</ul> : null}
                 </td>
                 <td className="r">{formatEUR(line.price)}</td>
                 <td className="r">{formatEUR(lineTotal(line))}</td>
