@@ -40,12 +40,17 @@ export default function Editor() {
   const totals = useMemo(() => (quote && req ? computeTotals(quote, req.event_date) : null), [quote, req]);
   // Google Agenda : alerte quand 3 événements ou plus sont déjà prévus à la date demandée.
   const [agenda, setAgenda] = useState<{ count: number; titles: string[] } | null>(null);
+  const [agendaStatus, setAgendaStatus] = useState<"" | "loading" | "off" | "error" | "ok">("");
   const eventDate = req?.event_date || "";
   useEffect(() => {
     setAgenda(null);
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) return;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) { setAgendaStatus(""); return; }
+    setAgendaStatus("loading");
     const timer = setTimeout(() => {
-      fetch(`/api/admin/agenda?date=${eventDate}`).then((r) => r.json()).then((d) => setAgenda(d.agenda)).catch(() => {});
+      fetch(`/api/admin/agenda?date=${eventDate}`)
+        .then((r) => r.json())
+        .then((d) => { setAgenda(d.agenda); setAgendaStatus(!d.connected ? "off" : d.agenda ? "ok" : "error"); })
+        .catch(() => setAgendaStatus("error"));
     }, 600);
     return () => clearTimeout(timer);
   }, [eventDate]);
@@ -183,7 +188,17 @@ export default function Editor() {
               <label>E-mail<input type="email" value={req.client_email} onChange={(e) => setField("client_email", e.target.value)} /></label>
               <label>Adresse de facturation (si société)<input value={req.billing_address} onChange={(e) => setField("billing_address", e.target.value)} /></label>
               <label>Type d’événement<input value={req.event_type} onChange={(e) => setField("event_type", e.target.value)} /></label>
-              <label>Date<input type="date" value={req.event_date} onChange={(e) => setField("event_date", e.target.value)} /></label>
+              <label>Date<input type="date" value={req.event_date} onChange={(e) => setField("event_date", e.target.value)} />
+                {agendaStatus ? (
+                  <small className={`adm-agenda ${agenda && agenda.count >= 3 ? "full" : ""}`} title={agenda?.titles.join("\n") || ""}>
+                    📅 {agendaStatus === "loading" ? "Agenda : vérification…"
+                      : agendaStatus === "off" ? "Agenda Google non relié"
+                      : agendaStatus === "error" ? "Agenda : lecture impossible"
+                      : agenda!.count === 0 ? "Agenda : aucun événement ce jour-là"
+                      : `Agenda : ${agenda!.count} événement${agenda!.count > 1 ? "s" : ""} ce jour-là (${agenda!.titles.join(", ")})`}
+                  </small>
+                ) : null}
+              </label>
               <label className="wide">Lieu (adresse complète)
                 <span className="adm-inline adm-place">
                   <input value={req.event_place} onChange={(e) => setField("event_place", e.target.value)} />

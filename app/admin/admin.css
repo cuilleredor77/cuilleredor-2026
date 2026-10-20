@@ -108,3 +108,5 @@
 .adm-danger { color: #b3261e; border-color: #e3b4ae; }
 .adm-danger:hover { background: #fdf0ee; }
 .adm-origin a { color: #8b6914; font-weight: 700; }
+.adm-agenda { font-weight: 600; color: #6b5420; }
+.adm-agenda.full { color: #b3261e; font-weight: 700; }
