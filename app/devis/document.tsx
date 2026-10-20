@@ -225,9 +225,10 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         <ul>
           <li>Virement bancaire sur le compte Qonto de Cuillère d’Or :
             <div className="dv-rib">
+              <div><span>Titulaire</span><b>EI-MVUNDA-KILOLA HUGUETTE / CUILLERE D OR<br />8 allée des Bois, 77240 Vert-Saint-Denis</b></div>
               <div><span>IBAN</span><b>FR76 1695 8000 0103 6634 1336 613</b></div>
               <div><span>BIC</span><b>QNTOFRP1XXX</b></div>
-              <div><span>Banque</span><b>Qonto</b></div>
+              <div><span>Banque</span><b>Qonto (Olinda SAS), 18 rue de Navarin, 75009 Paris</b></div>
               <div><span>Référence</span><b>{`CDO ${row.client_name} ${row.event_date ? formatDateShort(row.event_date) : ""}`.trim()}</b></div>
             </div>
           </li>
