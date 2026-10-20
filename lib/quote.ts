@@ -276,6 +276,7 @@ export function buildDefaultQuote(req: RequestRow): Quote {
       qty: adults,
       unit: "pers.",
       label: "Vin d’honneur — 10 pièces au choix",
+      detail: "10 pièces par personne, au choix parmi nos mignardises salées et sucrées",
       price: PRICES.honorWine,
     });
   }
