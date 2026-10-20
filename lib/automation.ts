@@ -112,7 +112,7 @@ async function notifyReviewer(row: RequestRow, origin: string): Promise<void> {
   const viewUrl = `${origin}/devis/${row.token}`;
   const editUrl = `${origin}/admin/${row.id}`;
   const when = row.event_date ? formatDateFR(row.event_date, true) : "date inconnue";
-  const subject = `${alerts.length ? "⚠️ À vérifier" : "✅ Devis prêt"} — ${row.client_name}, ${row.event_type} du ${when} — ${formatEUR(totals.total)}`;
+  const subject = `📝 Nouvelle demande de devis à relire — ${row.client_name}, ${row.event_type} du ${when} — ${formatEUR(totals.total)}`;
   const facts = [
     `${row.client_name} · ${row.client_email} · ${row.client_phone}`,
     `${row.event_type} le ${when}${row.event_place ? ` à ${row.event_place}` : ""}`,
@@ -127,7 +127,7 @@ async function notifyReviewer(row: RequestRow, origin: string): Promise<void> {
   const text = [
     ...facts,
     "",
-    alerts.length ? `À vérifier :\n- ${alerts.join("\n- ")}` : "Aucun point bloquant détecté.",
+    alerts.length ? `Points à relire :\n- ${alerts.join("\n- ")}` : "Aucun point bloquant détecté.",
     AVAILABILITY,
     "",
     sendUrl ? `Envoyer au client tel quel : ${sendUrl}` : "",
@@ -138,7 +138,7 @@ async function notifyReviewer(row: RequestRow, origin: string): Promise<void> {
     `<a href="${esc(href)}" style="display:inline-block;margin:4px 8px 4px 0;padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold;${gold ? "background:#d4ae2a;color:#0a0a0a" : "border:1px solid #775a19;color:#775a19"}">${label}</a>`;
   const html = `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.5;color:#1a1a1a">
 ${facts.map((f) => `<p style="margin:0 0 6px">${esc(f)}</p>`).join("")}
-${alerts.length ? `<div style="margin:14px 0;padding:12px 14px;background:#fff7e0;border:1px solid #e9c83e;border-radius:6px"><b>À vérifier</b><ul style="margin:6px 0 0;padding-left:18px">${alerts.map((a) => `<li>${esc(a)}</li>`).join("")}</ul></div>` : `<p style="color:#2e6b2e">Aucun point bloquant détecté.</p>`}
+${alerts.length ? `<div style="margin:14px 0;padding:12px 14px;background:#fff7e0;border:1px solid #e9c83e;border-radius:6px"><b>Points à relire</b><ul style="margin:6px 0 0;padding-left:18px">${alerts.map((a) => `<li>${esc(a)}</li>`).join("")}</ul></div>` : `<p style="color:#2e6b2e">Aucun point bloquant détecté.</p>`}
 <p style="color:#5e5e5e">${esc(AVAILABILITY)}</p>
 <p style="margin-top:16px">${sendUrl ? button(sendUrl, "Envoyer au client", true) : ""}${button(viewUrl, "Voir le devis")}${button(editUrl, "Modifier")}</p>
 </div>`;
