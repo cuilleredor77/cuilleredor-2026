@@ -43,6 +43,8 @@ export default function Editor() {
   // Google Agenda : alerte quand 3 événements ou plus sont déjà prévus à la date demandée.
   const [agenda, setAgenda] = useState<{ count: number; titles: string[]; off: string[] } | null>(null);
   const [negative, setNegative] = useState(false);
+  const [dragFrom, setDragFrom] = useState<number | null>(null);
+  const [dragOver, setDragOver] = useState<number | null>(null);
   const [unavailableQuote, setUnavailableQuote] = useState(false);
   // Version du mail modifiée à la main dans l’aperçu (null = modèle proposé).
   const [edited, setEdited] = useState<{ subject: string; html: string; text: string } | null>(null);
@@ -77,6 +79,14 @@ export default function Editor() {
   const setQ = (patch: Partial<Quote>) => { setQuote({ ...quote, ...patch }); setDirty(true); };
   const setLine = (i: number, patch: Partial<QuoteLine>) => setQ({ lines: quote.lines.map((l, idx) => (idx === i ? { ...l, ...patch } : l)) });
   const totalGuests = req.adults + req.children + req.providers;
+  // Déplace une ligne (glisser-déposer ou flèches) ; les frais de déplacement restent toujours en dernier.
+  const moveLine = (from: number, to: number) => {
+    if (from === to || to < 0 || to >= quote.lines.length) return;
+    const lines = [...quote.lines];
+    const [moved] = lines.splice(from, 1);
+    lines.splice(to, 0, moved);
+    setQ({ lines: travelLast(lines) });
+  };
 
   async function removeRequest() {
     if (!confirm(`Supprimer définitivement la demande de ${req!.client_name || "ce client"} ? Cette action est irréversible.`)) return;
@@ -256,7 +266,19 @@ export default function Editor() {
             <div className="adm-split"><h2>Lignes du devis</h2><button className="adm-btn" onClick={regenerate} disabled={busy}>↻ Régénérer depuis la demande</button></div>
             <div className="adm-lines">
               {quote.lines.map((line, i) => (
-                <div className="adm-line" key={line.id}>
+                <div
+                  className={`adm-line ${dragOver === i && dragFrom !== null && dragFrom !== i ? "drop" : ""} ${dragFrom === i ? "dragging" : ""}`}
+                  key={line.id}
+                  onDragOver={(e) => { if (dragFrom !== null) { e.preventDefault(); setDragOver(i); } }}
+                  onDrop={(e) => { e.preventDefault(); if (dragFrom !== null) moveLine(dragFrom, i); setDragFrom(null); setDragOver(null); }}
+                >
+                  <div className="g">
+                    <span className="grip" draggable title="Glisser pour déplacer la ligne"
+                      onDragStart={(e) => { setDragFrom(i); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(i)); }}
+                      onDragEnd={() => { setDragFrom(null); setDragOver(null); }}>⠿</span>
+                    <button type="button" aria-label="Monter la ligne" disabled={i === 0} onClick={() => moveLine(i, i - 1)}>▲</button>
+                    <button type="button" aria-label="Descendre la ligne" disabled={i === quote.lines.length - 1} onClick={() => moveLine(i, i + 1)}>▼</button>
+                  </div>
                   <input className="q" type="number" step="any" value={line.qty} onChange={(e) => setLine(i, { qty: Number(e.target.value) })} />
                   <input className="u" value={line.unit} onChange={(e) => setLine(i, { unit: e.target.value })} />
                   <div className="t">
