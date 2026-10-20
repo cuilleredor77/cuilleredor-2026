@@ -667,7 +667,7 @@ export function receivedAt(iso: string): string {
  */
 /** Retire un message d’erreur technique resté dans d’anciennes demandes (« Unexpected token '<' … is not valid JSON »). */
 export function withoutTechNoise(text: string): string {
-  return (text || "").replace(/\s*\(Unexpected token[\s\S]*?is not valid JSON\)/g, "");
+  return (text || "").replace(/\s*\(Unexpected token[\s\S]*?(?:is not valid JSON\)|$)/g, "");
 }
 
 export function clientRemarks(text: string): string {
