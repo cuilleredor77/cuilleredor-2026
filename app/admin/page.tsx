@@ -1,6 +1,6 @@
 "use client";
 
-import { SOURCE_LABEL, receivedAt, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FORMULAS, FORMULA_KEYS, SOURCE_LABEL, receivedAt, formatDateShort, formatEUR, type FormulaKey } from "../../lib/quote";
 
 type Item = {
