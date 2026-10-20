@@ -10,6 +10,7 @@ import {
   formatEUR,
   parseQuote,
   quoteAlerts,
+  agendaDayLink,
   receivedAt,
   SOURCE_LABEL,
   serviceModeLabel,
@@ -143,6 +144,7 @@ async function notifyReviewer(row: RequestRow, origin: string): Promise<void> {
     sendUrl ? `Envoyer au client tel quel : ${sendUrl}` : "",
     `Voir le devis : ${viewUrl}`,
     `Modifier : ${editUrl}`,
+    /^\d{4}-\d{2}-\d{2}$/.test(row.event_date) ? `Agenda ce jour-là : ${agendaDayLink(row.event_date)}` : "",
   ].join("\n");
   const button = (href: string, label: string, gold = false) =>
     `<a href="${esc(href)}" style="display:inline-block;margin:4px 8px 4px 0;padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold;${gold ? "background:#d4ae2a;color:#0a0a0a" : "border:1px solid #775a19;color:#775a19"}">${label}</a>`;
@@ -150,7 +152,7 @@ async function notifyReviewer(row: RequestRow, origin: string): Promise<void> {
 ${facts.map((f) => `<p style="margin:0 0 6px">${esc(f)}</p>`).join("")}
 ${alerts.length ? `<div style="margin:14px 0;padding:12px 14px;background:#fff7e0;border:1px solid #e9c83e;border-radius:6px"><b>Points à relire</b><ul style="margin:6px 0 0;padding-left:18px">${alerts.map((a) => `<li>${esc(a)}</li>`).join("")}</ul></div>` : `<p style="color:#2e6b2e">Aucun point bloquant détecté.</p>`}
 <p style="color:#5e5e5e">${esc(AVAILABILITY)}</p>
-<p style="margin-top:16px">${sendUrl ? button(sendUrl, "Envoyer au client", true) : ""}${button(viewUrl, "Voir le devis")}${button(editUrl, "Modifier")}</p>
+<p style="margin-top:16px">${sendUrl ? button(sendUrl, "Envoyer au client", true) : ""}${button(viewUrl, "Voir le devis")}${button(editUrl, "Modifier")}${/^\d{4}-\d{2}-\d{2}$/.test(row.event_date) ? button(agendaDayLink(row.event_date), "📅 Agenda ce jour-là") : ""}</p>
 </div>`;
   const result = await sendMail({ to, subject, text, html });
   if (!result.ok) console.error("notifyReviewer", row.id, result.error);

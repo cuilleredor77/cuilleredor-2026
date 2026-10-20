@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, charterEmail, computeTotals, formatDateFR,
+  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
   formatEUR, isTravelPending, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
@@ -195,7 +195,10 @@ export default function Editor() {
               <label>Adresse de facturation (si société)<input value={req.billing_address} onChange={(e) => setField("billing_address", e.target.value)} /></label>
               <label>Type d’événement<input value={req.event_type} onChange={(e) => setField("event_type", e.target.value)} /></label>
               <label>Date<input type="date" value={req.event_date} onChange={(e) => setField("event_date", e.target.value)} />
-                {agendaStatus ? (
+                {/^\d{4}-\d{2}-\d{2}$/.test(req.event_date) ? (
+                  <a className="adm-agenda-link" href={agendaDayLink(req.event_date)} target="_blank" rel="noopener noreferrer">📅 Voir l’agenda ce jour-là ↗</a>
+                ) : null}
+                {agendaStatus && agendaStatus !== "off" ? (
                   <small className={`adm-agenda ${agenda && (agenda.count >= 3 || agenda.off.length) ? "full" : ""}`} title={agenda?.titles.join("\n") || ""}>
                     📅 {agendaStatus === "loading" ? "Agenda : vérification…"
                       : agendaStatus === "off" ? "Agenda Google non relié"

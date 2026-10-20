@@ -110,3 +110,5 @@
 .adm-origin a { color: #8b6914; font-weight: 700; }
 .adm-agenda { font-weight: 600; color: #6b5420; }
 .adm-agenda.full { color: #b3261e; font-weight: 700; }
+.adm-agenda-link { font-size: 12.5px; font-weight: 700; color: #8b6914; text-decoration: none; }
+.adm-agenda-link:hover { text-decoration: underline; }

@@ -704,3 +704,9 @@ export function clientRemarks(text: string): string {
     .map((l) => l.replace(/^(Options|Formule demandée)\s*:\s*/i, ""))
     .join("\n");
 }
+
+/** Google Agenda ouvert sur le jour de l’événement (compte Cuillère d’Or), pour vérifier OFF et événements déjà prévus. */
+export function agendaDayLink(date: string): string {
+  const [y, m, d] = date.split("-");
+  return `https://calendar.google.com/calendar/u/0/r/day/${y}/${Number(m)}/${Number(d)}?authuser=cuilleredor4%40gmail.com`;
+}
