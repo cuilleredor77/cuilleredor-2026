@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, SOURCE_LABEL, receivedAt, withoutTechNoise, charterEmail, computeTotals, formatDateFR,
+  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, charterEmail, computeTotals, formatDateFR,
   formatEUR, isTravelPending, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
@@ -39,7 +39,8 @@ export default function Editor() {
 
   const totals = useMemo(() => (quote && req ? computeTotals(quote, req.event_date) : null), [quote, req]);
   // Google Agenda : alerte quand 3 événements ou plus sont déjà prévus à la date demandée.
-  const [agenda, setAgenda] = useState<{ count: number; titles: string[] } | null>(null);
+  const [agenda, setAgenda] = useState<{ count: number; titles: string[]; off: string[] } | null>(null);
+  const [negative, setNegative] = useState(false);
   const [agendaStatus, setAgendaStatus] = useState<"" | "loading" | "off" | "error" | "ok">("");
   const eventDate = req?.event_date || "";
   useEffect(() => {
@@ -49,13 +50,18 @@ export default function Editor() {
     const timer = setTimeout(() => {
       fetch(`/api/admin/agenda?date=${eventDate}`)
         .then((r) => r.json())
-        .then((d) => { setAgenda(d.agenda); setAgendaStatus(!d.connected ? "off" : d.agenda ? "ok" : "error"); })
+        .then((d) => {
+          setAgenda(d.agenda); setAgendaStatus(!d.connected ? "off" : d.agenda ? "ok" : "error");
+          // Période OFF : la réponse proposée par défaut est la réponse négative.
+          if (d.agenda?.off?.length) setNegative(true);
+        })
         .catch(() => setAgendaStatus("error"));
     }, 600);
     return () => clearTimeout(timer);
   }, [eventDate]);
   const alerts = useMemo(() => {
     const list = req && quote && totals ? quoteAlerts(req, quote, totals) : [];
+    if (agenda?.off?.length) list.unshift(`⛔ Huguette est OFF ce jour-là (${agenda.off.join(", ")}) : envoyer la réponse négative (« Préparer l’e-mail » → Indisponible).`);
     if (agenda && agenda.count >= 3) list.unshift(`Déjà ${agenda.count} événements dans ton agenda ce jour-là (${agenda.titles.join(", ")}) : vérifie la disponibilité.`);
     return list;
   }, [req, quote, totals, agenda]);
@@ -139,7 +145,7 @@ export default function Editor() {
   const fullLink = `${origin}/devis/${req.token}`;
   const quoteLink = `${fullLink}?doc=devis`;
   const link = withContract ? fullLink : quoteLink;
-  const { subject, html, text } = charterEmail(req, quote, totals, "", withContract);
+  const { subject, html, text } = negative ? unavailableEmail(req) : charterEmail(req, quote, totals, "", withContract);
   // Gmail ne reçoit que l’objet par l’adresse : le corps mis en forme se colle (Cmd+V) après « Copier l’e-mail mis en forme ».
   const gmail = `https://mail.google.com/mail/?view=cm&fs=1&authuser=cuilleredor4%40gmail.com&to=${encodeURIComponent(req.client_email)}&su=${encodeURIComponent(subject)}`;
   async function copyFormatted() {
@@ -190,10 +196,11 @@ export default function Editor() {
               <label>Type d’événement<input value={req.event_type} onChange={(e) => setField("event_type", e.target.value)} /></label>
               <label>Date<input type="date" value={req.event_date} onChange={(e) => setField("event_date", e.target.value)} />
                 {agendaStatus ? (
-                  <small className={`adm-agenda ${agenda && agenda.count >= 3 ? "full" : ""}`} title={agenda?.titles.join("\n") || ""}>
+                  <small className={`adm-agenda ${agenda && (agenda.count >= 3 || agenda.off.length) ? "full" : ""}`} title={agenda?.titles.join("\n") || ""}>
                     📅 {agendaStatus === "loading" ? "Agenda : vérification…"
                       : agendaStatus === "off" ? "Agenda Google non relié"
                       : agendaStatus === "error" ? "Agenda : lecture impossible"
+                      : agenda!.off.length ? `Huguette OFF ce jour-là (${agenda!.off.join(", ")})`
                       : agenda!.count === 0 ? "Agenda : aucun événement ce jour-là"
                       : `Agenda : ${agenda!.count} événement${agenda!.count > 1 ? "s" : ""} ce jour-là (${agenda!.titles.join(", ")})`}
                   </small>
@@ -315,25 +322,32 @@ export default function Editor() {
           <div className="adm-card adm-mail" onClick={(e) => e.stopPropagation()}>
             <h2>E-mail au client</h2>
             <div className="adm-seg">
-              <button className={withContract ? "" : "on"} onClick={() => { setWithContract(false); setCopied(""); }}>Devis seul</button>
-              <button className={withContract ? "on" : ""} onClick={() => { setWithContract(true); setCopied(""); }}>Devis + contrat</button>
+              <button className={!negative && !withContract ? "on" : ""} onClick={() => { setNegative(false); setWithContract(false); setCopied(""); }}>Devis seul</button>
+              <button className={!negative && withContract ? "on" : ""} onClick={() => { setNegative(false); setWithContract(true); setCopied(""); }}>Devis + contrat</button>
+              <button className={negative ? "on" : ""} onClick={() => { setNegative(true); setCopied(""); }}>Indisponible</button>
             </div>
             <p><b>À :</b> {req.client_email || <em>(adresse manquante)</em>}</p>
             <p><b>Objet :</b> {subject}</p>
             <div className="adm-mailpreview" dangerouslySetInnerHTML={{ __html: html }} />
             {copied ? <p className="adm-note">{copied}</p> : null}
-            <div className="adm-attach">
+            {!negative ? <div className="adm-attach">
               <label className="adm-btn">📎 Ajouter une pièce jointe<input type="file" multiple accept=".pdf,image/*,.doc,.docx" hidden onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} /></label>
               {files.length ? (
                 <ul>{files.map((f, i) => <li key={i}>{f.filename} <span className="adm-muted">({Math.max(1, Math.round(f.size / 1024))} Ko)</span> <button className="adm-x" onClick={() => setFiles(files.filter((_, j) => j !== i))} aria-label="Retirer">✕</button></li>)}</ul>
               ) : <span className="adm-muted">Pour l’envoi direct : télécharge le PDF (bouton 3) puis ajoute-le ici.</span>}
-            </div>
+            </div> : null}
             <div className="adm-actions">
               <button className="adm-btn adm-gold" onClick={copyFormatted}>1. Copier l’e-mail mis en forme</button>
               <a className="adm-btn adm-gold" href={gmail} target="_blank" rel="noopener noreferrer">2. Ouvrir Gmail (destinataire + objet) ↗</a>
-              <a className="adm-btn adm-gold" href={link} target="_blank" rel="noopener noreferrer">3. Télécharger le PDF à joindre ↗</a>
-              <button className="adm-btn" disabled={busy || !!req.sent_at} onClick={sendNow}>{req.sent_at ? "Déjà envoyé ✓" : "Envoyer directement depuis le site"}</button>
-              <button className="adm-btn" onClick={async () => { if (await save({ markSent: true })) setMail(false); }}>✔ C’est envoyé : marquer comme envoyé</button>
+              {negative ? (
+                <button className="adm-btn" onClick={async () => { if (await save({ status: "abandonnee" })) { setReq({ ...req, status: "abandonnee" }); setMail(false); } }}>✔ C’est envoyé : classer en Abandonnée</button>
+              ) : (
+                <>
+                  <a className="adm-btn adm-gold" href={link} target="_blank" rel="noopener noreferrer">3. Télécharger le PDF à joindre ↗</a>
+                  <button className="adm-btn" disabled={busy || !!req.sent_at} onClick={sendNow}>{req.sent_at ? "Déjà envoyé ✓" : "Envoyer directement depuis le site"}</button>
+                  <button className="adm-btn" onClick={async () => { if (await save({ markSent: true })) setMail(false); }}>✔ C’est envoyé : marquer comme envoyé</button>
+                </>
+              )}
               <button className="adm-btn" onClick={() => setMail(false)}>Fermer</button>
             </div>
           </div>

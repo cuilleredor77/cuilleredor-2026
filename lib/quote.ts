@@ -584,6 +584,27 @@ export const EMAIL_SIGNATURE = `<table role="presentation" cellpadding="0" cells
   + `<a href="tel:+33783748971" style="color:#1a1a1a;text-decoration:none">07 83 74 89 71</a> · <a href="mailto:contact@cuilleredor.fr" style="color:#1a1a1a">contact@cuilleredor.fr</a><br>`
   + `<a href="https://cuilleredor.fr" target="_blank" rel="noopener noreferrer" style="color:#8b6914">cuilleredor.fr</a></td></tr></table>`;
 
+/** Réponse négative : la cheffe n’est pas disponible à la date demandée (période OFF ou agenda complet). */
+export function unavailableEmail(req: RequestRow): { subject: string; html: string; text: string } {
+  const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const first = firstName(req.client_name);
+  const type = (req.event_type || "événement").toLowerCase();
+  const when = req.event_date ? ` du ${formatDateFR(req.event_date)}` : "";
+  const subject = `Votre demande Cuillère d’Or — ${req.event_type}${req.event_date ? ` du ${formatDateShort(req.event_date)}` : ""} — ${req.client_name}`;
+  const paras = [
+    `Merci pour votre demande et pour l’intérêt que vous portez à Cuillère d’Or.`,
+    `Malheureusement, nous ne sommes pas disponibles pour votre ${type}${when} et ne pourrons donc pas assurer cette prestation.`,
+    `Si votre date peut évoluer, n’hésitez pas à nous proposer une autre date : nous serons ravis de vous établir un devis.`,
+    `Nous vous souhaitons une très belle réception.`,
+  ];
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#1a1a1a;max-width:680px">`
+    + `<p>Bonjour ${esc(first)},</p>${paras.map((t) => `<p>${esc(t)}</p>`).join("")}`
+    + `<p style="margin:18px 0 0">Bien cordialement,</p><p style="margin:2px 0 22px"><strong>Cuillère d’Or</strong></p>${EMAIL_SIGNATURE}</div>`;
+  const text = [`Bonjour ${first},`, "", ...paras.flatMap((t) => [t, ""]), "Bien cordialement,", "Cuillère d’Or", "",
+    "Cheffe Huguette MVUNDA — Cuillère d’Or, traiteur", "07 83 74 89 71 · contact@cuilleredor.fr · cuilleredor.fr"].join("\n");
+  return { subject, html, text };
+}
+
 /** E-mail client au modèle Cuillère d’Or : intro, tableau récapitulatif, informations complémentaires, signature. */
 export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link: string, withContract: boolean): { subject: string; html: string; text: string } {
   const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
