@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { FORMULAS, FORMULA_KEYS, formatDateShort, formatEUR, type FormulaKey } from "../../lib/quote";
 
 type Item = {
-  id: number; createdAt: string; status: string; name: string; email: string; phone: string;
+  id: number; createdAt: string; source: string; status: string; name: string; email: string; phone: string;
   eventType: string; eventDate: string; place: string; formula: string; adults: number;
   children: number; providers: number; total: number; sentAt: string | null; hasQuote: boolean;
 };
@@ -95,6 +95,7 @@ export default function AdminHome() {
                 <div className="adm-main">
                   <strong>{it.name || "Sans nom"}</strong>
                   <span>{it.eventType} · {it.eventDate ? formatDateShort(it.eventDate) : "date ?"} · {it.place || "lieu ?"}</span>
+                  <span className="adm-origin">{SOURCE_LABEL[it.source] || it.source} · reçue le {receivedAt(it.createdAt)}</span>
                   <span>{meta.label} · {it.adults} adulte{it.adults > 1 ? "s" : ""}{it.children ? ` + ${it.children} enf.` : ""}{it.providers ? ` + ${it.providers} prest.` : ""}</span>
                 </div>
                 <div className="adm-side">
@@ -173,4 +174,19 @@ function NewRequest({ onClose }: { onClose: () => void }) {
 // Comparaison sans accents ni majuscules (« Bénédicte » = « benedicte »).
 function norm(text: string): string {
   return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+const SOURCE_LABEL: Record<string, string> = {
+  site: "Formulaire du site",
+  google_sheet: "Google Form",
+  manuel: "Saisie manuelle",
+};
+
+// Date et heure de réception, à l’heure de Paris (ex. « 20/10/2026 à 12h30 »).
+function receivedAt(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const p = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }).formatToParts(d);
+  const g = (t: string) => p.find((x) => x.type === t)?.value || "";
+  return `${g("day")}/${g("month")}/${g("year")} à ${g("hour")}h${g("minute")}`;
 }
