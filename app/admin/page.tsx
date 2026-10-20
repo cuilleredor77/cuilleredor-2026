@@ -47,7 +47,7 @@ export default function AdminHome() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [offOnly, setOffOnly] = useState(false);
-  // Filtre par date d’événement ou période OFF : porte sur toutes les demandes, comme la recherche.
+  // Filtre par date d’événement ou période OFF : s’applique dans l’onglet ouvert (archives seulement dans Archives / Toutes).
   const dateFilter = Boolean(from || to || offOnly);
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
@@ -76,7 +76,7 @@ export default function AdminHome() {
     const list = (items || []).filter((it) =>
       (q
         ? norm([it.name, it.email, it.phone, it.place, it.eventType].join(" ")).includes(q) || norm(it.phone || "").replace(/\s/g, "").includes(q.replace(/\s/g, ""))
-        : dateFilter || filter === "all" || buckets.get(it.id) === filter)
+        : filter === "all" || buckets.get(it.id) === filter)
       && (!from || (it.eventDate && it.eventDate >= from))
       && (!to || (it.eventDate && it.eventDate <= to))
       && (!offOnly || Boolean(offPeriod(it.eventDate))),
@@ -140,7 +140,7 @@ export default function AdminHome() {
         <button type="button" className={`adm-chip ${offOnly ? "on" : ""}`} onClick={() => setOffOnly(!offOnly)}>⛔ Pendant un OFF</button>
         {dateFilter ? <button type="button" className="adm-linkbtn" onClick={() => { setFrom(""); setTo(""); setOffOnly(false); }}>Effacer les dates</button> : null}
       </div>
-      {dateFilter && !query.trim() ? <p className="adm-hint">{shown.length} demande{shown.length > 1 ? "s" : ""} à ces dates, tous onglets confondus</p>
+      {dateFilter && !query.trim() ? <p className="adm-hint">{shown.length} demande{shown.length > 1 ? "s" : ""} à ces dates dans l’onglet « {TABS.find(([k]) => k === filter)?.[1]} »</p>
         : !query.trim() ? <p className="adm-hint">{TABS.find(([k]) => k === filter)?.[2]}</p> : null}
       {shown.length === 0 ? <p className="adm-muted">{query.trim() ? "Aucun client ne correspond à cette recherche." : "Aucune demande dans cette liste."}</p> : null}
       {/* Le statut n’est utile que dans les listes qui en mélangent plusieurs. */}
