@@ -572,6 +572,13 @@ export function weddingPlannerLabel(value: string): string {
   return value === "oui" ? "déjà trouvé" : value === "recherche" ? "en recherche" : value === "non" ? "pas prévu" : "non précisé";
 }
 
+/** Petite signature des e-mails clients (logo, nom, coordonnées). */
+export const EMAIL_SIGNATURE = `<table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;margin-top:4px"><tr>`
+  + `<td style="padding:0 14px 0 0;border-right:2px solid #c9a227;vertical-align:middle"><img src="https://cuilleredor.fr/logo-cuillere-dor.png" alt="Cuillère d’Or" width="96" style="display:block;width:96px;height:auto"></td>`
+  + `<td style="padding:0 0 0 14px;vertical-align:middle;font-size:13px;line-height:1.5;color:#1a1a1a"><strong>Cheffe Huguette MVUNDA</strong><br><span style="color:#6b5420">Cuillère d’Or — traiteur</span><br>`
+  + `<a href="tel:+33783748971" style="color:#1a1a1a;text-decoration:none">07 83 74 89 71</a> · <a href="mailto:contact@cuilleredor.fr" style="color:#1a1a1a">contact@cuilleredor.fr</a><br>`
+  + `<a href="https://cuilleredor.fr" target="_blank" rel="noopener noreferrer" style="color:#8b6914">cuilleredor.fr</a></td></tr></table>`;
+
 /** E-mail client au modèle Cuillère d’Or : intro, tableau récapitulatif, informations complémentaires, signature. */
 export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link: string, withContract: boolean): { subject: string; html: string; text: string } {
   const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -607,7 +614,7 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
     + `<p style="margin:0 0 6px"><strong>Informations complémentaires :</strong></p>`
     + `<ul style="margin:0 0 16px;padding-left:22px">${infos.map((t) => `<li style="margin-bottom:4px">${bold(t)}</li>`).join("")}</ul>`
     + `<p>Je reste à votre entière disposition pour toute question ou ajustement.</p>`
-    + `<p style="margin:18px 0 0">Bien cordialement,<br>Cheffe Huguette - 07 83 74 89 71 | <a href="mailto:cuilleredor4@gmail.com">cuilleredor4@gmail.com</a></p></div>`;
+    + `<p style="margin:18px 0 10px">Bien cordialement,</p>${EMAIL_SIGNATURE}</div>`;
   const text = [
     `Bonjour ${first},`, "", intro1, "", `${intro2} ${link}`, "",
     "Voici le récapitulatif de votre devis :",
@@ -615,7 +622,7 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
     `TOTAL PRESTATIONS : ${formatEUR(totals.total)}`, "",
     "Informations complémentaires :", ...infos.map((t) => `- ${t}`), "",
     "Je reste à votre entière disposition pour toute question ou ajustement.", "",
-    "Bien cordialement,", "Cheffe Huguette - 07 83 74 89 71 | cuilleredor4@gmail.com",
+    "Bien cordialement,", "", "Cheffe Huguette MVUNDA — Cuillère d’Or, traiteur", "07 83 74 89 71 · contact@cuilleredor.fr · cuilleredor.fr",
   ].join("\n");
   return { subject, html, text };
 }
