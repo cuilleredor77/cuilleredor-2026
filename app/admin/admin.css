@@ -73,3 +73,8 @@
   .adm-side { text-align: left; }
   .adm-badge { justify-self: start; }
 }
+
+.adm-seg { display: inline-flex; border: 1px solid #c9bda0; border-radius: 999px; overflow: hidden; margin: 4px 0 12px; }
+.adm-seg button { border: 0; background: #fff; padding: 8px 16px; font-size: 14px; cursor: pointer; }
+.adm-seg button.on { background: #1a1a1a; color: #f7f4ec; }
+.adm-mailpreview { border: 1px solid #e3ddcc; border-radius: 8px; padding: 16px 18px; background: #fff; max-height: 52vh; overflow: auto; margin: 8px 0 12px; }

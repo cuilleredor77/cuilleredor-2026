@@ -1,7 +1,7 @@
 "use client";
 
 // Deux PDF possibles : le devis seul, ou le devis suivi du contrat.
-export default function PrintButton({ fileName }: { fileName: string }) {
+export default function PrintButton({ fileName, quoteOnly = false }: { fileName: string; quoteOnly?: boolean }) {
   const print = (quoteOnly: boolean) => {
     const previous = document.title;
     document.title = quoteOnly ? fileName.replace(/_Devis_Contrat$/, "_Devis") : fileName;
@@ -18,9 +18,11 @@ export default function PrintButton({ fileName }: { fileName: string }) {
       <button type="button" className="dv-print dv-print-alt" onClick={() => print(true)}>
         Devis seul
       </button>
-      <button type="button" className="dv-print" onClick={() => print(false)}>
-        Devis + contrat
-      </button>
+      {quoteOnly ? null : (
+        <button type="button" className="dv-print" onClick={() => print(false)}>
+          Devis + contrat
+        </button>
+      )}
     </div>
   );
 }

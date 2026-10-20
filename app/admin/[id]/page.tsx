@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, clientEmail, computeTotals, formatDateFR, formatDateShort,
+  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, charterEmail, computeTotals, formatDateFR, formatDateShort,
   formatEUR, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
@@ -20,6 +20,8 @@ export default function Editor() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [mail, setMail] = useState(false);
+  const [withContract, setWithContract] = useState(true);
+  const [copied, setCopied] = useState("");
   const [presetId, setPresetId] = useState("");
 
   const load = useCallback(async () => {
@@ -72,21 +74,29 @@ export default function Editor() {
     if (dirty && !(await save())) return;
     if (!confirm(`Envoyer le devis à ${req!.client_email} ?`)) return;
     setBusy(true); setMsg("");
-    const res = await fetch(`/api/admin/requests/${id}/send`, { method: "POST" });
+    const res = await fetch(`/api/admin/requests/${id}/send`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ withContract }) });
     const data = await res.json();
     setBusy(false);
     if (!res.ok) { setMsg(data.error || "Envoi impossible."); return; }
     setReq(data.request); setMail(false); setMsg("Devis envoyé au client ✓");
   }
 
-  async function preview() {
-    if (dirty && !(await save())) return;
-    window.open(`/devis/${req!.token}`, "_blank");
-  }
 
-  const link = `${typeof window !== "undefined" ? window.location.origin : ""}/devis/${req.token}`;
-  const { subject, body } = clientEmail(req, quote, totals, link);
-  const gmail = `https://mail.google.com/mail/?view=cm&fs=1&authuser=cuilleredor4%40gmail.com&to=${encodeURIComponent(req.client_email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const fullLink = `${origin}/devis/${req.token}`;
+  const quoteLink = `${fullLink}?doc=devis`;
+  const link = withContract ? fullLink : quoteLink;
+  const { subject, html, text } = charterEmail(req, quote, totals, link, withContract);
+  // Gmail ne reçoit que l’objet par l’adresse : le corps mis en forme se colle (Cmd+V) après « Copier l’e-mail mis en forme ».
+  const gmail = `https://mail.google.com/mail/?view=cm&fs=1&authuser=cuilleredor4%40gmail.com&to=${encodeURIComponent(req.client_email)}&su=${encodeURIComponent(subject)}`;
+  async function copyFormatted() {
+    try {
+      await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([text], { type: "text/plain" }) })]);
+    } catch {
+      await navigator.clipboard.writeText(text);
+    }
+    setCopied("E-mail copié avec sa mise en forme : collez-le (Cmd+V) dans Gmail.");
+  }
 
   return (
     <div className="adm-wrap">
@@ -100,7 +110,8 @@ export default function Editor() {
           <select value={req.status} onChange={(e) => { setReq({ ...req, status: e.target.value }); setDirty(true); }}>
             {STATUS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
           </select>
-          <button className="adm-btn" onClick={preview} disabled={busy}>Aperçu du devis</button>
+          <a className="adm-btn" href={quoteLink} target="_blank" rel="noopener noreferrer">Devis seul ↗</a>
+          <a className="adm-btn" href={fullLink} target="_blank" rel="noopener noreferrer">Devis + contrat ↗</a>
           <button className="adm-btn" onClick={() => save({ status: req.status })} disabled={busy || !dirty}>{dirty ? "Enregistrer" : "Enregistré"}</button>
           <button className="adm-btn adm-gold" onClick={async () => { if (!dirty || (await save())) setMail(true); }} disabled={busy}>Préparer l’e-mail →</button>
         </div>
@@ -209,14 +220,18 @@ export default function Editor() {
         <div className="adm-modal" onClick={() => setMail(false)}>
           <div className="adm-card adm-mail" onClick={(e) => e.stopPropagation()}>
             <h2>E-mail au client</h2>
-            <p className="adm-muted">Relisez, puis « Envoyer au client maintenant » (copie cachée dans votre boîte). Gmail reste possible en secours.</p>
+            <div className="adm-seg">
+              <button className={withContract ? "" : "on"} onClick={() => { setWithContract(false); setCopied(""); }}>Devis seul</button>
+              <button className={withContract ? "on" : ""} onClick={() => { setWithContract(true); setCopied(""); }}>Devis + contrat</button>
+            </div>
             <p><b>À :</b> {req.client_email || <em>(adresse manquante)</em>}</p>
             <p><b>Objet :</b> {subject}</p>
-            <pre className="adm-pre">{body}</pre>
+            <div className="adm-mailpreview" dangerouslySetInnerHTML={{ __html: html }} />
+            {copied ? <p className="adm-note">{copied}</p> : null}
             <div className="adm-actions">
-              <button className="adm-btn" onClick={() => navigator.clipboard.writeText(body)}>Copier le texte</button>
-              <button className="adm-btn adm-gold" disabled={busy || !!req.sent_at} onClick={sendNow}>{req.sent_at ? "Déjà envoyé ✓" : "Envoyer au client maintenant"}</button>
-              <a className="adm-btn" href={gmail} target="_blank" rel="noreferrer">Ouvrir dans Gmail ↗</a>
+              <button className="adm-btn adm-gold" onClick={copyFormatted}>1. Copier l’e-mail mis en forme</button>
+              <a className="adm-btn adm-gold" href={gmail} target="_blank" rel="noopener noreferrer">2. Ouvrir Gmail (destinataire + objet) ↗</a>
+              <button className="adm-btn" disabled={busy || !!req.sent_at} onClick={sendNow}>{req.sent_at ? "Déjà envoyé ✓" : "Envoyer directement depuis le site"}</button>
               <button className="adm-btn" onClick={async () => { if (await save({ markSent: true })) setMail(false); }}>✔ C’est envoyé : marquer comme envoyé</button>
               <button className="adm-btn" onClick={() => setMail(false)}>Fermer</button>
             </div>

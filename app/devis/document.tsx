@@ -41,7 +41,7 @@ function groupDetail(parts: string[]) {
 }
 
 
-export default function QuoteDocument({ row }: { row: RequestRow }) {
+export default function QuoteDocument({ row, quoteOnly = false }: { row: RequestRow; quoteOnly?: boolean }) {
   const quote = parseQuote(row);
   const totals = computeTotals(quote, row.event_date);
   const eventLong = row.event_date ? formatDateFR(row.event_date, true) : "";
@@ -171,6 +171,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
         </section>
       ) : null}
 
+      {quoteOnly ? null : (<>
       {/* ================= CONTRAT ================= */}
       <section className="dv-page dv-contract">
         <h2 className="dv-h2 dv-center">CONTRAT DE PRESTATION TRAITEUR</h2>
@@ -323,6 +324,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
         </div>
         <footer className="dv-foot">Cuillère d’Or — 8 Allée des Bois, 77240 Vert-Saint-Denis — SIRET 889 933 800 00019 — contact@cuilleredor.fr — 07 83 74 89 71 — TVA non applicable (art. 293 B du CGI)</footer>
       </section>
+      </>)}
     </div>
   );
 }

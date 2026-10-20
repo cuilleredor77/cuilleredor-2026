@@ -4,6 +4,7 @@ import { roundTripKm } from "./geo";
 import {
   buildDefaultQuote,
   clientEmail,
+  charterEmail,
   computeTotals,
   formatDateFR,
   formatEUR,
@@ -145,13 +146,14 @@ ${alerts.length ? `<div style="margin:14px 0;padding:12px 14px;background:#fff7e
 }
 
 /** Envoie le devis au client (copie cachée à la relectrice) et marque la demande « envoyée ». */
-export async function sendQuoteToClient(row: RequestRow, origin: string): Promise<{ ok: boolean; error?: string }> {
+export async function sendQuoteToClient(row: RequestRow, origin: string, withContract = true): Promise<{ ok: boolean; error?: string }> {
   if (!row.quote_json) return { ok: false, error: "Le devis n’est pas encore calculé." };
   if (!row.client_email) return { ok: false, error: "E-mail du client manquant." };
   const quote = parseQuote(row);
   const totals = computeTotals(quote, row.event_date);
-  const { subject, body } = clientEmail(row, quote, totals, `${origin}/devis/${row.token}`);
-  const result = await sendMail({ to: row.client_email, subject, text: body, bcc: setting("REVIEW_EMAIL") || undefined });
+  const link = `${origin}/devis/${row.token}${withContract ? "" : "?doc=devis"}`;
+  const { subject, html, text } = charterEmail(row, quote, totals, link, withContract);
+  const result = await sendMail({ to: row.client_email, subject, text, html, bcc: setting("REVIEW_EMAIL") || undefined });
   if (!result.ok) return result;
   const now = new Date().toISOString();
   await db()

@@ -11,18 +11,19 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function QuotePage({ params }: { params: Promise<{ token: string }> }) {
+export default async function QuotePage({ params, searchParams }: { params: Promise<{ token: string }>; searchParams: Promise<{ doc?: string }> }) {
   const { token } = await params;
+  const quoteOnly = (await searchParams).doc === "devis";
   if (!/^[a-f0-9]{36}$/.test(token)) notFound();
   const row = await getRequestByToken(token);
   if (!row || !row.quote_json) notFound();
   return (
     <main className="dv-wrap">
       <div className="dv-toolbar">
-        <span>Devis et contrat — {row.client_name}</span>
-        <PrintButton fileName={quoteFileName(row)} />
+        <span>{quoteOnly ? "Devis" : "Devis et contrat"} — {row.client_name}</span>
+        <PrintButton fileName={quoteFileName(row)} quoteOnly={quoteOnly} />
       </div>
-      <QuoteDocument row={row} />
+      <QuoteDocument row={row} quoteOnly={quoteOnly} />
     </main>
   );
 }
