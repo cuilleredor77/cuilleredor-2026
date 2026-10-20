@@ -66,17 +66,25 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
           </thead>
           <tbody>
             <tr className="dv-band"><td colSpan={4}>PRESTATIONS INCLUSES</td></tr>
-            {quote.lines.map((line) => (
-              <tr key={line.id}>
-                <td>{fmtQty(line.qty)} {line.unit}</td>
-                <td>
-                  ☑ {line.label}
-                  {line.detail ? <ul className="dv-detail">{line.detail.split(" · ").map((part, i) => <li key={i} className={/ :$/.test(part) ? "dv-detail-h" : /^\d+\./.test(part) ? "dv-detail-n" : undefined}>{part}</li>)}</ul> : null}
-                </td>
-                <td className="r">{formatEUR(line.price)}</td>
-                <td className="r">{formatEUR(lineTotal(line))}</td>
-              </tr>
-            ))}
+            {quote.lines.map((line) => {
+              const parts = line.detail ? line.detail.split(" · ") : [];
+              return (
+                <Fragment key={line.id}>
+                  <tr className={parts.length ? "dv-has-detail" : undefined}>
+                    <td>{fmtQty(line.qty)} {line.unit}</td>
+                    <td>☑ {line.label}</td>
+                    <td className="r">{formatEUR(line.price)}</td>
+                    <td className="r">{formatEUR(lineTotal(line))}</td>
+                  </tr>
+                  {parts.map((part, i) => (
+                    <tr key={i} className={`dv-sub${i === parts.length - 1 ? " dv-sub-last" : ""}${/ :$/.test(part) ? " dv-sub-h" : /^\d+\./.test(part) ? " dv-sub-n" : ""}`}>
+                      <td />
+                      <td colSpan={3}>{part}</td>
+                    </tr>
+                  ))}
+                </Fragment>
+              );
+            })}
             <tr className="dv-total"><td colSpan={3}>TOTAL PRESTATIONS</td><td className="r">{formatEUR(totals.total)}</td></tr>
           </tbody>
         </table>
