@@ -54,7 +54,7 @@
 .dv-sign p { margin: 4px 0; }
 .dv-signname { font-weight: 700; }
 .dv-box { height: 70px; border: 1px dashed #b8932a; margin-top: 8px; }
-.dv-page .dv-foot { margin-top: 22px; padding: 10px 0 0; border-top: 1px solid #d9d2bd; background: none; font-size: 10.5px; line-height: 1.5; color: #555; text-align: center; }
+.dv-page .dv-foot { display: block; width: auto; max-width: none; margin-top: 22px; padding: 10px 0 0; border-top: 1px solid #d9d2bd; background: none; font-size: 10.5px; line-height: 1.5; color: #555; text-align: center; }
 .dv-h2 { font-size: 18px; letter-spacing: 0.08em; color: #6b5420; margin: 0 0 8px; }
 .dv-contract h3 { font-size: 15px; margin: 20px 0 6px; letter-spacing: 0.04em; color: #1a1a1a; border-bottom: 1px solid #d9d2bd; padding-bottom: 3px; }
 .dv-contract h4 { font-size: 14px; margin: 12px 0 3px; }

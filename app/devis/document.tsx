@@ -151,7 +151,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
             <div className="dv-box" />
           </div>
         </div>
-        <footer className="dv-foot">Cuillère d’Or — 8 Allée des Bois, 77240 Vert-Saint-Denis — SIRET 889 933 800 00019 — contact@cuilleredor.fr — 07 83 74 89 71 — TVA non applicable (art. 293 B du CGI)</footer>
+        <footer className="dv-foot">Cuillère d’Or — 8 Allée des Bois, 77240 Vert-Saint-Denis — SIRET 889 933 800 00019 — contact@cuilleredor.fr — 07 83 74 89 71 — TVA non applicable (art. 293 B du CGI)</footer>
       </section>
 
       {/* ================= SERVICES COMPLÉMENTAIRES ================= */}
@@ -335,7 +335,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
             <div className="dv-box" />
           </div>
         </div>
-        <footer className="dv-foot">Cuillère d’Or — 8 Allée des Bois, 77240 Vert-Saint-Denis — SIRET 889 933 800 00019 — contact@cuilleredor.fr — 07 83 74 89 71 — TVA non applicable (art. 293 B du CGI)</footer>
+        <footer className="dv-foot">Cuillère d’Or — 8 Allée des Bois, 77240 Vert-Saint-Denis — SIRET 889 933 800 00019 — contact@cuilleredor.fr — 07 83 74 89 71 — TVA non applicable (art. 293 B du CGI)</footer>
       </section>
       </>)}
     </div>
