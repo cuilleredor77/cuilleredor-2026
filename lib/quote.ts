@@ -190,6 +190,7 @@ export type OptionPreset = {
 
 export const OPTION_PRESETS: OptionPreset[] = [
   { id: "soft", label: "Forfait soft et eau (Coca-Cola, Fanta, Oasis, eau plate et gazeuse)", unit: "pers.", price: 5, basis: "guests" },
+  { id: "vh-cocktails", label: "Vin d’honneur — 4 cocktails au choix", unit: "pers.", price: PRICES.honorWine, basis: "adults", detail: "4 cocktails par personne, au choix parmi nos cocktails" },
   { id: "cocktails", label: "Cocktails signature", unit: "litre", price: 10, basis: "one", detail: "1 litre pour environ 4 convives" },
   { id: "serveurs", label: "Service des boissons toute la soirée", unit: "serveur", price: 160, basis: "servers", detail: "1 serveur conseillé pour 50 convives" },
   { id: "fromages", label: "Assiette de fromages avant le dessert", unit: "pers.", price: 9, basis: "adults" },
