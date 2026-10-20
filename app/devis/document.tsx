@@ -317,7 +317,8 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
 
         <h3>ARTICLE 9 — DROIT À L’IMAGE</h3>
         <p>Les photographies et vidéos des réalisations culinaires de Cuillère d’Or et des séquences de l’événement pourront être utilisées à des fins de communication, sans limitation de durée.</p>
-        <p>Le Client autorise ou refuse ce droit : □ J’accepte □ Je refuse</p>
+        <p>Le Client autorise ou refuse ce droit :</p>
+        <p className="dv-choices"><span className="dv-tick" aria-hidden="true" /> J’accepte <span className="dv-tick" aria-hidden="true" /> Je refuse</p>
 
         <p className="dv-fait">Fait à Vert-Saint-Denis, le {issued}</p>
         <div className="dv-sign">
