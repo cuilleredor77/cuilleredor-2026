@@ -45,7 +45,10 @@
 .adm-grid .wide { grid-column: 1 / -1; }
 .adm-grid .chk { display: flex; align-items: center; gap: 8px; font-weight: 600; }
 .adm-grid .chk input { width: auto; min-height: 0; }
-.adm-inline { display: flex; gap: 8px; align-items: center; }
+.adm-inline { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.adm-inline input { flex: 0 0 120px; width: 120px; }
+.adm-inline .adm-btn { white-space: nowrap; }
+.adm-msg { white-space: pre-line; }
 .adm-client { margin: 12px 0; padding: 10px 12px; background: #faf6ea; border-radius: 8px; font-size: 13px; }
 .adm-client p { margin: 4px 0; }
 .adm-split { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }

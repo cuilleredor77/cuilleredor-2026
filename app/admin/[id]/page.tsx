@@ -156,12 +156,12 @@ export default function Editor() {
               <label>Enfants<input type="number" min={0} value={req.children} onChange={(e) => setField("children", Number(e.target.value))} /></label>
               <label>Prestataires<input type="number" min={0} value={req.providers} onChange={(e) => setField("providers", Number(e.target.value))} /></label>
               <label className="chk"><input type="checkbox" checked={Boolean(req.honor_wine)} onChange={(e) => setField("honor_wine", e.target.checked ? 1 : 0)} /> Avec vin d’honneur (buffet, plateau, assiette)</label>
-              <label>Km aller-retour
+              <label className="wide">Km aller-retour
                 <span className="adm-inline">
                   <input type="number" step="0.1" min={0} value={req.km ?? ""} onChange={(e) => setField("km", e.target.value === "" ? null : Number(e.target.value))} />
                   <button type="button" className="adm-btn" onClick={computeKm}>Calculer les km</button>
                   {req.event_place.trim() ? (
-                    <a className="adm-btn" href={mapsLink(req.event_place)} target="_blank" rel="noopener noreferrer" title="Itinéraire aller-retour depuis Vert-Saint-Denis">🗺 Lien itinéraire AR ↗</a>
+                    <a className="adm-btn" href={mapsLink(req.event_place)} target="_blank" rel="noopener noreferrer" title="Itinéraire aller-retour depuis Vert-Saint-Denis">🗺 Itinéraire AR ↗</a>
                   ) : null}
                 </span>
               </label>
@@ -170,7 +170,7 @@ export default function Editor() {
               <div className="adm-client">
                 <p><b>Prestation :</b> {serviceModeLabel(req.service_mode)} · <b>Wedding planner :</b> {weddingPlannerLabel(req.wedding_planner)}{req.vendors_found ? <> · <b>Prestataires trouvés :</b> {req.vendors_found}</> : null}</p>
                 {req.budget ? <p><b>Budget indiqué :</b> {req.budget.replace(/\s*€\s*$/, "")} €</p> : null}
-                {req.message ? <p><b>Message du client :</b> {req.message}</p> : null}
+                {req.message ? <p className="adm-msg"><b>Message du client :</b>{"\n"}{req.message}</p> : null}
                 {req.selection_text ? <p><b>Plats choisis :</b> {req.selection_text}</p> : null}
               </div>
             )}
