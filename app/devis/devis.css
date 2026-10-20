@@ -14,8 +14,8 @@
 .dv-title { font-size: 22px; font-weight: 700; letter-spacing: 0.08em; color: #6b5420; }
 .dv-company { margin: 8px 0 14px; font-size: 11px; color: #5e5e5e; }
 .dv-client { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-.dv-client th { text-align: left; width: 32%; padding: 8px 14px; font-weight: 700; vertical-align: top; background: #faf6ea; border-bottom: 1px solid #ece4cc; }
-.dv-client td { padding: 8px 14px; border-bottom: 1px solid #ece4cc; }
+.dv-client th { text-align: left; width: 14%; white-space: nowrap; padding: 8px 14px; font-weight: 700; vertical-align: top; background: #faf6ea; border-bottom: 1px solid #ece4cc; }
+.dv-client td { padding: 8px 14px; border-bottom: 1px solid #ece4cc; width: 36%; }
 .dv-page .dv-client th { text-transform: none; letter-spacing: normal; font-size: 13px; color: #5a4618; }
 .dv-sum { margin: 8px 0; }
 .dv-lines, .dv-comp { width: 100%; border-collapse: collapse; margin: 14px 0; }
@@ -59,6 +59,8 @@
 .dv-contract ul { margin: 4px 0 6px 18px; padding: 0; }
 .dv-fait { margin-top: 18px !important; font-weight: 700; }
 @media (max-width: 640px) {
+  .dv-client tr { display: grid; grid-template-columns: auto 1fr; }
+  .dv-client th, .dv-client td { width: auto; }
   .dv-lines td:first-child { white-space: nowrap; }
   .dv-lines td, .dv-lines th { padding: 9px 10px; }
   .dv-terms li { grid-template-columns: 1fr; gap: 2px; }

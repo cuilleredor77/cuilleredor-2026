@@ -62,18 +62,14 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
         </div>
         <table className="dv-client">
           <tbody>
-            <tr><th>Nom du client :</th><td>{row.client_name}</td></tr>
-            <tr><th>Téléphone :</th><td>{row.client_phone}</td></tr>
-            <tr><th>Email :</th><td>{row.client_email}</td></tr>
-            {row.billing_address ? <tr><th>Adresse de facturation :</th><td>{row.billing_address}</td></tr> : null}
-            <tr><th>Date de l’événement :</th><td>{row.event_date ? formatDateShort(row.event_date) : ""}</td></tr>
-            <tr><th>Lieu :</th><td>{row.event_place}</td></tr>
-            <tr><th>Type :</th><td>{row.event_type}</td></tr>
-            <tr><th>Invités :</th><td>{guests}</td></tr>
+            <tr><th>Client</th><td>{row.client_name}</td><th>Téléphone</th><td>{row.client_phone}</td></tr>
+            <tr><th>Email</th><td>{row.client_email}</td><th>Facturation</th><td>{row.billing_address || "—"}</td></tr>
+            <tr><th>Événement</th><td>{row.event_type}</td><th>Date</th><td>{row.event_date ? formatDateShort(row.event_date) : ""}</td></tr>
+            <tr><th>Lieu</th><td>{row.event_place}</td><th>Invités</th><td>{guests}</td></tr>
           </tbody>
         </table>
         <p className="dv-sum"><b>Prestation souhaitée :</b> {quote.summary}</p>
-        <p className="dv-sum"><b>Options / remarques :</b> {quote.remarks || "—"}</p>
+        {quote.remarks && quote.remarks.trim() !== "—" ? <p className="dv-sum"><b>Options / remarques :</b> {quote.remarks}</p> : null}
 
         <table className="dv-lines">
           <thead>
