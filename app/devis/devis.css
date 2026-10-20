@@ -58,9 +58,36 @@
 .dv-contract p, .dv-contract li { font-size: 12px; margin: 3px 0; }
 .dv-contract ul { margin: 4px 0 6px 18px; padding: 0; }
 .dv-fait { margin-top: 18px !important; font-weight: 700; }
+
+/* ===== Mise en page alignée sur le modèle Cuillère d'Or (devis Adu) ===== */
+.dv-head { display: grid; grid-template-columns: minmax(0, 40%) minmax(0, 60%); gap: 24px; align-items: start; border-bottom: 0; padding-bottom: 0; margin-bottom: 14px; }
+.dv-brand img { width: 220px; max-width: 100%; height: auto; display: block; }
+.dv-brand p { margin: 10px 0 0; font-size: 12px; line-height: 1.5; color: #333; }
+.dv-page .dv-client { width: 100%; min-width: 0; border-collapse: collapse; margin: 0; border: 1px solid #d4b96a; table-layout: fixed; }
+.dv-page .dv-client thead th { background: #8b6914; color: #fff; text-align: center; font-size: 14px; letter-spacing: 0.04em; padding: 7px 10px; width: auto; border: 0; }
+.dv-page .dv-client tbody th { background: #fbf5e6; color: #1a1a1a; font-size: 12.5px; width: 40%; padding: 4px 10px; border-bottom: 1px solid #d4b96a; border-right: 1px solid #d4b96a; white-space: normal; overflow-wrap: anywhere; }
+.dv-page .dv-client tbody td { background: #fbf5e6; font-size: 12.5px; width: auto; padding: 4px 10px; border-bottom: 1px solid #d4b96a; white-space: normal; overflow-wrap: anywhere; }
+.dv-lines th.c, .dv-lines td.c { text-align: center; }
+.dv-lines td.dv-check { width: 26px; padding-left: 4px; padding-right: 4px; color: #8b6914; }
+.dv-lines td.b { font-weight: 700; }
+.dv-lines th { border-right: 1px solid #555; }
+.dv-lines th:last-child { border-right: 0; }
+.dv-band td { color: #8b6914; background: #fbf5e6; }
+.dv-totalbar { display: flex; justify-content: space-between; gap: 24px; margin: 10px 0 0 auto; width: 46%; min-width: 260px; background: #8b6914; color: #fff; font-weight: 700; font-size: 14px; padding: 9px 14px; }
+.dv-stamp { width: 150px; height: auto; display: block; margin: 6px 0 2px; }
+.dv-center { text-align: center; }
+.dv-contract .dv-h2.dv-center { color: #1a1a1a; font-size: 19px; margin-bottom: 4px; }
+.dv-contract .dv-sub-title { margin: 0; font-size: 13px; }
+.dv-contract .dv-sub-place { margin: 0 0 14px; color: #6b6b6b; font-size: 12px; }
+.dv-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 10px 0 18px; }
+.dv-party { background: #f3eee4; padding: 14px 16px; text-align: center; font-size: 12px; line-height: 1.55; }
+.dv-party-dark { background: #0f1a14; color: #fff; }
+.dv-party-label { color: #c9a227; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px; }
+.dv-contract h3 { font-weight: 700; border-bottom: 1.5px solid #c9a227; }
+
 @media (max-width: 640px) {
-  .dv-client tr { display: grid; grid-template-columns: auto 1fr; }
-  .dv-client th, .dv-client td { width: auto; }
+  .dv-head, .dv-parties { grid-template-columns: 1fr; }
+  .dv-totalbar { width: 100%; }
   .dv-lines td:first-child { white-space: nowrap; }
   .dv-lines td, .dv-lines th { padding: 9px 10px; }
   .dv-terms li { grid-template-columns: 1fr; gap: 2px; }
@@ -84,10 +111,17 @@
   /* Impression compacte : le devis tient sur une page */
   .dv-page { font-size: 10.5px; line-height: 1.35; }
   .dv-head { padding-bottom: 6px; border-bottom-width: 1.5px; }
-  .dv-head img { width: 170px; max-width: 170px; }
+  .dv-head { gap: 16px; margin-bottom: 8px; grid-template-columns: minmax(0, 40%) minmax(0, 60%); }
+  .dv-brand img { width: 170px; max-width: 100%; }
+  .dv-brand p { font-size: 9.5px; margin-top: 5px; line-height: 1.4; }
+  .dv-page .dv-client thead th { font-size: 11.5px; padding: 4px 8px; }
+  .dv-page .dv-client tbody th, .dv-page .dv-client tbody td { font-size: 10px; padding: 2px 8px; }
+  .dv-totalbar { font-size: 11.5px; padding: 5px 12px; margin-top: 6px; }
+  .dv-stamp { width: 110px; margin: 3px 0 1px; }
+  .dv-parties { gap: 12px; margin: 6px 0 10px; }
+  .dv-party { padding: 8px 10px; font-size: 10px; line-height: 1.45; }
   .dv-title { font-size: 17px; }
   .dv-company { margin: 4px 0 6px; font-size: 9px; }
-  .dv-page .dv-client th, .dv-page .dv-client td { padding: 2.5px 10px; font-size: 10.5px; }
   .dv-client { margin-bottom: 4px; }
   .dv-sum { margin: 3px 0; }
   .dv-lines { margin: 6px 0; }
@@ -111,3 +145,6 @@
   .dv-contract h3 { font-size: 11px; margin: 10px 0 3px; }
   .dv-contract h4 { font-size: 10.5px; margin: 6px 0 1px; }
 }
+
+/* Le site impose une largeur minimale aux tableaux : on la retire dans le devis */
+.dv-page table { min-width: 0; }

@@ -23,6 +23,9 @@ const COMPLEMENTARY: Array<{ title: string; rows: Array<[string, string]> }> = [
 
 const fmtQty = (n: number) => String(n).replace(".", ",");
 
+// Lignes rangées sous « Prestations incluses » ; les autres vont sous « Options ».
+const INCLUDED_IDS = new Set(["main", "vin-honneur", "enfants", "prestataires"]);
+
 // Regroupe le détail d'une ligne (« Titre : · 1. a · 2. b · Autre titre : · … ») en blocs titre + liste.
 function groupDetail(parts: string[]) {
   const groups: Array<{ title: string; items: string[]; numbered: boolean }> = [];
@@ -54,56 +57,68 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
       {/* ================= DEVIS ================= */}
       <section className="dv-page">
         <header className="dv-head">
-          <div className="dv-title">DEVIS POUR</div>
-          <img src="/logo-cuillere-dor-800.png" alt="Cuillère d’Or" width={260} />
+          <div className="dv-brand">
+            <img src="/logo-cuillere-dor-800.png" alt="Cuillère d’Or" width={220} />
+            <p>8 Allée des Bois, 77240 Vert-Saint-Denis<br />Tél : 07 83 74 89 71<br />contact@cuilleredor.fr<br />SIRET : 889 933 800 00019</p>
+          </div>
+          <table className="dv-client">
+            <thead><tr><th colSpan={2}>DEVIS POUR</th></tr></thead>
+            <tbody>
+              <tr><th>Nom du client :</th><td>{row.client_name}</td></tr>
+              <tr><th>Téléphone :</th><td>{row.client_phone}</td></tr>
+              <tr><th>Email :</th><td>{row.client_email}</td></tr>
+              {row.billing_address ? <tr><th>Facturation :</th><td>{row.billing_address}</td></tr> : null}
+              <tr><th>Date de l’événement :</th><td>{row.event_date ? formatDateShort(row.event_date) : ""}</td></tr>
+              <tr><th>Lieu :</th><td>{row.event_place}</td></tr>
+              <tr><th>Type :</th><td>{row.event_type}</td></tr>
+              <tr><th>Invités :</th><td>{guests}</td></tr>
+            </tbody>
+          </table>
         </header>
-        <div className="dv-company">
-          8 Allée des Bois, 77240 Vert-Saint-Denis · Tél : 07 83 74 89 71 · contact@cuilleredor.fr · SIRET : 889 933 800 00019
-        </div>
-        <table className="dv-client">
-          <tbody>
-            <tr><th>Client</th><td>{row.client_name}</td><th>Téléphone</th><td>{row.client_phone}</td></tr>
-            <tr><th>Email</th><td>{row.client_email}</td><th>Facturation</th><td>{row.billing_address || "—"}</td></tr>
-            <tr><th>Événement</th><td>{row.event_type}</td><th>Date</th><td>{row.event_date ? formatDateShort(row.event_date) : ""}</td></tr>
-            <tr><th>Lieu</th><td>{row.event_place}</td><th>Invités</th><td>{guests}</td></tr>
-          </tbody>
-        </table>
         <p className="dv-sum"><b>Prestation souhaitée :</b> {quote.summary}</p>
         {quote.remarks && quote.remarks.trim() !== "—" ? <p className="dv-sum"><b>Options / remarques :</b> {quote.remarks}</p> : null}
 
         <table className="dv-lines">
           <thead>
-            <tr><th>Quantité</th><th>Description</th><th className="r">Prix unitaire</th><th className="r">Total</th></tr>
+            <tr><th>Quantité</th><th className="c" /><th>Description</th><th className="r">Prix unitaire</th><th className="r">Total</th></tr>
           </thead>
           <tbody>
-            <tr className="dv-band"><td colSpan={4}>PRESTATIONS INCLUSES</td></tr>
-            {quote.lines.map((line) => {
-              const parts = line.detail ? line.detail.split(" · ") : [];
-              return (
-                <Fragment key={line.id}>
-                  <tr className={parts.length ? "dv-has-detail" : undefined}>
-                    <td>{fmtQty(line.qty)} {line.unit}</td>
-                    <td>☑ {line.label}</td>
-                    <td className="r">{formatEUR(line.price)}</td>
-                    <td className="r">{formatEUR(lineTotal(line))}</td>
-                  </tr>
-                  {groupDetail(parts).map((g, i, all) => (
-                    <tr key={i} className={`dv-sub dv-sub-group${i === all.length - 1 ? " dv-sub-last" : ""}`}>
-                      <td />
-                      <td colSpan={3}>
-                        {g.title ? <div className="dv-group-title">{g.title}</div> : null}
-                        {g.numbered
-                          ? <ol className={`dv-cols${g.items.length > 2 ? " dv-cols-2" : ""}`}>{g.items.map((it, k) => <li key={k}>{it}</li>)}</ol>
-                          : <ul className={`dv-cols${g.items.length > 2 ? " dv-cols-2" : ""}`}>{g.items.map((it, k) => <li key={k}>{it}</li>)}</ul>}
-                      </td>
-                    </tr>
-                  ))}
-                </Fragment>
-              );
-            })}
-            <tr className="dv-total"><td colSpan={3}>TOTAL PRESTATIONS</td><td className="r">{formatEUR(totals.total)}</td></tr>
+            {[
+              { title: "PRESTATIONS INCLUSES", lines: quote.lines.filter((l) => INCLUDED_IDS.has(l.id)) },
+              { title: "OPTIONS", lines: quote.lines.filter((l) => !INCLUDED_IDS.has(l.id)) },
+            ].filter((sec) => sec.lines.length).map((sec) => (
+              <Fragment key={sec.title}>
+                <tr className="dv-band"><td colSpan={5}>{sec.title}</td></tr>
+                {sec.lines.map((line) => {
+                  const parts = line.detail ? line.detail.split(" · ") : [];
+                  return (
+                    <Fragment key={line.id}>
+                      <tr className={parts.length ? "dv-has-detail" : undefined}>
+                        <td className="c">{fmtQty(line.qty)} {line.unit}</td>
+                        <td className="c dv-check">☑</td>
+                        <td>{line.label}</td>
+                        <td className="r">{formatEUR(line.price)}</td>
+                        <td className="r b">{formatEUR(lineTotal(line))}</td>
+                      </tr>
+                      {groupDetail(parts).map((g, i, all) => (
+                        <tr key={i} className={`dv-sub dv-sub-group${i === all.length - 1 ? " dv-sub-last" : ""}`}>
+                          <td /><td />
+                          <td colSpan={3}>
+                            {g.title ? <div className="dv-group-title">{g.title}</div> : null}
+                            {g.numbered
+                              ? <ol className={`dv-cols${g.items.length > 2 ? " dv-cols-2" : ""}`}>{g.items.map((it, k) => <li key={k}>{it}</li>)}</ol>
+                              : <ul className={`dv-cols${g.items.length > 2 ? " dv-cols-2" : ""}`}>{g.items.map((it, k) => <li key={k}>{it}</li>)}</ul>}
+                          </td>
+                        </tr>
+                      ))}
+                    </Fragment>
+                  );
+                })}
+              </Fragment>
+            ))}
           </tbody>
         </table>
+        <div className="dv-totalbar"><span>TOTAL PRESTATIONS</span><span>{formatEUR(totals.total)}</span></div>
 
         <p className="dv-conditions"><b>Conditions</b></p>
         <ul className="dv-terms">
@@ -123,6 +138,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
           <div>
             <p>Devis émis le {issued}</p>
             <p>Signature Cuillère d’Or :</p>
+            <img className="dv-stamp" src="/logo-cuillere-dor-800.png" alt="Cuillère d’Or" width={150} />
             <p className="dv-signname">Huguette MVUNDA KILOLA</p>
           </div>
           <div>
@@ -157,11 +173,19 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
 
       {/* ================= CONTRAT ================= */}
       <section className="dv-page dv-contract">
-        <h2 className="dv-h2">CONTRAT DE PRESTATION TRAITEUR</h2>
-        <p><b>{row.event_type} — {eventLong}</b></p>
-        <p>{row.event_place}</p>
-        <p><b>PRESTATAIRE</b> Cuillère d’Or — 8 allée des Bois, 77240 Vert-Saint-Denis — SIREN : 889 933 800 — Représentée par : Mme Huguette MVUNDA KILOLA</p>
-        <p><b>CLIENT(S)</b> {row.client_name} — {row.client_phone} — {row.client_email}</p>
+        <h2 className="dv-h2 dv-center">CONTRAT DE PRESTATION TRAITEUR</h2>
+        <p className="dv-center dv-sub-title"><i>{row.event_type} — {eventLong}</i></p>
+        <p className="dv-center dv-sub-place"><i>{row.event_place}</i></p>
+        <div className="dv-parties">
+          <div className="dv-party dv-party-dark">
+            <div className="dv-party-label">PRESTATAIRE</div>
+            Cuillère d’Or<br />8 allée des Bois, 77240 Vert-Saint-Denis<br />SIREN : 889 933 800<br />Représentée par : Mme Huguette MVUNDA KILOLA
+          </div>
+          <div className="dv-party">
+            <div className="dv-party-label">CLIENT(S)</div>
+            {row.client_name}<br />{row.client_phone}<br />{row.client_email}
+          </div>
+        </div>
 
         <h3>ARTICLE 1 — OBJET DE LA PRESTATION</h3>
         <p>Le Prestataire s’engage à réaliser la prestation traiteur suivante :</p>
