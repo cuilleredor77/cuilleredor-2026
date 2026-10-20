@@ -121,43 +121,43 @@
   .dv-total, .dv-conditions { break-after: avoid; }
   @page { size: A4; margin: 11mm 12mm 12mm; }
   /* Impression compacte : le devis tient sur une page */
-  .dv-page { font-size: 10.5px; line-height: 1.35; }
+  .dv-page { font-size: 12px; line-height: 1.35; }
   .dv-head { padding-bottom: 6px; border-bottom-width: 1.5px; }
   .dv-head { gap: 16px; margin-bottom: 8px; grid-template-columns: minmax(0, 40%) minmax(0, 60%); }
   .dv-brand img { width: 170px; max-width: 100%; }
-  .dv-brand p { font-size: 9.5px; margin-top: 5px; line-height: 1.4; }
-  .dv-page .dv-client thead th { font-size: 11.5px; padding: 4px 8px; }
-  .dv-page .dv-client tbody th, .dv-page .dv-client tbody td { font-size: 10px; padding: 2px 8px; }
-  .dv-totalbar { font-size: 11.5px; padding: 5px 12px; margin-top: 6px; }
+  .dv-brand p { font-size: 11px; margin-top: 5px; line-height: 1.4; }
+  .dv-page .dv-client thead th { font-size: 13px; padding: 4px 8px; }
+  .dv-page .dv-client tbody th, .dv-page .dv-client tbody td { font-size: 11.5px; padding: 2px 8px; }
+  .dv-totalbar { font-size: 13px; padding: 5px 12px; margin-top: 6px; }
   .dv-stamp { width: 110px; margin: 3px 0 1px; }
   .dv-parties { gap: 12px; margin: 6px 0 10px; }
-  .dv-party { padding: 8px 10px; font-size: 10px; line-height: 1.45; }
-  .dv-title { font-size: 17px; }
-  .dv-company { margin: 4px 0 6px; font-size: 9px; }
+  .dv-party { padding: 8px 10px; font-size: 11.5px; line-height: 1.45; }
+  .dv-title { font-size: 19.5px; }
+  .dv-company { margin: 4px 0 6px; font-size: 10.5px; }
   .dv-client { margin-bottom: 4px; }
   .dv-sum { margin: 3px 0; }
   .dv-lines { margin: 6px 0; }
-  .dv-lines th { padding: 5px 10px; font-size: 9.5px; }
-  .dv-page .dv-lines td { padding: 5px 10px; font-size: 11px; }
-  .dv-band td { padding: 4px 10px; font-size: 9.5px; }
-  .dv-lines tr.dv-sub td { padding-top: 0; padding-bottom: 0; font-size: 10.5px; line-height: 1.35; }
+  .dv-lines th { padding: 5px 10px; font-size: 11px; }
+  .dv-page .dv-lines td { padding: 5px 10px; font-size: 12.5px; }
+  .dv-band td { padding: 4px 10px; font-size: 11px; }
+  .dv-lines tr.dv-sub td { padding-top: 0; padding-bottom: 0; font-size: 12px; line-height: 1.35; }
   .dv-cols { margin-bottom: 3px; }
   .dv-lines tr.dv-sub-h td { padding-top: 4px; }
   .dv-lines tr.dv-sub-last td { padding-bottom: 5px; }
   .dv-lines tr.dv-sub-n td + td { padding-left: 24px; }
-  .dv-total td { padding: 6px 10px; font-size: 11.5px; }
-  .dv-conditions { margin: 8px 0 0; font-size: 10.5px; }
-  .dv-terms { margin: 2px 0 6px; font-size: 10px; }
+  .dv-total td { padding: 6px 10px; font-size: 13px; }
+  .dv-conditions { margin: 8px 0 0; font-size: 12px; }
+  .dv-terms { margin: 2px 0 6px; font-size: 11.5px; }
   .dv-terms li { padding: 2.5px 10px; grid-template-columns: 140px 1fr; }
   .dv-sign { margin-top: 8px; gap: 20px; }
   .dv-sign p { margin: 2px 0; }
   .dv-box { height: 48px; margin-top: 4px; }
-  .dv-page .dv-foot { margin-top: 8px; padding-top: 5px; font-size: 8.5px; }
-  .dv-contract p, .dv-contract li { font-size: 11.5px; line-height: 1.45; margin: 2px 0; }
-  .dv-contract h3 { font-size: 12.5px; margin: 10px 0 3px; }
-  .dv-contract h4 { font-size: 12px; margin: 6px 0 1px; }
+  .dv-page .dv-foot { margin-top: 8px; padding-top: 5px; font-size: 10px; }
+  .dv-contract p, .dv-contract li { font-size: 13px; line-height: 1.45; margin: 2px 0; }
+  .dv-contract h3 { font-size: 14.5px; margin: 10px 0 3px; }
+  .dv-contract h4 { font-size: 14px; margin: 6px 0 1px; }
   .dv-tick { width: 13px; height: 13px; border-width: 1.5px; }
-  .dv-party { font-size: 11px; }
+  .dv-party { font-size: 12.5px; }
 }
 
 .dv-rib { display: grid; gap: 2px; margin: 6px 0 4px; padding: 8px 12px; border-left: 3px solid #c9a227; background: #fbf5e6; max-width: 100%; }
