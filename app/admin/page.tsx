@@ -51,8 +51,8 @@ export default function AdminHome() {
         ? norm([it.name, it.email, it.phone, it.place, it.eventType].join(" ")).includes(q) || norm(it.phone || "").replace(/\s/g, "").includes(q.replace(/\s/g, ""))
         : filter === "all" ? true : filter === "todo" ? TODO.includes(it.status) : it.status === filter,
     );
-    // les demandes les plus anciennes d'abord : ce sont celles qui attendent depuis le plus longtemps
-    return list.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+    // les demandes les plus récentes d’abord
+    return list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }, [items, filter, query]);
 
   if (auth === "loading") return <p className="adm-muted">Chargement…</p>;
