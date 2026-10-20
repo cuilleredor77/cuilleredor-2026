@@ -22,6 +22,7 @@ export default function Editor() {
   const [mail, setMail] = useState(false);
   const [withContract, setWithContract] = useState(true);
   const [copied, setCopied] = useState("");
+  const [sheetFinder, setSheetFinder] = useState("");
   const [files, setFiles] = useState<{ filename: string; content: string; size: number }[]>([]);
   const [presetId, setPresetId] = useState("");
 
@@ -29,7 +30,7 @@ export default function Editor() {
     const res = await fetch(`/api/admin/requests/${id}`, { cache: "no-store" });
     if (res.status === 401) { window.location.href = "/admin"; return; }
     const data = await res.json();
-    setReq(data.request); setQuote(data.quote); setDirty(!data.request.quote_json);
+    setReq(data.request); setQuote(data.quote); setDirty(!data.request.quote_json); setSheetFinder(data.sheetFinderUrl || "");
     // Ouverture directe de la fenêtre e-mail depuis la page du devis (?mail=1&doc=devis)
     const params = new URLSearchParams(window.location.search);
     if (params.get("mail") === "1") { setWithContract(params.get("doc") !== "devis"); setMail(true); }
@@ -45,6 +46,14 @@ export default function Editor() {
   const setQ = (patch: Partial<Quote>) => { setQuote({ ...quote, ...patch }); setDirty(true); };
   const setLine = (i: number, patch: Partial<QuoteLine>) => setQ({ lines: quote.lines.map((l, idx) => (idx === i ? { ...l, ...patch } : l)) });
   const totalGuests = req.adults + req.children + req.providers;
+
+  async function removeRequest() {
+    if (!confirm(`Supprimer définitivement la demande de ${req!.client_name || "ce client"} ? Cette action est irréversible.`)) return;
+    setBusy(true);
+    const res = await fetch(`/api/admin/requests/${id}`, { method: "DELETE" });
+    if (res.ok) { window.location.href = "/admin"; return; }
+    setBusy(false); setMsg("Suppression impossible.");
+  }
 
   // Modifications non enregistrées : on enregistre avant d’ouvrir le devis, sinon il montrerait l’ancienne version.
   async function openSaved(e: { preventDefault: () => void }, href: string) {
@@ -128,7 +137,12 @@ export default function Editor() {
         <div>
           <a href="/admin" className="adm-back">← Toutes les demandes</a>
           <h1>{req.client_name || "Demande sans nom"}</h1>
-          <p className="adm-origin">Origine : <b>{SOURCE_LABEL[req.source] || req.source}</b> · reçue le <b>{receivedAt(req.created_at)}</b>{req.sent_at ? ` · envoyé le ${receivedAt(req.sent_at)}` : ""}</p>
+          <p className="adm-origin">
+            Origine : <b>{SOURCE_LABEL[req.source] || req.source}</b> · reçue le <b>{receivedAt(req.created_at)}</b>{req.sent_at ? ` · envoyé le ${receivedAt(req.sent_at)}` : ""}
+            {req.source === "google_sheet" && sheetFinder ? (
+              <> · <a href={`${sheetFinder}?email=${encodeURIComponent(req.client_email)}&date=${req.event_date}`} target="_blank" rel="noopener noreferrer">📄 Demande initiale ↗</a></>
+            ) : null}
+          </p>
         </div>
         <div className="adm-actions">
           <select value={req.status} onChange={(e) => { setReq({ ...req, status: e.target.value }); setDirty(true); }}>
@@ -138,6 +152,7 @@ export default function Editor() {
           <a className="adm-btn" href={fullLink} target="_blank" rel="noopener noreferrer" onClick={(e) => openSaved(e, fullLink)}>Devis + contrat ↗</a>
           <button className="adm-btn" onClick={() => save({ status: req.status })} disabled={busy || !dirty}>{dirty ? "Enregistrer" : "Enregistré"}</button>
           <button className="adm-btn adm-gold" onClick={async () => { if (!dirty || (await save())) setMail(true); }} disabled={busy}>Préparer l’e-mail →</button>
+          <button className="adm-btn adm-danger" onClick={removeRequest} disabled={busy}>🗑 Supprimer</button>
         </div>
       </header>
       {msg ? <p className="adm-note">{msg}</p> : null}

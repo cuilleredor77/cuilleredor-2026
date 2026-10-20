@@ -1,4 +1,4 @@
-import { db, getRequestById, json, requireAdmin } from "../../../../../lib/server";
+import { db, getRequestById, json, requireAdmin, setting } from "../../../../../lib/server";
 import {
   buildDefaultQuote,
   computeTotals,
@@ -16,7 +16,7 @@ export async function GET(request: Request, ctx: { params: Promise<{ id: string 
   const row = await getRequestById(Number(id));
   if (!row) return json({ error: "Demande introuvable" }, { status: 404 });
   const quote = parseQuote(row);
-  return json({ request: row, quote, totals: computeTotals(quote, row.event_date) });
+  return json({ request: row, quote, totals: computeTotals(quote, row.event_date), sheetFinderUrl: setting("GSHEET_FINDER_URL") });
 }
 
 export async function PUT(request: Request, ctx: { params: Promise<{ id: string }> }) {
@@ -103,4 +103,14 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
   const row = await getRequestById(existing.id);
   const saved = parseQuote(row!);
   return json({ ok: true, request: row, quote: saved, totals: computeTotals(saved, row!.event_date) });
+}
+
+// Suppression définitive (demandes de test, doublons). Demandée depuis la fiche, avec confirmation.
+export async function DELETE(request: Request, ctx: { params: Promise<{ id: string }> }) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
+  const { id } = await ctx.params;
+  const result = await db().prepare("DELETE FROM requests WHERE id = ?").bind(Number(id)).run();
+  if (!result.meta.changes) return json({ error: "Demande introuvable" }, { status: 404 });
+  return json({ ok: true });
 }

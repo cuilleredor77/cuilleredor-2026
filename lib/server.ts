@@ -18,9 +18,10 @@ type AppEnv = {
   MAIL_FROM?: string; // ex. « Cuillère d’Or <devis@cuilleredor.fr> »
   REVIEW_EMAIL?: string; // qui reçoit « Devis prêt » et relit avant envoi
   GFORM_SECRET?: string; // partagé avec le script du Google Form (secret)
+  GSHEET_FINDER_URL?: string; // web app du script de la feuille : ouvre la ligne d’un client
 };
 
-export function setting(name: "RESEND_API_KEY" | "MAIL_FROM" | "REVIEW_EMAIL" | "GFORM_SECRET"): string {
+export function setting(name: "RESEND_API_KEY" | "MAIL_FROM" | "REVIEW_EMAIL" | "GFORM_SECRET" | "GSHEET_FINDER_URL"): string {
   return ((env as unknown as AppEnv)[name] || "").trim();
 }
 
