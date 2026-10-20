@@ -46,6 +46,14 @@ export default function Editor() {
   const setLine = (i: number, patch: Partial<QuoteLine>) => setQ({ lines: quote.lines.map((l, idx) => (idx === i ? { ...l, ...patch } : l)) });
   const totalGuests = req.adults + req.children + req.providers;
 
+  // Modifications non enregistrées : on enregistre avant d’ouvrir le devis, sinon il montrerait l’ancienne version.
+  async function openSaved(e: { preventDefault: () => void }, href: string) {
+    if (!dirty) return;
+    e.preventDefault();
+    const tab = window.open("about:blank", "_blank");
+    if (await save()) { if (tab) tab.location.href = href; else window.open(href, "_blank"); } else tab?.close();
+  }
+
   async function save(extra: Record<string, unknown> = {}): Promise<boolean> {
     setBusy(true); setMsg("");
     const res = await fetch(`/api/admin/requests/${id}`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ request: req, quote, ...extra }) });
@@ -126,8 +134,8 @@ export default function Editor() {
           <select value={req.status} onChange={(e) => { setReq({ ...req, status: e.target.value }); setDirty(true); }}>
             {STATUS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
           </select>
-          <a className="adm-btn" href={quoteLink} target="_blank" rel="noopener noreferrer">Devis seul ↗</a>
-          <a className="adm-btn" href={fullLink} target="_blank" rel="noopener noreferrer">Devis + contrat ↗</a>
+          <a className="adm-btn" href={quoteLink} target="_blank" rel="noopener noreferrer" onClick={(e) => openSaved(e, quoteLink)}>Devis seul ↗</a>
+          <a className="adm-btn" href={fullLink} target="_blank" rel="noopener noreferrer" onClick={(e) => openSaved(e, fullLink)}>Devis + contrat ↗</a>
           <button className="adm-btn" onClick={() => save({ status: req.status })} disabled={busy || !dirty}>{dirty ? "Enregistrer" : "Enregistré"}</button>
           <button className="adm-btn adm-gold" onClick={async () => { if (!dirty || (await save())) setMail(true); }} disabled={busy}>Préparer l’e-mail →</button>
         </div>
@@ -204,11 +212,17 @@ export default function Editor() {
               <input
                 type="checkbox"
                 checked={quote.lines.some((l) => l.id === "dechets" || /d[ée]chets/i.test(l.label))}
-                onChange={(e) => setQ({
-                  lines: e.target.checked
-                    ? [...quote.lines.filter((l) => !/d[ée]placement/i.test(l.label)), { id: "dechets", qty: 1, unit: "forfait", label: "Gestion des déchets alimentaires (hors verre)", price: 50 }, ...quote.lines.filter((l) => /d[ée]placement/i.test(l.label))]
-                    : quote.lines.filter((l) => !(l.id === "dechets" || /d[ée]chets/i.test(l.label))),
-                })}
+                onChange={(e) => {
+                  // Enregistré tout de suite : le devis en ligne et le PDF montrent aussitôt le changement.
+                  const next = {
+                    ...quote,
+                    lines: e.target.checked
+                      ? [...quote.lines.filter((l) => !/d[ée]placement/i.test(l.label)), { id: "dechets", qty: 1, unit: "forfait", label: "Gestion des déchets alimentaires (hors verre)", price: 50 }, ...quote.lines.filter((l) => /d[ée]placement/i.test(l.label))]
+                      : quote.lines.filter((l) => !(l.id === "dechets" || /d[ée]chets/i.test(l.label))),
+                  };
+                  setQuote(next);
+                  save({ quote: next });
+                }}
               />
               Gestion des déchets alimentaires (hors verre) — 50 € <span className="adm-muted">· cochée par défaut, à décocher si le lieu garde les déchets</span>
             </label>
