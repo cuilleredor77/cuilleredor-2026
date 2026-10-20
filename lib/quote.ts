@@ -790,7 +790,7 @@ export function brunchNextDay(message: string, adults: number): QuoteLine | null
 
 // Périodes OFF d’Huguette (dates incluses). Les demandes à ces dates reçoivent une réponse négative.
 export const OFF_PERIODS: Array<{ from: string; to: string; label: string }> = [
-  { from: "2027-08-21", to: "2027-09-03", label: "OFF du 21/08 au 03/09/2027" },
+  { from: "2027-08-21", to: "2027-09-01", label: "OFF du 21/08 au 01/09/2027" },
 ];
 
 export function offPeriod(date: string): { from: string; to: string; label: string } | null {
