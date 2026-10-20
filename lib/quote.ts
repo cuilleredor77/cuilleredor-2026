@@ -537,6 +537,13 @@ export function quoteAlerts(req: RequestRow, quote: Quote, totals: Totals): stri
   else if (quote.lines.some((l) => l.id === "deplacement" && (l.detail || "").startsWith("Estimation depuis la commune")))
     out.push("Déplacement estimé depuis la ville seule : à confirmer avec l’adresse exacte.");
   if (key === "chef") out.push("Chef à domicile : tarif à confirmer.");
+  // Garde-fou : distance surprenante (au-delà de 200 km aller-retour) → vérifier la commune retenue
+  if (req.km && req.km > 200) {
+    const place = (req.internal_notes || "").split("\n").find((l) => l.startsWith("Lieu retenu pour les km : "));
+    out.push(
+      `Distance élevée (${req.km} km aller-retour) : vérifier la commune retenue${place ? ` (${place.replace("Lieu retenu pour les km : ", "").split(",").slice(0, 3).join(",")})` : ""}.`,
+    );
+  }
   if (req.service_mode && req.service_mode !== "service") out.push(`${serviceModeLabel(req.service_mode)} : le tarif de la formule inclut le service, à adapter.`);
   if (quote.lines.some((l) => !(l.price > 0) || !(l.qty > 0))) out.push("Une ligne a une quantité ou un prix à zéro.");
   return out;

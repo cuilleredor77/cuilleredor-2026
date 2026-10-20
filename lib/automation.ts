@@ -15,6 +15,7 @@ import {
 } from "./quote";
 
 const REPLY_TO = "cuilleredor4@gmail.com";
+export const PLACE_NOTE = "Lieu retenu pour les km : ";
 export const TRAVEL_FROM_TOWN = "Estimation depuis la commune : montant ajusté avec l’adresse exacte du lieu";
 export const TRAVEL_TO_QUOTE = "Frais de déplacement : à chiffrer selon l’adresse exacte du lieu de réception.";
 const AVAILABILITY = "Avant d’envoyer : vérifie que la date est libre (l’e-mail au client dit « Nous sommes disponibles à cette date »).";
@@ -56,6 +57,13 @@ export async function sendMail(mail: Mail): Promise<{ ok: boolean; error?: strin
 const esc = (s: string) =>
   s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] as string);
 
+/** Garde dans les notes internes la commune retenue pour les km (pour vérifier une distance surprenante). */
+export function withPlaceNote(notes: string, resolved: string): string {
+  const line = `${PLACE_NOTE}${resolved}`;
+  const kept = notes.split("\n").filter((l) => !l.startsWith(PLACE_NOTE));
+  return [...kept, line].filter(Boolean).join("\n").slice(0, 4000);
+}
+
 /** Calcule les km et le devis d'une nouvelle demande, puis prévient la relectrice. Ne lève jamais d'erreur. */
 export async function prepareAndNotify(id: number, origin: string): Promise<void> {
   try {
@@ -63,9 +71,13 @@ export async function prepareAndNotify(id: number, origin: string): Promise<void
     if (!row) return;
     let km = row.km;
     let precision = km ? "adresse" : "";
+    let notes = row.internal_notes;
     if (!km && row.event_place.length >= 4) {
       const distance = await roundTripKm(row.event_place);
-      if (!("error" in distance)) km = distance.km;
+      if (!("error" in distance)) {
+        km = distance.km;
+        notes = withPlaceNote(notes, distance.resolved);
+      }
       precision = distance.precision || "";
     }
     const quote = buildDefaultQuote({ ...row, km, quote_json: "" });
@@ -74,10 +86,11 @@ export async function prepareAndNotify(id: number, origin: string): Promise<void
     if (!km && precision === "departement") quote.note = TRAVEL_TO_QUOTE;
     await db()
       .prepare(
-        `UPDATE requests SET updated_at = ?, km = ?, quote_json = ?, quote_version = quote_version + 1, status = 'devis_pret'
+        `UPDATE requests SET updated_at = ?, km = ?, quote_json = ?, internal_notes = ?, quote_version = quote_version + 1,
+          status = 'devis_pret'
          WHERE id = ? AND quote_json = ''`,
       )
-      .bind(new Date().toISOString(), km, JSON.stringify(quote), id)
+      .bind(new Date().toISOString(), km, JSON.stringify(quote), notes, id)
       .run();
     row = await getRequestById(id);
     if (row) await notifyReviewer(row, origin);
