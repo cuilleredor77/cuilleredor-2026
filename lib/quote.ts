@@ -382,6 +382,8 @@ export function parseQuote(row: RequestRow): Quote {
   if (row.quote_json) {
     try {
       const q = JSON.parse(row.quote_json) as Quote;
+      // Ancienne mention « catalogue en ligne sur cuilleredor.fr/liseuse » : remplacée par la ligne Catalogue des conditions.
+      if (q.note && q.note.includes("liseuse")) q.note = "";
       if (Array.isArray(q.lines)) return q;
     } catch {
       /* on retombe sur le devis par défaut */

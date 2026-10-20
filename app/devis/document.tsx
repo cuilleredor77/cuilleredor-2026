@@ -135,7 +135,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
               </>}
           <li><b>Validité</b><span>30 jours à compter du {issued}. Tarifs et disponibilités garantis après signature et versement {totals.fullAtSignature ? "du règlement" : "de l’acompte"}.</span></li>
           <li><b>Catalogue</b><span>Formules, menus et services complémentaires : <a href="https://catalogue.cuilleredor.fr/" target="_blank" rel="noopener noreferrer">catalogue.cuilleredor.fr</a></span></li>
-          {quote.note && !quote.note.includes("liseuse") ? <li><b>Remarque</b><span>{quote.note}</span></li> : null}
+          {quote.note ? <li><b>Remarque</b><span>{quote.note}</span></li> : null}
         </ul>
 
         <div className="dv-sign">
