@@ -91,7 +91,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
                 <li><b>Solde</b><span>{formatEUR(totals.balance)} au plus tard le {formatDateFR(totals.balanceDue)}</span></li>
               </>}
           <li><b>Validité</b><span>30 jours à compter du {issued}. Tarifs et disponibilités garantis après signature et versement {totals.fullAtSignature ? "du règlement" : "de l’acompte"}.</span></li>
-          <li><b>Catalogue</b><span>Formules, menus et services complémentaires : <a href="https://cuilleredor.fr/liseuse/">cuilleredor.fr/liseuse/</a></span></li>
+          <li><b>Catalogue</b><span>Formules, menus et services complémentaires : <a href="https://cuilleredor.fr/liseuse/" target="_blank" rel="noopener noreferrer">cuilleredor.fr/liseuse/</a></span></li>
           {quote.note && !quote.note.includes("liseuse") ? <li><b>Remarque</b><span>{quote.note}</span></li> : null}
         </ul>
 
