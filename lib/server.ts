@@ -17,9 +17,10 @@ type AppEnv = {
   RESEND_API_KEY?: string; // clé du service d'envoi d'e-mails (secret)
   MAIL_FROM?: string; // ex. « Cuillère d’Or <devis@cuilleredor.fr> »
   REVIEW_EMAIL?: string; // qui reçoit « Devis prêt » et relit avant envoi
+  GFORM_SECRET?: string; // partagé avec le script du Google Form (secret)
 };
 
-export function setting(name: "RESEND_API_KEY" | "MAIL_FROM" | "REVIEW_EMAIL"): string {
+export function setting(name: "RESEND_API_KEY" | "MAIL_FROM" | "REVIEW_EMAIL" | "GFORM_SECRET"): string {
   return ((env as unknown as AppEnv)[name] || "").trim();
 }
 
