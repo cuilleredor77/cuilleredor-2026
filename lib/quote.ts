@@ -590,8 +590,8 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
     `Convives : ${guests}`,
     `Total : ${formatEUR(totals.total)}${travelText}`,
     totals.fullAtSignature
-      ? "Règlement : intégral à la signature (événement dans moins de deux mois)"
-      : `Règlement : acompte de 30 % à la signature (${formatEUR(totals.deposit)}), solde de ${formatEUR(totals.balance)} au plus tard le ${formatDateFR(totals.balanceDue)}`,
+      ? `Règlement : intégral à la signature (événement dans moins de deux mois), accompagné de la caution de ${formatEUR(totals.caution)}`
+      : `Règlement : acompte de 30 % à la signature (${formatEUR(totals.deposit)}), solde de ${formatEUR(totals.balance)} au plus tard le ${formatDateFR(totals.balanceDue)}, accompagné de la caution de ${formatEUR(totals.caution)} (restituée si aucun retard constaté)`,
     `Devis valable jusqu’au ${formatDateFR(totals.validUntil)}`,
   ];
   const steps = withContract

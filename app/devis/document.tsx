@@ -125,10 +125,10 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         <ul className="dv-terms">
           <li><b>Total des prestations</b><span>{formatEUR(totals.total)}</span></li>
           {totals.fullAtSignature
-            ? <li><b>Règlement</b><span>L’événement ayant lieu dans moins de 2 mois, la totalité ({formatEUR(totals.total)}) est à régler à la signature.</span></li>
+            ? <li><b>Règlement</b><span>L’événement ayant lieu dans moins de 2 mois, la totalité ({formatEUR(totals.total)}) est à régler à la signature, accompagnée de la caution de {formatEUR(totals.caution)} (restituée si aucun retard constaté).</span></li>
             : <>
                 <li><b>Acompte (30 %)</b><span>{formatEUR(totals.deposit)} à la signature</span></li>
-                <li><b>Solde</b><span>{formatEUR(totals.balance)} au plus tard le {formatDateFR(totals.balanceDue)}</span></li>
+                <li><b>Solde</b><span>{formatEUR(totals.balance)} au plus tard le {formatDateFR(totals.balanceDue)}, accompagné de la caution de {formatEUR(totals.caution)} (restituée si aucun retard constaté)</span></li>
               </>}
           <li><b>Validité</b><span>30 jours à compter du {issued}. Tarifs et disponibilités garantis après signature et versement {totals.fullAtSignature ? "du règlement" : "de l’acompte"}.</span></li>
           <li><b>Catalogue</b><span>Formules, menus et services complémentaires : <a href="https://cuilleredor.fr/liseuse/" target="_blank" rel="noopener noreferrer">cuilleredor.fr/liseuse/</a></span></li>
@@ -210,14 +210,14 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         <ul>
           <li>Montant total : {formatEUR(totals.total)} TTC</li>
           {totals.fullAtSignature ? (
-            <li>Règlement : {formatEUR(totals.total)} — intégralité à verser à la signature (événement dans moins de 2 mois)</li>
+            <li>Règlement : {formatEUR(totals.total)} — intégralité à verser à la signature (événement dans moins de 2 mois), accompagnée de la caution de {formatEUR(totals.caution)}</li>
           ) : (
             <>
               <li>Acompte (30 %) : {formatEUR(totals.deposit)} — à verser à la signature</li>
-              <li>Solde (70 %) : {formatEUR(totals.balance)} — à régler au plus tard le {formatDateFR(totals.balanceDue)}</li>
+              <li>Solde (70 %) : {formatEUR(totals.balance)} — à régler au plus tard le {formatDateFR(totals.balanceDue)}, accompagné de la caution de {formatEUR(totals.caution)}</li>
             </>
           )}
-          <li>Caution : {formatEUR(totals.caution)}, versée avec le solde — restituée si aucun retard constaté</li>
+          <li>Caution : {formatEUR(totals.caution)}, versée {totals.fullAtSignature ? "à la signature" : "avec le solde"} — restituée si aucun retard constaté</li>
         </ul>
         <p>Le Prestataire se réserve le droit de suspendre la prestation en cas de non-paiement du solde, sans obligation de remboursement des sommes déjà versées.</p>
         <p>Aucun service ne sera exécuté sans règlement complet du montant dû.</p>
