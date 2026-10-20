@@ -6,8 +6,8 @@ s=open('index.merged.html',encoding='utf8').read()
 btn=r'''<div class="pdf-menu" id="pdf-menu">
   <div class="pdf-panel" id="pdf-panel" hidden>
     <a id="pdf-flip" href="liseuse/"><b id="pdf-flip-t">Feuilleter le catalogue</b><small id="pdf-flip-s">Liseuse page par page</small></a>
-    <a id="pdf-dl" href="pdf/Catalogue-Cuillere-dOr-2027-2028-FR.pdf?v=19" download><b id="pdf-full-t">Catalogue complet</b><small id="pdf-full-s">PDF vierge</small></a>
-    <a id="pdf-hd" href="pdf/Catalogue-Cuillere-dOr-2027-2028-FR-HD-impression.pdf?v=19" download><b id="pdf-hd-t">Version impression (HD)</b><small id="pdf-hd-s">PDF haute d&eacute;finition, 18 Mo</small></a>
+    <a id="pdf-dl" href="pdf/Catalogue-Cuillere-dOr-2027-2028-FR.pdf?v=20" download><b id="pdf-full-t">Catalogue complet</b><small id="pdf-full-s">PDF vierge</small></a>
+    <a id="pdf-hd" href="pdf/Catalogue-Cuillere-dOr-2027-2028-FR-HD-impression.pdf?v=20" download><b id="pdf-hd-t">Version impression (HD)</b><small id="pdf-hd-s">PDF haute d&eacute;finition, 18 Mo</small></a>
     <button type="button" id="pdf-sel"><b id="pdf-sel-t">Ma s&eacute;lection</b><small id="pdf-sel-s">PDF avec mes cases coch&eacute;es</small></button>
     <button type="button" id="pdf-mail"><b id="pdf-mail-t">Envoyer ma s&eacute;lection</b><small id="pdf-mail-s">Par e-mail &agrave; Cuill&egrave;re d&rsquo;Or, pour un devis</small></button>
   </div>
@@ -115,7 +115,7 @@ assert s.count(a)==1
 s=s.replace(a,btn+a,1)
 old="      var bk=document.getElementById('cdo-book'); if(bk) bk.setAttribute('data-style',style);\n"
 assert s.count(old)==1
-new=old+"""      var d=document.getElementById('pdf-dl'); if(d){ d.href='pdf/Catalogue-Cuillere-dOr-2027-2028-'+(lang==='en'?'EN':'FR')+'.pdf?v=19'; var h=document.getElementById('pdf-hd'); if(h){ h.href='pdf/Catalogue-Cuillere-dOr-2027-2028-'+(lang==='en'?'EN-HD-print':'FR-HD-impression')+'.pdf?v=19'; } }
+new=old+"""      var d=document.getElementById('pdf-dl'); if(d){ d.href='pdf/Catalogue-Cuillere-dOr-2027-2028-'+(lang==='en'?'EN':'FR')+'.pdf?v=20'; var h=document.getElementById('pdf-hd'); if(h){ h.href='pdf/Catalogue-Cuillere-dOr-2027-2028-'+(lang==='en'?'EN-HD-print':'FR-HD-impression')+'.pdf?v=20'; } }
       var fl=document.getElementById('pdf-flip'); if(fl) fl.href='liseuse/'+(lang==='en'?'?lang=en':'');
       if(window.__cdoUi) window.__cdoUi(lang,style);
 """
