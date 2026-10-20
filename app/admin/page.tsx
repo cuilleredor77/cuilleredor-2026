@@ -43,6 +43,12 @@ export default function AdminHome() {
   const [auth, setAuth] = useState<"loading" | "login" | "ok">("loading");
   const [filter, setFilter] = useState<string>("relire");
   const [query, setQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"recues" | "evt-proche" | "evt-loin">("recues");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [offOnly, setOffOnly] = useState(false);
+  // Filtre par date d’événement ou période OFF : porte sur toutes les demandes, comme la recherche.
+  const dateFilter = Boolean(from || to || offOnly);
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
 
@@ -68,15 +74,21 @@ export default function AdminHome() {
     const q = norm(query.trim());
     // Une recherche porte sur toutes les demandes, quel que soit l’onglet choisi.
     const list = (items || []).filter((it) =>
-      q
+      (q
         ? norm([it.name, it.email, it.phone, it.place, it.eventType].join(" ")).includes(q) || norm(it.phone || "").replace(/\s/g, "").includes(q.replace(/\s/g, ""))
-        : filter === "all" || buckets.get(it.id) === filter,
+        : dateFilter || filter === "all" || buckets.get(it.id) === filter)
+      && (!from || (it.eventDate && it.eventDate >= from))
+      && (!to || (it.eventDate && it.eventDate <= to))
+      && (!offOnly || Boolean(offPeriod(it.eventDate))),
     );
+    const byEvent = (a: Item, b: Item) => (a.eventDate || "9999").localeCompare(b.eventDate || "9999");
+    if (sortBy === "evt-proche") return list.sort(byEvent);
+    if (sortBy === "evt-loin") return list.sort((a, b) => byEvent(b, a));
     // Relances : les envois les plus anciens d’abord ; ailleurs, les demandes les plus récentes d’abord.
-    return filter === "relancer" && !q
+    return filter === "relancer" && !q && !dateFilter
       ? list.sort((a, b) => (a.sentAt || "").localeCompare(b.sentAt || ""))
       : list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  }, [items, filter, query, buckets]);
+  }, [items, filter, query, buckets, sortBy, from, to, offOnly, dateFilter]);
 
   async function markRelaunched(id: number) {
     const res = await fetch(`/api/admin/requests/${id}`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ relaunched: true }) });
@@ -115,7 +127,21 @@ export default function AdminHome() {
           </button>
         ))}
       </nav>
-      {!query.trim() ? <p className="adm-hint">{TABS.find(([k]) => k === filter)?.[2]}</p> : null}
+      <div className="adm-sortbar">
+        <label>Trier par
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as typeof sortBy)}>
+            <option value="recues">Réception la plus récente</option>
+            <option value="evt-proche">Date d’événement la plus proche</option>
+            <option value="evt-loin">Date d’événement la plus lointaine</option>
+          </select>
+        </label>
+        <label>Événement du <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></label>
+        <label>au <input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></label>
+        <button type="button" className={`adm-chip ${offOnly ? "on" : ""}`} onClick={() => setOffOnly(!offOnly)}>⛔ Pendant un OFF</button>
+        {dateFilter ? <button type="button" className="adm-linkbtn" onClick={() => { setFrom(""); setTo(""); setOffOnly(false); }}>Effacer les dates</button> : null}
+      </div>
+      {dateFilter && !query.trim() ? <p className="adm-hint">{shown.length} demande{shown.length > 1 ? "s" : ""} à ces dates, tous onglets confondus</p>
+        : !query.trim() ? <p className="adm-hint">{TABS.find(([k]) => k === filter)?.[2]}</p> : null}
       {shown.length === 0 ? <p className="adm-muted">{query.trim() ? "Aucun client ne correspond à cette recherche." : "Aucune demande dans cette liste."}</p> : null}
       {/* Le statut n’est utile que dans les listes qui en mélangent plusieurs. */}
       <ul className="adm-list">
