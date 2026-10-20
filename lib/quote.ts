@@ -336,6 +336,8 @@ export function buildDefaultQuote(req: RequestRow): Quote {
   // Options cochées dans le Google Form (« Options : … ») : chacune devient une ligne chiffrée du catalogue.
   const form = estimate || isChef ? { lines: [], message: req.message } : formOptions(req.message, adults, totalGuests);
   lines.push(...form.lines);
+  const brunch = isChef || key === "brunch" ? null : brunchNextDay(req.message, adults);
+  if (brunch) lines.push(brunch);
 
   if (!isChef && wasteWanted) {
     lines.push({
@@ -549,6 +551,8 @@ export function clientEmail(req: RequestRow, quote: Quote, totals: Totals, link:
 /** Points à vérifier avant d'envoyer le devis au client. */
 export function quoteAlerts(req: RequestRow, quote: Quote, totals: Totals): string[] {
   const out: string[] = [];
+  const off = offPeriod(req.event_date);
+  if (off) out.push(`⛔ Huguette est OFF ce jour-là (${off.label}) : répondre avec « Indisponible » ou « Indispo + devis ».`);
   const key: FormulaKey = isFormulaKey(req.formula) ? req.formula : "buffet";
   if (!req.client_email) out.push("E-mail du client manquant.");
   if (!req.event_date) out.push("Date de l’événement manquante : le mail demande la date et ne confirme pas la disponibilité.");
@@ -704,7 +708,11 @@ export function clientRemarks(text: string): string {
     .replace(/\s*(?=(Formule demandée|Options|Contact souhaité|Distance indiquée)\s*:)/g, "\n")
     .split("\n")
     .map((l) => l.trim())
-    .filter((l) => l && !/^(Contact souhaité|Distance indiquée)\s*:/i.test(l))
+    // « Contact souhaité » : on ne garde que les demandes particulières (ajout, brunch, option, menu…).
+    .map((l) => /^Contact souhaité\s*:/i.test(l)
+      ? l.replace(/^Contact souhaité\s*:\s*/i, "").split(/,\s*(?=[A-ZÉ])/).filter((p) => /ajout|brunch|lendemain|option|menu|formule/i.test(p)).join(", ")
+      : l)
+    .filter((l) => l && !/^Distance indiquée\s*:/i.test(l))
     // « Formule demandée » : retirée si c'est le nom de la formule (déjà dans « Prestation souhaitée »),
     // gardée sans l'intitulé si le client y a écrit ses choix de plats.
     .filter((l) => !/^Formule demandée\s*:[\s\p{Extended_Pictographic}+\u200d\ufe0f]*(Formule\b|Vin d.honneur|Repas seul|Repas\s*\()/iu.test(l))
@@ -763,4 +771,29 @@ export function formOptions(message: string, adults: number, totalGuests: number
 export function travelLast(lines: QuoteLine[]): QuoteLine[] {
   const travel = (l: QuoteLine) => l.id === "deplacement" || /d[ée]placement/i.test(l.label);
   return [...lines.filter((l) => !travel(l)), ...lines.filter(travel)];
+}
+
+/** « Ajouter le brunch le lendemain pour 100 personnes » écrit par le client → ligne Brunch Signature du lendemain. */
+export function brunchNextDay(message: string, adults: number): QuoteLine | null {
+  const text = (message || "").split("\n").filter((l) => !/^\s*Formule demandée\s*:/i.test(l)).join(" ");
+  if (!/brunch/i.test(text) || !/lendemain|ajout/i.test(text)) return null;
+  const qty = Number(text.match(/brunch[^.]*?(\d{2,4})\s*(personnes|pers|convives|invités)/i)?.[1]) || adults;
+  return {
+    id: "brunch-lendemain",
+    qty,
+    unit: "pers.",
+    label: "Brunch Signature — le lendemain",
+    detail: FORMULAS.brunch.detail,
+    price: FORMULAS.brunch.flat!,
+  };
+}
+
+// Périodes OFF d’Huguette (dates incluses). Les demandes à ces dates reçoivent une réponse négative.
+export const OFF_PERIODS: Array<{ from: string; to: string; label: string }> = [
+  { from: "2027-08-21", to: "2027-09-03", label: "OFF du 21/08 au 03/09/2027" },
+];
+
+export function offPeriod(date: string): { from: string; to: string; label: string } | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date || "")) return null;
+  return OFF_PERIODS.find((p) => date >= p.from && date <= p.to) || null;
 }

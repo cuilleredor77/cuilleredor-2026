@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, travelLast, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
+  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, travelLast, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
   formatEUR, isTravelPending, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
@@ -34,6 +34,8 @@ export default function Editor() {
     // Ouverture directe de la fenêtre e-mail depuis la page du devis (?mail=1&doc=devis)
     const params = new URLSearchParams(window.location.search);
     if (params.get("mail") === "1") { setWithContract(params.get("doc") !== "devis"); setMail(true); }
+    // Date dans une période OFF : la réponse négative est proposée par défaut.
+    if (offPeriod(data.request.event_date)) setNegative(true);
   }, [id]);
   useEffect(() => { load(); }, [load]);
 
