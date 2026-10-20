@@ -100,3 +100,5 @@
 .adm-chip.quiet.on { opacity: 1; }
 .adm-hint { margin: -4px 0 12px; font-size: 13px; color: #777; }
 .adm-relance { justify-self: end; padding: 4px 12px; font-size: 12px; }
+.adm-inline.adm-place { flex-wrap: nowrap; }
+.adm-inline.adm-place input { flex: 1 1 auto; width: auto; min-width: 0; }

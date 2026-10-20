@@ -146,7 +146,14 @@ export default function Editor() {
               <label>Adresse de facturation (si société)<input value={req.billing_address} onChange={(e) => setField("billing_address", e.target.value)} /></label>
               <label>Type d’événement<input value={req.event_type} onChange={(e) => setField("event_type", e.target.value)} /></label>
               <label>Date<input type="date" value={req.event_date} onChange={(e) => setField("event_date", e.target.value)} /></label>
-              <label className="wide">Lieu (adresse complète)<input value={req.event_place} onChange={(e) => setField("event_place", e.target.value)} /></label>
+              <label className="wide">Lieu (adresse complète)
+                <span className="adm-inline adm-place">
+                  <input value={req.event_place} onChange={(e) => setField("event_place", e.target.value)} />
+                  {req.event_place.trim() ? (
+                    <a className="adm-btn" href={mapsLink(req.event_place)} target="_blank" rel="noopener noreferrer" title="Itinéraire aller-retour depuis Vert-Saint-Denis">🗺 Itinéraire AR ↗</a>
+                  ) : null}
+                </span>
+              </label>
               <label>Formule
                 <select value={req.formula} onChange={(e) => setField("formula", e.target.value)}>
                   {FORMULA_KEYS.map((k) => <option key={k} value={k}>{FORMULAS[k].label}</option>)}
@@ -160,9 +167,6 @@ export default function Editor() {
                 <span className="adm-inline">
                   <input type="number" step="0.1" min={0} value={req.km ?? ""} onChange={(e) => setField("km", e.target.value === "" ? null : Number(e.target.value))} />
                   <button type="button" className="adm-btn" onClick={computeKm}>Calculer les km</button>
-                  {req.event_place.trim() ? (
-                    <a className="adm-btn" href={mapsLink(req.event_place)} target="_blank" rel="noopener noreferrer" title="Itinéraire aller-retour depuis Vert-Saint-Denis">🗺 Itinéraire AR ↗</a>
-                  ) : null}
                 </span>
               </label>
             </div>
