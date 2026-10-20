@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FORMULAS, FORMULA_KEYS, SOURCE_LABEL, receivedAt, formatDateShort, formatEUR, type FormulaKey } from "../../lib/quote";
+import { FORMULAS, FORMULA_KEYS, SOURCE_LABEL, receivedAt, offPeriod, formatDateShort, formatEUR, type FormulaKey } from "../../lib/quote";
 
 type Item = {
   id: number; createdAt: string; source: string; status: string; name: string; email: string; phone: string;
@@ -127,6 +127,7 @@ export default function AdminHome() {
             <li key={it.id}>
               <a href={`/admin/${it.id}`} className="adm-row">
                 <span className="adm-l1">
+                  {offPeriod(it.eventDate) ? <span className="adm-off" title="Huguette est OFF à cette date">⛔ OFF</span> : null}
                   <strong>{it.name || "Sans nom"}</strong> — {it.eventType} · {it.eventDate ? formatDateShort(it.eventDate) : "date ?"} · {it.place || "lieu ?"}
                 </span>
                 <b className="adm-total">{formatEUR(it.total)}</b>
