@@ -149,6 +149,25 @@ ${alerts.length ? `<div style="margin:14px 0;padding:12px 14px;background:#fff7e
   if (!result.ok) console.error("notifyReviewer", row.id, result.error);
 }
 
+/** Coche « Devis envoyé » sur la ligne du client dans le Google Sheet (via le script de la feuille). Ne lève jamais d'erreur. */
+export async function markSheetSent(row: RequestRow): Promise<void> {
+  const url = setting("GSHEET_FINDER_URL");
+  const secret = setting("GFORM_SECRET");
+  if (!url || !secret || row.source !== "google_sheet" || !row.client_email) return;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ secret, email: row.client_email, date: row.event_date }),
+      signal: AbortSignal.timeout(15000),
+    });
+    const answer = (await res.text()).slice(0, 80);
+    if (!answer.startsWith("ok")) console.error("markSheetSent", row.id, res.status, answer);
+  } catch (error) {
+    console.error("markSheetSent", row.id, error);
+  }
+}
+
 /** Envoie le devis au client (copie cachée à la relectrice) et marque la demande « envoyée ». */
 export async function sendQuoteToClient(row: RequestRow, origin: string, withContract = true, attachments: MailAttachment[] = []): Promise<{ ok: boolean; error?: string }> {
   if (!row.quote_json) return { ok: false, error: "Le devis n’est pas encore calculé." };
@@ -165,5 +184,6 @@ export async function sendQuoteToClient(row: RequestRow, origin: string, withCon
     .prepare("UPDATE requests SET status = 'envoye', sent_at = ?, updated_at = ? WHERE id = ?")
     .bind(now, now, row.id)
     .run();
+  await markSheetSent(row);
   return { ok: true };
 }

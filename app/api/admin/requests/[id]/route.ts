@@ -1,4 +1,5 @@
 import { db, getRequestById, json, requireAdmin, setting } from "../../../../../lib/server";
+import { markSheetSent } from "../../../../../lib/automation";
 import {
   buildDefaultQuote,
   computeTotals,
@@ -101,6 +102,7 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
     .run();
 
   const row = await getRequestById(existing.id);
+  if (body.markSent && row) await markSheetSent(row);
   const saved = parseQuote(row!);
   return json({ ok: true, request: row, quote: saved, totals: computeTotals(saved, row!.event_date) });
 }
