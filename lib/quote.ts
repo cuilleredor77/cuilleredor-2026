@@ -666,6 +666,6 @@ export function clientRemarks(text: string): string {
     .split("\n")
     .map((l) => l.trim())
     .filter((l) => l && !/^(Formule demandée|Contact souhaité|Distance indiquée)\s*:/i.test(l))
-    .map((l) => l.replace(/^Options\s*:/i, "Options demandées :"))
+    .map((l) => l.replace(/^Options\s*:\s*/i, ""))
     .join("\n");
 }
