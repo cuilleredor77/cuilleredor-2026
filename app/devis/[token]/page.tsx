@@ -41,7 +41,7 @@ export default async function QuotePage({ params, searchParams }: { params: Prom
 
 const STATUS_LABEL: Record<string, string> = {
   nouvelle: "Nouvelle", en_cours: "En cours", devis_pret: "Devis prêt", envoye: "Envoyé",
-  signe: "Signé", acompte: "Acompte reçu", archivee: "Archivée",
+  signe: "Signé", acompte: "Acompte reçu", archivee: "Archivée", abandonnee: "Abandonnée",
 };
 
 function parisDateTime(iso: string): string {

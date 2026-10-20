@@ -11,7 +11,7 @@ type Item = {
 
 const STATUS_LABEL: Record<string, string> = {
   nouvelle: "Nouvelle", en_cours: "En cours", devis_pret: "Devis prêt", envoye: "Envoyé",
-  signe: "Signé", acompte: "Acompte reçu", archivee: "Archivée",
+  signe: "Signé", acompte: "Acompte reçu", archivee: "Archivée", abandonnee: "Abandonnée",
 };
 const TODO = ["nouvelle", "en_cours", "devis_pret"];
 
@@ -77,7 +77,7 @@ export default function AdminHome() {
       />
       {query.trim() ? <p className="adm-muted">{shown.length} résultat{shown.length > 1 ? "s" : ""} dans toutes les demandes</p> : null}
       <nav className="adm-chips">
-        {[["todo", "À traiter"], ["envoye", "Envoyés"], ["signe", "Signés"], ["acompte", "Acompte reçu"], ["archivee", "Archivées"], ["all", "Toutes"]].map(([key, label]) => (
+        {[["todo", "À traiter"], ["envoye", "Envoyés"], ["signe", "Signés"], ["acompte", "Acompte reçu"], ["archivee", "Archivées"], ["abandonnee", "Abandonnées"], ["all", "Toutes"]].map(([key, label]) => (
           <button key={key} className={`adm-chip ${filter === key ? "on" : ""}`} onClick={() => setFilter(key)}>
             {label} <b>{counts[key] || 0}</b>
           </button>

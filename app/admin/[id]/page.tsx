@@ -9,7 +9,7 @@ import {
 
 const STATUS: Array<[string, string]> = [
   ["nouvelle", "Nouvelle"], ["en_cours", "En cours"], ["devis_pret", "Devis prêt"], ["envoye", "Envoyé"],
-  ["signe", "Signé"], ["acompte", "Acompte reçu"], ["archivee", "Archivée"],
+  ["signe", "Signé"], ["acompte", "Acompte reçu"], ["archivee", "Archivée"], ["abandonnee", "Abandonnée"],
 ];
 
 export default function Editor() {

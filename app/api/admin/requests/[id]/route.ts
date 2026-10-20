@@ -7,7 +7,7 @@ import {
   type Quote,
 } from "../../../../../lib/quote";
 
-const STATUSES = ["nouvelle", "en_cours", "devis_pret", "envoye", "signe", "acompte", "archivee"];
+const STATUSES = ["nouvelle", "en_cours", "devis_pret", "envoye", "signe", "acompte", "archivee", "abandonnee"];
 
 export async function GET(request: Request, ctx: { params: Promise<{ id: string }> }) {
   const denied = await requireAdmin(request);
