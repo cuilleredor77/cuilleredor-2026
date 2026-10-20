@@ -135,3 +135,9 @@
 @media (max-width: 640px) { .adm-row4 { grid-template-columns: 1fr 1fr; } .adm-row4 label:first-child { grid-column: 1 / -1; } }
 .adm-second { display: inline-flex; gap: 6px; align-items: center; }
 .adm-second select { min-height: 40px; width: auto; }
+.adm-group-title { margin: 0; font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #8b6914; }
+.adm-sep { display: flex; align-items: baseline; gap: 12px; padding: 8px 10px; margin: 6px 0; border-top: 2px solid #b8932a; background: #f3ecd8; border-radius: 6px; }
+.adm-sep span { font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #8b6914; }
+.adm-sep small { font-size: 11.5px; color: #8a7a55; }
+.adm-sep.active { outline: 2px dashed #d4b96a; }
+.adm-sep.over { background: #ead9a8; }

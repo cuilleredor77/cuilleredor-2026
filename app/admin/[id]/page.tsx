@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, travelLast, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
+  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, travelLast, isIncluded, withGroup, groupOrder, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
   formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
@@ -80,13 +80,34 @@ export default function Editor() {
   const setQ = (patch: Partial<Quote>) => { setQuote({ ...quote, ...patch }); setDirty(true); };
   const setLine = (i: number, patch: Partial<QuoteLine>) => setQ({ lines: quote.lines.map((l, idx) => (idx === i ? { ...l, ...patch } : l)) });
   const totalGuests = req.adults + req.children + req.providers;
-  // Déplace une ligne (glisser-déposer ou flèches) ; les frais de déplacement restent toujours en dernier.
-  const moveLine = (from: number, to: number) => {
-    if (from === to || to < 0 || to >= quote.lines.length) return;
-    const lines = [...quote.lines];
-    const [moved] = lines.splice(from, 1);
-    lines.splice(to, 0, moved);
-    setQ({ lines: travelLast(lines) });
+  // Lignes + barre « OPTIONS » : au-dessus = prestations incluses, en dessous = options.
+  // Déplacer une ligne (glisser-déposer ou flèches) peut lui faire franchir la barre ; le déplacement reste en dernier.
+  const includedCount = quote.lines.filter(isIncluded).length;
+  type Slot = QuoteLine | "SEP";
+  const slots = (): Slot[] => [...quote.lines.slice(0, includedCount), "SEP", ...quote.lines.slice(includedCount)];
+  const slotOf = (i: number) => (i < includedCount ? i : i + 1);
+  const applySlots = (list: Slot[]) => {
+    const sep = list.indexOf("SEP");
+    const lines = list.filter((x): x is QuoteLine => x !== "SEP").map((l) => withGroup(l, list.indexOf(l) < sep));
+    setQ({ lines: groupOrder(lines) });
+  };
+  const moveSlot = (from: number, to: number) => {
+    const list = slots();
+    if (from === to || to < 0 || to >= list.length) return;
+    const [moved] = list.splice(from, 1);
+    list.splice(to, 0, moved);
+    applySlots(list);
+  };
+  const moveLine = (from: number, to: number) => moveSlot(slotOf(from), slotOf(to));
+  // Flèches : un cran dans la liste avec la barre ; passer la barre change de bloc.
+  const stepLine = (i: number, dir: -1 | 1) => moveSlot(slotOf(i), slotOf(i) + dir);
+  const dropOnSeparator = (from: number) => {
+    const list = slots();
+    const fromSlot = slotOf(from);
+    const sep = list.indexOf("SEP");
+    const [moved] = list.splice(fromSlot, 1);
+    list.splice(fromSlot < sep ? sep : sep + 1, 0, moved); // incluse → 1re option ; option → dernière incluse
+    applySlots(list);
   };
 
   // Second devis : même demande, autre formule (ouvert dans un nouvel onglet).
@@ -287,10 +308,13 @@ export default function Editor() {
           <section className="adm-card">
             <div className="adm-split"><h2>Lignes du devis</h2><button className="adm-btn" onClick={regenerate} disabled={busy}>↻ Régénérer depuis la demande</button></div>
             <div className="adm-lines">
+              <p className="adm-group-title">Prestations incluses</p>
+              {includedCount === 0 ? <OptionsBar onDrop={() => dragFrom !== null && dropOnSeparator(dragFrom)} active={dragFrom !== null} /> : null}
               {quote.lines.map((line, i) => (
+                <Fragment key={line.id}>
+                {i === includedCount && i > 0 ? <OptionsBar onDrop={() => dragFrom !== null && dropOnSeparator(dragFrom)} active={dragFrom !== null} /> : null}
                 <div
                   className={`adm-line ${dragOver === i && dragFrom !== null && dragFrom !== i ? "drop" : ""} ${dragFrom === i ? "dragging" : ""}`}
-                  key={line.id}
                   onDragOver={(e) => { if (dragFrom !== null) { e.preventDefault(); setDragOver(i); } }}
                   onDrop={(e) => { e.preventDefault(); if (dragFrom !== null) moveLine(dragFrom, i); setDragFrom(null); setDragOver(null); }}
                 >
@@ -298,8 +322,8 @@ export default function Editor() {
                     <span className="grip" draggable title="Glisser pour déplacer la ligne"
                       onDragStart={(e) => { setDragFrom(i); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(i)); }}
                       onDragEnd={() => { setDragFrom(null); setDragOver(null); }}>⠿</span>
-                    <button type="button" aria-label="Monter la ligne" disabled={i === 0} onClick={() => moveLine(i, i - 1)}>▲</button>
-                    <button type="button" aria-label="Descendre la ligne" disabled={i === quote.lines.length - 1} onClick={() => moveLine(i, i + 1)}>▼</button>
+                    <button type="button" aria-label="Monter la ligne" disabled={slotOf(i) === 0} onClick={() => stepLine(i, -1)}>▲</button>
+                    <button type="button" aria-label="Descendre la ligne" disabled={slotOf(i) === quote.lines.length} onClick={() => stepLine(i, 1)}>▼</button>
                   </div>
                   <input className="q" type="number" step="any" value={line.qty} onChange={(e) => setLine(i, { qty: Number(e.target.value) })} />
                   <input className="u" value={line.unit} onChange={(e) => setLine(i, { unit: e.target.value })} />
@@ -311,7 +335,9 @@ export default function Editor() {
                   <b className="s">{isTravelPending(line) || isLodgingPending(line) ? "à chiffrer" : formatEUR(lineTotal(line))}</b>
                   <button className="x" aria-label="Supprimer la ligne" onClick={() => setQ({ lines: quote.lines.filter((_, idx) => idx !== i) })}>✕</button>
                 </div>
+                </Fragment>
               ))}
+              {includedCount === quote.lines.length && includedCount > 0 ? <OptionsBar onDrop={() => dragFrom !== null && dropOnSeparator(dragFrom)} active={dragFrom !== null} /> : null}
             </div>
             <label className="adm-check">
               <input
@@ -443,5 +469,21 @@ function MailEditor({ model, edited, onChange }: {
         {edited ? <> · <button type="button" className="adm-linkbtn" onClick={() => { if (box.current) box.current.innerHTML = model.html; onChange(null); }}>↺ Revenir au modèle</button></> : null}
       </p>
     </>
+  );
+}
+
+/** Barre « OPTIONS » de l’éditeur : y déposer une ligne la fait changer de bloc (incluse ↔ option). */
+function OptionsBar({ onDrop, active }: { onDrop: () => void; active: boolean }) {
+  const [over, setOver] = useState(false);
+  return (
+    <div
+      className={`adm-sep ${active ? "active" : ""} ${over ? "over" : ""}`}
+      onDragOver={(e) => { if (active) { e.preventDefault(); setOver(true); } }}
+      onDragLeave={() => setOver(false)}
+      onDrop={(e) => { e.preventDefault(); setOver(false); onDrop(); }}
+    >
+      <span>Options</span>
+      <small>au-dessus : prestations incluses · en dessous : options</small>
+    </div>
   );
 }

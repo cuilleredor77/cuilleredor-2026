@@ -6,6 +6,7 @@ import {
   formatDateShort,
   formatEUR,
   isTravelPending,
+  isIncluded,
   isLodgingPending,
   lineTotal,
   parseQuote,
@@ -27,7 +28,6 @@ const COMPLEMENTARY: Array<{ title: string; rows: Array<[string, string]> }> = [
 const fmtQty = (n: number) => String(n).replace(".", ",");
 
 // Lignes rangées sous « Prestations incluses » ; les autres vont sous « Options ».
-const INCLUDED_IDS = new Set(["main", "vin-honneur", "enfants", "prestataires"]);
 
 // Regroupe le détail d'une ligne (« Titre : · 1. a · 2. b · Autre titre : · … ») en blocs titre + liste.
 function groupDetail(parts: string[]) {
@@ -89,8 +89,8 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
           </thead>
           <tbody>
             {[
-              { title: "PRESTATIONS INCLUSES", lines: quote.lines.filter((l) => INCLUDED_IDS.has(l.id) || l.id.startsWith("inc-")) },
-              { title: "OPTIONS", lines: quote.lines.filter((l) => !INCLUDED_IDS.has(l.id) && !l.id.startsWith("inc-")) },
+              { title: "PRESTATIONS INCLUSES", lines: quote.lines.filter(isIncluded) },
+              { title: "OPTIONS", lines: quote.lines.filter((l) => !isIncluded(l)) },
             ].filter((sec) => sec.lines.length).map((sec) => (
               <Fragment key={sec.title}>
                 <tr className="dv-band"><td colSpan={5}>{sec.title}</td></tr>

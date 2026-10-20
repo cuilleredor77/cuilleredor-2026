@@ -407,7 +407,7 @@ export function parseQuote(row: RequestRow): Quote {
       if (q.note && q.note.includes("liseuse")) q.note = "";
       // Anciens devis : formule, contact et distance retirés des remarques (déjà ailleurs).
       if (q.remarks && q.remarks.trim() !== "—") q.remarks = clientRemarks(q.remarks) || "—";
-      if (Array.isArray(q.lines)) return { ...q, lines: travelLast(q.lines) };
+      if (Array.isArray(q.lines)) return { ...q, lines: groupOrder(q.lines) };
     } catch {
       /* on retombe sur le devis par défaut */
     }
@@ -813,4 +813,26 @@ export const OFF_PERIODS: Array<{ from: string; to: string; label: string }> = [
 export function offPeriod(date: string): { from: string; to: string; label: string } | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date || "")) return null;
   return OFF_PERIODS.find((p) => date >= p.from && date <= p.to) || null;
+}
+
+// ---------- Prestations incluses / options (deux blocs du devis) ----------
+
+const INCLUDED_IDS = new Set(["main", "vin-honneur", "enfants", "prestataires"]);
+
+/** Ligne du bloc « Prestations incluses » (sinon : bloc « Options »). */
+export function isIncluded(line: QuoteLine): boolean {
+  return INCLUDED_IDS.has(line.id) || line.id.startsWith("inc-");
+}
+
+/** Range une ligne dans l’un ou l’autre bloc en ajustant son identifiant (« inc-… » ou « x-… »). */
+export function withGroup(line: QuoteLine, included: boolean): QuoteLine {
+  if (isIncluded(line) === included) return line;
+  const base = line.id.replace(/^(inc-|x-)/, "");
+  const id = included ? (INCLUDED_IDS.has(base) ? base : `inc-${base}`) : INCLUDED_IDS.has(base) ? `x-${base}` : base;
+  return { ...line, id };
+}
+
+/** Ordre du devis : prestations incluses, puis options, déplacement toujours en dernier. */
+export function groupOrder(lines: QuoteLine[]): QuoteLine[] {
+  return travelLast([...lines.filter(isIncluded), ...lines.filter((l) => !isIncluded(l))]);
 }
