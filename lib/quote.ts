@@ -572,52 +572,50 @@ export function weddingPlannerLabel(value: string): string {
   return value === "oui" ? "déjà trouvé" : value === "recherche" ? "en recherche" : value === "non" ? "pas prévu" : "non précisé";
 }
 
-/** E-mail client selon la charte Cuillère d’Or (sobre : intertitres, listes, signature). */
+/** E-mail client au modèle Cuillère d’Or : intro, tableau récapitulatif, informations complémentaires, signature. */
 export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link: string, withContract: boolean): { subject: string; html: string; text: string } {
   const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const first = firstName(req.client_name);
-  const dateLong = req.event_date ? formatDateFR(req.event_date, true) : "";
+  const dateLong = req.event_date ? formatDateFR(req.event_date) : "";
   const type = (req.event_type || "événement").toLowerCase();
-  const doc = withContract ? "Votre devis et votre contrat" : "Votre devis";
-  const linkLabel = withContract ? "voir mon devis et mon contrat" : "voir mon devis";
-  const guests = `${req.adults} adultes${req.children ? ` + ${req.children} enfants` : ""}${req.providers ? ` + ${req.providers} prestataires` : ""}`;
-  const travel = quote.lines.find((l) => /d[ée]placement/i.test(l.label));
-  const travelText = !travel ? "" : isTravelPending(travel) ? `, hors frais de déplacement (${formatEUR(travel.price)}/km aller-retour, à chiffrer avec l’adresse du lieu)` : ", déplacement inclus";
-  const recap: string[] = [
-    `Événement : ${type}${dateLong ? `, ${dateLong}` : ""}`,
-    `Lieu : ${req.event_place || "à préciser"}`,
-    `Prestation : ${quote.summary.split(" — ")[0]}`,
-    `Convives : ${guests}`,
-    `Total : ${formatEUR(totals.total)}${travelText}`,
-    totals.fullAtSignature
-      ? `Règlement : intégral à la signature (événement dans moins de deux mois), accompagné de la caution de ${formatEUR(totals.caution)}`
-      : `Règlement : acompte de 30 % à la signature (${formatEUR(totals.deposit)}), solde de ${formatEUR(totals.balance)} au plus tard le ${formatDateFR(totals.balanceDue)}, accompagné de la caution de ${formatEUR(totals.caution)} (restituée si aucun retard constaté)`,
-    `Devis valable jusqu’au ${formatDateFR(totals.validUntil)}`,
-  ];
-  const steps = withContract
-    ? ["Retournez-nous le contrat signé.", `Réglez ${totals.fullAtSignature ? `le montant total (${formatEUR(totals.total)})` : `l’acompte (${formatEUR(totals.deposit)})`} par virement : les coordonnées bancaires figurent dans le contrat.`]
-    : ["Confirmez-nous votre accord sur ce devis.", `Nous vous envoyons le contrat à signer, puis nos coordonnées bancaires pour ${totals.fullAtSignature ? "le règlement" : "l’acompte"}.`];
+  const docs = withContract ? "votre devis ainsi que le contrat de prestation" : "votre devis";
   const subject = `${withContract ? "Votre devis et contrat" : "Votre devis"} Cuillère d’Or — ${req.event_type} du ${req.event_date ? formatDateShort(req.event_date) : ""} — ${req.client_name}`;
-  const intro = `Merci pour votre demande. Nous sommes disponibles pour votre ${type}${dateLong ? ` du ${dateLong}` : ""}.`;
-  const h = (t: string) => `<p style="margin:24px 0 4px"><strong>${t}</strong></p>`;
-  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:600px">`
-    + `<p>Bonjour ${esc(first)},</p><p>${esc(intro)}</p>`
-    + h(doc)
-    + `<p style="margin:0 0 16px">Consultez-${withContract ? "les" : "le"} et enregistrez-${withContract ? "les" : "le"} en PDF ici : <a href="${link}" target="_blank" rel="noopener noreferrer">${linkLabel}</a></p>`
-    + h("Récapitulatif")
-    + `<ul style="margin:0 0 16px;padding-left:20px">${recap.map((r) => `<li>${esc(r).replace(/^(Total : )(.+?€)/, "$1<strong>$2</strong>")}</li>`).join("")}</ul>`
-    + h("Pour réserver votre date")
-    + `<ol style="margin:0 0 16px;padding-left:20px">${steps.map((t) => `<li>${esc(t)}</li>`).join("")}</ol>`
-    + `<p>Nous restons à votre disposition pour toute question.</p>`
-    + `<p style="margin:24px 0 4px">Bien cordialement,</p>`
-    + `<p style="margin:0"><strong>Cheffe Huguette</strong> - 07 83 74 89 71<br>📧 cuilleredor4@gmail.com<br>📍 8 allée des Bois, 77240 Vert-Saint-Denis</p></div>`;
+  const intro1 = `Merci pour votre demande. Nous vous confirmons notre disponibilité pour votre ${type}${dateLong ? ` du ${dateLong}` : ""}${req.event_place ? ` (${req.event_place})` : ""}.`;
+  const intro2 = `Vous trouverez ${docs} en ligne, téléchargeable${withContract ? "s" : ""} en PDF :`;
+  const rows = quote.lines.map((l) => {
+    const pending = isTravelPending(l);
+    const qty = pending ? `${formatEUR(l.price)}/km AR` : `${String(l.qty).replace(".", ",")} ${l.unit} × ${formatEUR(l.price)}`;
+    return { label: l.label, qty, total: pending ? "à chiffrer" : formatEUR(lineTotal(l)) };
+  });
+  const infos = [
+    `Validité du devis : 30 jours (jusqu’au ${formatDateFR(totals.validUntil)}).`,
+    totals.fullAtSignature
+      ? `Confirmation : l’événement ayant lieu dans moins de deux mois, la réservation sera effective après signature${withContract ? " du contrat" : ""} et règlement de la totalité, soit ${formatEUR(totals.total)}, accompagné de la caution de ${formatEUR(totals.caution)} (en prévention de retard, restituée si aucun retard constaté).`
+      : `Confirmation : la réservation sera effective après signature${withContract ? " du contrat" : " du devis"} et versement d’un acompte de 30 %, soit ${formatEUR(totals.deposit)}. Le solde restant de ${formatEUR(totals.balance)} sera à régler au plus tard le ${formatDateFR(totals.balanceDue)}, accompagné de la caution de ${formatEUR(totals.caution)} (en prévention de retard, restituée si aucun retard constaté).`,
+    withContract ? "Règlement par virement : les coordonnées bancaires figurent dans le contrat." : "",
+  ].filter(Boolean);
+  const td = "padding:11px 14px;border-bottom:1px solid #e6dccb;font-size:14px";
+  const table = `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:8px 0 18px;font-family:Arial,Helvetica,sans-serif">`
+    + `<tr style="background:#0f1a14"><th style="padding:12px 14px;text-align:left;color:#c9a227;font-size:14px">Prestation</th><th style="padding:12px 14px;text-align:center;color:#c9a227;font-size:14px">Qté</th><th style="padding:12px 14px;text-align:right;color:#c9a227;font-size:14px">Total</th></tr>`
+    + rows.map((r, i) => `<tr style="background:${i % 2 ? "#ffffff" : "#f6efe4"}"><td style="${td}">${esc(r.label)}</td><td style="${td};text-align:center;white-space:nowrap">${esc(r.qty)}</td><td style="${td};text-align:right;white-space:nowrap">${esc(r.total)}</td></tr>`).join("")
+    + `<tr style="background:#0f1a14"><td colspan="2" style="padding:13px 14px;color:#ffffff;font-weight:bold;font-size:15px">TOTAL PRESTATIONS</td><td style="padding:13px 14px;text-align:right;color:#c9a227;font-weight:bold;font-size:15px;white-space:nowrap">${esc(formatEUR(totals.total))}</td></tr></table>`;
+  const bold = (t: string) => esc(t).replace(/(\d[\d\s]*,\d\d\s?€)/g, "<strong>$1</strong>").replace(/(au plus tard le )([^,]+)/, "$1<strong>$2</strong>");
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#1a1a1a;max-width:680px">`
+    + `<p>Bonjour ${esc(first)},</p><p>${esc(intro1)}</p>`
+    + `<p>${esc(intro2)} <a href="${link}" target="_blank" rel="noopener noreferrer">${withContract ? "voir mon devis et mon contrat" : "voir mon devis"}</a></p>`
+    + `<p>Voici le récapitulatif de votre devis :</p>${table}`
+    + `<p style="margin:0 0 6px"><strong>Informations complémentaires :</strong></p>`
+    + `<ul style="margin:0 0 16px;padding-left:22px">${infos.map((t) => `<li style="margin-bottom:4px">${bold(t)}</li>`).join("")}</ul>`
+    + `<p>Je reste à votre entière disposition pour toute question ou ajustement.</p>`
+    + `<p style="margin:18px 0 0">Bien cordialement,<br>Cheffe Huguette - 07 83 74 89 71 | <a href="mailto:cuilleredor4@gmail.com">cuilleredor4@gmail.com</a></p></div>`;
   const text = [
-    `Bonjour ${first},`, "", intro, "",
-    doc.toUpperCase(), `Consultez et enregistrez en PDF : ${link}`, "",
-    "RÉCAPITULATIF", ...recap.map((r) => `- ${r}`), "",
-    "POUR RÉSERVER VOTRE DATE", ...steps.map((t, i) => `${i + 1}. ${t}`), "",
-    "Nous restons à votre disposition pour toute question.", "",
-    "Bien cordialement,", "Cheffe Huguette - 07 83 74 89 71", "📧 cuilleredor4@gmail.com", "📍 8 allée des Bois, 77240 Vert-Saint-Denis",
+    `Bonjour ${first},`, "", intro1, "", `${intro2} ${link}`, "",
+    "Voici le récapitulatif de votre devis :",
+    ...rows.map((r) => `- ${r.label} : ${r.qty} = ${r.total}`),
+    `TOTAL PRESTATIONS : ${formatEUR(totals.total)}`, "",
+    "Informations complémentaires :", ...infos.map((t) => `- ${t}`), "",
+    "Je reste à votre entière disposition pour toute question ou ajustement.", "",
+    "Bien cordialement,", "Cheffe Huguette - 07 83 74 89 71 | cuilleredor4@gmail.com",
   ].join("\n");
   return { subject, html, text };
 }
