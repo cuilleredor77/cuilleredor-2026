@@ -83,3 +83,7 @@
 .adm-check input { width: 18px; height: 18px; accent-color: #8b6914; }
 
 .adm-origin { font-size: 12px; color: #8a6d12; }
+.adm-attach { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 10px 0; }
+.adm-attach label { cursor: pointer; }
+.adm-attach ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.adm-x { border: 0; background: none; cursor: pointer; color: #a33; font-size: 13px; }

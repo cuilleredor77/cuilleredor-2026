@@ -21,7 +21,8 @@ export const TRAVEL_FROM_TOWN = "Estimation depuis la commune : montant ajusté 
 export const TRAVEL_TO_QUOTE = "Frais de déplacement : à chiffrer selon l’adresse exacte du lieu de réception.";
 const AVAILABILITY = "Avant d’envoyer : vérifie que la date est libre (l’e-mail au client dit « Nous sommes disponibles à cette date »).";
 
-type Mail = { to: string; subject: string; text: string; html?: string; bcc?: string; replyTo?: string };
+export type MailAttachment = { filename: string; content: string }; // content en base64
+type Mail = { to: string; subject: string; text: string; html?: string; bcc?: string; replyTo?: string; attachments?: MailAttachment[] };
 
 /** Envoi via Resend. Sans clé configurée, ne fait rien (le devis reste visible dans /admin). */
 export async function sendMail(mail: Mail): Promise<{ ok: boolean; error?: string }> {
@@ -45,8 +46,9 @@ export async function sendMail(mail: Mail): Promise<{ ok: boolean; error?: strin
         subject: mail.subject,
         text: mail.text,
         html: mail.html,
+        attachments: mail.attachments?.length ? mail.attachments : undefined,
       }),
-      signal: AbortSignal.timeout(10000),
+      signal: AbortSignal.timeout(mail.attachments?.length ? 30000 : 10000),
     });
     if (!res.ok) return { ok: false, error: `Resend ${res.status} : ${(await res.text()).slice(0, 200)}` };
     return { ok: true };
@@ -145,14 +147,15 @@ ${alerts.length ? `<div style="margin:14px 0;padding:12px 14px;background:#fff7e
 }
 
 /** Envoie le devis au client (copie cachée à la relectrice) et marque la demande « envoyée ». */
-export async function sendQuoteToClient(row: RequestRow, origin: string, withContract = true): Promise<{ ok: boolean; error?: string }> {
+export async function sendQuoteToClient(row: RequestRow, origin: string, withContract = true, attachments: MailAttachment[] = []): Promise<{ ok: boolean; error?: string }> {
   if (!row.quote_json) return { ok: false, error: "Le devis n’est pas encore calculé." };
   if (!row.client_email) return { ok: false, error: "E-mail du client manquant." };
   const quote = parseQuote(row);
   const totals = computeTotals(quote, row.event_date);
   const link = `${origin}/devis/${row.token}${withContract ? "" : "?doc=devis"}`;
-  const { subject, html, text } = charterEmail(row, quote, totals, link, withContract);
-  const result = await sendMail({ to: row.client_email, subject, text, html, bcc: setting("REVIEW_EMAIL") || undefined });
+  // Avec pièces jointes, le mail dit « ci-joint en PDF » ; sans, il garde le lien en ligne.
+  const { subject, html, text } = charterEmail(row, quote, totals, attachments.length ? "" : link, withContract);
+  const result = await sendMail({ to: row.client_email, subject, text, html, bcc: setting("REVIEW_EMAIL") || undefined, attachments });
   if (!result.ok) return result;
   const now = new Date().toISOString();
   await db()

@@ -22,6 +22,7 @@ export default function Editor() {
   const [mail, setMail] = useState(false);
   const [withContract, setWithContract] = useState(true);
   const [copied, setCopied] = useState("");
+  const [files, setFiles] = useState<{ filename: string; content: string; size: number }[]>([]);
   const [presetId, setPresetId] = useState("");
 
   const load = useCallback(async () => {
@@ -75,13 +76,25 @@ export default function Editor() {
 
   async function sendNow() {
     if (dirty && !(await save())) return;
-    if (!confirm(`Envoyer le devis à ${req!.client_email} ?`)) return;
+    const warn = files.length ? `avec ${files.length} pièce${files.length > 1 ? "s" : ""} jointe${files.length > 1 ? "s" : ""}` : "SANS pièce jointe (le mail contiendra alors le lien vers le devis en ligne)";
+    if (!confirm(`Envoyer le devis à ${req!.client_email} ${warn} ?`)) return;
     setBusy(true); setMsg("");
-    const res = await fetch(`/api/admin/requests/${id}/send`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ withContract }) });
+    const attachments = files.map(({ filename, content }) => ({ filename, content }));
+    const res = await fetch(`/api/admin/requests/${id}/send`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ withContract, attachments }) });
     const data = await res.json();
     setBusy(false);
     if (!res.ok) { setMsg(data.error || "Envoi impossible."); return; }
-    setReq(data.request); setMail(false); setMsg("Devis envoyé au client ✓");
+    setReq(data.request); setMail(false); setFiles([]); setMsg("Devis envoyé au client ✓");
+  }
+
+  async function addFiles(list: FileList | null) {
+    const added = await Promise.all(Array.from(list || []).map((f) => new Promise<{ filename: string; content: string; size: number }>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve({ filename: f.name, content: String(r.result).split(",")[1] || "", size: f.size });
+      r.onerror = () => reject(r.error);
+      r.readAsDataURL(f);
+    })));
+    setFiles((cur) => [...cur, ...added]);
   }
 
 
@@ -243,6 +256,12 @@ export default function Editor() {
             <p><b>Objet :</b> {subject}</p>
             <div className="adm-mailpreview" dangerouslySetInnerHTML={{ __html: html }} />
             {copied ? <p className="adm-note">{copied}</p> : null}
+            <div className="adm-attach">
+              <label className="adm-btn">📎 Ajouter une pièce jointe<input type="file" multiple accept=".pdf,image/*,.doc,.docx" hidden onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} /></label>
+              {files.length ? (
+                <ul>{files.map((f, i) => <li key={i}>{f.filename} <span className="adm-muted">({Math.max(1, Math.round(f.size / 1024))} Ko)</span> <button className="adm-x" onClick={() => setFiles(files.filter((_, j) => j !== i))} aria-label="Retirer">✕</button></li>)}</ul>
+              ) : <span className="adm-muted">Pour l’envoi direct : télécharge le PDF (bouton 3) puis ajoute-le ici.</span>}
+            </div>
             <div className="adm-actions">
               <button className="adm-btn adm-gold" onClick={copyFormatted}>1. Copier l’e-mail mis en forme</button>
               <a className="adm-btn adm-gold" href={gmail} target="_blank" rel="noopener noreferrer">2. Ouvrir Gmail (destinataire + objet) ↗</a>
