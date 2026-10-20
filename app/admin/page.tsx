@@ -21,6 +21,7 @@ export default function AdminHome() {
   const [items, setItems] = useState<Item[] | null>(null);
   const [auth, setAuth] = useState<"loading" | "login" | "ok">("loading");
   const [filter, setFilter] = useState<string>("todo");
+  const [query, setQuery] = useState("");
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
 
@@ -43,12 +44,16 @@ export default function AdminHome() {
   }, [items]);
 
   const shown = useMemo(() => {
+    const q = norm(query.trim());
+    // Une recherche porte sur toutes les demandes, quel que soit l’onglet choisi.
     const list = (items || []).filter((it) =>
-      filter === "all" ? true : filter === "todo" ? TODO.includes(it.status) : it.status === filter,
+      q
+        ? norm([it.name, it.email, it.phone, it.place, it.eventType].join(" ")).includes(q) || norm(it.phone || "").replace(/\s/g, "").includes(q.replace(/\s/g, ""))
+        : filter === "all" ? true : filter === "todo" ? TODO.includes(it.status) : it.status === filter,
     );
     // les demandes les plus anciennes d'abord : ce sont celles qui attendent depuis le plus longtemps
     return list.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
-  }, [items, filter]);
+  }, [items, filter, query]);
 
   if (auth === "loading") return <p className="adm-muted">Chargement…</p>;
   if (auth === "login") return <Login onDone={load} />;
@@ -63,6 +68,14 @@ export default function AdminHome() {
         </div>
       </header>
       {error ? <p className="adm-error">{error}</p> : null}
+      <input
+        type="search"
+        className="adm-search"
+        placeholder="Rechercher un client (nom, e-mail, téléphone, lieu)…"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      {query.trim() ? <p className="adm-muted">{shown.length} résultat{shown.length > 1 ? "s" : ""} dans toutes les demandes</p> : null}
       <nav className="adm-chips">
         {[["todo", "À traiter"], ["envoye", "Envoyés"], ["signe", "Signés"], ["acompte", "Acompte reçu"], ["archivee", "Archivées"], ["all", "Toutes"]].map(([key, label]) => (
           <button key={key} className={`adm-chip ${filter === key ? "on" : ""}`} onClick={() => setFilter(key)}>
@@ -70,7 +83,7 @@ export default function AdminHome() {
           </button>
         ))}
       </nav>
-      {shown.length === 0 ? <p className="adm-muted">Aucune demande dans cette liste.</p> : null}
+      {shown.length === 0 ? <p className="adm-muted">{query.trim() ? "Aucun client ne correspond à cette recherche." : "Aucune demande dans cette liste."}</p> : null}
       <ul className="adm-list">
         {shown.map((it) => {
           const wait = daysAgo(it.createdAt);
@@ -155,4 +168,9 @@ function NewRequest({ onClose }: { onClose: () => void }) {
       </form>
     </div>
   );
+}
+
+// Comparaison sans accents ni majuscules (« Bénédicte » = « benedicte »).
+function norm(text: string): string {
+  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }

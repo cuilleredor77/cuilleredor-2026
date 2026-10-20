@@ -10,6 +10,8 @@
 .adm-btn:disabled { opacity: 0.5; cursor: default; }
 .adm-gold { background: #d4af37; border-color: #b8932a; }
 .adm-gold:hover { background: #e0bd4a; }
+.adm-search { width: 100%; box-sizing: border-box; margin: 14px 0 0; padding: 12px 14px; font-size: 15px; border: 1px solid #c9bda0; border-radius: 10px; background: #fff; }
+.adm-search:focus { outline: 2px solid #d4af37; border-color: #d4af37; }
 .adm-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 18px; }
 .adm-chip { border: 1px solid #c9bda0; background: #fff; border-radius: 999px; padding: 8px 14px; font-size: 13px; cursor: pointer; }
 .adm-chip b { margin-left: 4px; color: #8a6d12; }
