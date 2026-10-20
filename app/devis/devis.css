@@ -3,6 +3,7 @@
 .dv-toolbar { position: sticky; top: 0; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px clamp(14px, 4vw, 40px); background: #1a1a1a; color: #f7f4ec; font-size: 14px; }
 .dv-print { background: #d4af37; color: #1a1a1a; border: 0; border-radius: 999px; padding: 10px 18px; font-weight: 700; font-size: 13px; cursor: pointer; }
 .dv-toolbar > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dv-admin-meta { font-style: normal; color: #d4af37; font-size: 13px; }
 .dv-toolbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .dv-mail { text-decoration: none; background: #f7f4ec; color: #1a1a1a; }
 .dv-print-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
