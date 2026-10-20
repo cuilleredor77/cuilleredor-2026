@@ -31,6 +31,7 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
     quote?: Quote;
     regenerate?: boolean;
     markSent?: boolean;
+    relaunched?: boolean;
     status?: string;
   };
   const r = body.request || {};
@@ -75,6 +76,13 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
   if (body.markSent) {
     status = "envoye";
     sentAt = new Date().toISOString();
+  }
+  // Relance faite : le délai repart de zéro (la demande revient « En attente ») et la date est gardée dans les notes.
+  if (body.relaunched) {
+    status = "envoye";
+    sentAt = new Date().toISOString();
+    const day = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date());
+    next.internal_notes = [next.internal_notes, `Relancé le ${day}.`].filter(Boolean).join("\n").slice(0, 4000);
   }
 
   await db()

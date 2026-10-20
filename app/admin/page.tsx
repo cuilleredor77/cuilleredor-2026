@@ -13,14 +13,35 @@ const STATUS_LABEL: Record<string, string> = {
   nouvelle: "Nouvelle", en_cours: "En cours", devis_pret: "Devis prêt", envoye: "Envoyé",
   signe: "Signé", acompte: "Acompte reçu", archivee: "Archivée", abandonnee: "Abandonnée",
 };
-const TODO = ["nouvelle", "en_cours", "devis_pret"];
+
+// Classement par action, calculé à partir du statut, de la date d’envoi et de la date de l’événement.
+const TABS: Array<[string, string, string]> = [
+  ["relire", "À relire", "Relire le devis puis l’envoyer"],
+  ["verifier", "À vérifier", "Demandes importées, peut-être traitées sur WhatsApp : vérifier puis classer"],
+  ["attente", "En attente", "Devis envoyé il y a moins de 7 jours"],
+  ["relancer", "À relancer", "Devis envoyé il y a 7 à 45 jours, événement à venir"],
+  ["confirmes", "Confirmés", "Contrat signé ou acompte reçu"],
+  ["sans_reponse", "Sans réponse", "Devis envoyé il y a plus de 45 jours, sans retour"],
+  ["archives", "Archives", "Événements passés et demandes abandonnées"],
+  ["all", "Toutes", "Toutes les demandes"],
+];
+const QUIET = ["sans_reponse", "archives", "all"];
+
+function bucketOf(it: Item, today: string): string {
+  if (it.status === "archivee" || it.status === "abandonnee" || (it.eventDate && it.eventDate < today)) return "archives";
+  if (it.status === "signe" || it.status === "acompte") return "confirmes";
+  if (it.status === "en_cours" && !it.sentAt) return "verifier";
+  if (!it.sentAt) return it.status === "envoye" ? "sans_reponse" : "relire";
+  const days = daysAgo(it.sentAt);
+  return days < 7 ? "attente" : days <= 45 ? "relancer" : "sans_reponse";
+}
 
 const daysAgo = (iso: string) => Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000));
 
 export default function AdminHome() {
   const [items, setItems] = useState<Item[] | null>(null);
   const [auth, setAuth] = useState<"loading" | "login" | "ok">("loading");
-  const [filter, setFilter] = useState<string>("todo");
+  const [filter, setFilter] = useState<string>("relire");
   const [query, setQuery] = useState("");
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
@@ -34,14 +55,14 @@ export default function AdminHome() {
   }, []);
   useEffect(() => { load().catch(() => setError("Chargement impossible.")); }, [load]);
 
+  const today = new Date().toISOString().slice(0, 10);
+  const buckets = useMemo(() => new Map((items || []).map((it) => [it.id, bucketOf(it, today)])), [items, today]);
+
   const counts = useMemo(() => {
-    const c: Record<string, number> = { todo: 0, all: items?.length ?? 0 };
-    for (const it of items || []) {
-      c[it.status] = (c[it.status] || 0) + 1;
-      if (TODO.includes(it.status)) c.todo += 1;
-    }
+    const c: Record<string, number> = { all: items?.length ?? 0 };
+    for (const b of buckets.values()) c[b] = (c[b] || 0) + 1;
     return c;
-  }, [items]);
+  }, [items, buckets]);
 
   const shown = useMemo(() => {
     const q = norm(query.trim());
@@ -49,13 +70,22 @@ export default function AdminHome() {
     const list = (items || []).filter((it) =>
       q
         ? norm([it.name, it.email, it.phone, it.place, it.eventType].join(" ")).includes(q) || norm(it.phone || "").replace(/\s/g, "").includes(q.replace(/\s/g, ""))
-        : filter === "all" ? true : filter === "todo" ? TODO.includes(it.status) : it.status === filter,
+        : filter === "all" || buckets.get(it.id) === filter,
     );
-    // les demandes les plus récentes d’abord
-    return list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  }, [items, filter, query]);
+    // Relances : les envois les plus anciens d’abord ; ailleurs, les demandes les plus récentes d’abord.
+    return filter === "relancer" && !q
+      ? list.sort((a, b) => (a.sentAt || "").localeCompare(b.sentAt || ""))
+      : list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }, [items, filter, query, buckets]);
 
-  const showBadge = Boolean(query.trim()) || filter === "todo" || filter === "all";
+  async function markRelaunched(id: number) {
+    const res = await fetch(`/api/admin/requests/${id}`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ relaunched: true }) });
+    if (!res.ok) { setError("Impossible d’enregistrer la relance."); return; }
+    const now = new Date().toISOString();
+    setItems((cur) => (cur || []).map((it) => (it.id === id ? { ...it, status: "envoye", sentAt: now } : it)));
+  }
+
+  const showBadge = Boolean(query.trim()) || filter === "all";
 
   if (auth === "loading") return <p className="adm-muted">Chargement…</p>;
   if (auth === "login") return <Login onDone={load} />;
@@ -79,18 +109,19 @@ export default function AdminHome() {
       />
       {query.trim() ? <p className="adm-muted">{shown.length} résultat{shown.length > 1 ? "s" : ""} dans toutes les demandes</p> : null}
       <nav className="adm-chips">
-        {[["todo", "À traiter"], ["envoye", "Envoyés"], ["signe", "Signés"], ["acompte", "Acompte reçu"], ["archivee", "Archivées"], ["abandonnee", "Abandonnées"], ["all", "Toutes"]].map(([key, label]) => (
-          <button key={key} className={`adm-chip ${filter === key ? "on" : ""}`} onClick={() => setFilter(key)}>
+        {TABS.map(([key, label, hint]) => (
+          <button key={key} title={hint} className={`adm-chip ${QUIET.includes(key) ? "quiet" : ""} ${filter === key ? "on" : ""}`} onClick={() => setFilter(key)}>
             {label} <b>{counts[key] || 0}</b>
           </button>
         ))}
       </nav>
+      {!query.trim() ? <p className="adm-hint">{TABS.find(([k]) => k === filter)?.[2]}</p> : null}
       {shown.length === 0 ? <p className="adm-muted">{query.trim() ? "Aucun client ne correspond à cette recherche." : "Aucune demande dans cette liste."}</p> : null}
       {/* Le statut n’est utile que dans les listes qui en mélangent plusieurs. */}
       <ul className="adm-list">
         {shown.map((it) => {
           const wait = daysAgo(it.createdAt);
-          const late = TODO.includes(it.status) && !it.sentAt && wait >= 3;
+          const late = buckets.get(it.id) === "relire" && wait >= 3;
           const meta = FORMULAS[(FORMULA_KEYS as string[]).includes(it.formula) ? (it.formula as FormulaKey) : "buffet"];
           return (
             <li key={it.id}>
@@ -108,7 +139,9 @@ export default function AdminHome() {
                   {it.sentAt ? ` · envoyé le ${formatDateShort(it.sentAt)}` : ""}
                   {" · "}{meta.label} · {it.adults} adulte{it.adults > 1 ? "s" : ""}{it.children ? ` + ${it.children} enf.` : ""}{it.providers ? ` + ${it.providers} prest.` : ""}
                 </span>
-                {showBadge ? <span className={`adm-badge s-${it.status}`}>{STATUS_LABEL[it.status] || it.status}</span> : <span />}
+                {buckets.get(it.id) === "relancer" && !query.trim() ? (
+                  <button type="button" className="adm-btn adm-relance" onClick={(e) => { e.preventDefault(); e.stopPropagation(); markRelaunched(it.id); }}>Relancé ✓</button>
+                ) : showBadge ? <span className={`adm-badge s-${it.status}`}>{STATUS_LABEL[it.status] || it.status}</span> : <span />}
               </a>
             </li>
           );

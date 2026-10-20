@@ -93,3 +93,7 @@
 @media (max-width: 640px) {
   .adm-l1 { white-space: normal; }
 }
+.adm-chip.quiet { opacity: .65; }
+.adm-chip.quiet.on { opacity: 1; }
+.adm-hint { margin: -4px 0 12px; font-size: 13px; color: #777; }
+.adm-relance { justify-self: end; padding: 4px 12px; font-size: 12px; }
