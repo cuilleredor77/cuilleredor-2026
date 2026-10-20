@@ -517,7 +517,7 @@ export function clientEmail(req: RequestRow, quote: Quote, totals: Totals, link:
     "Pour réserver votre date, il vous suffit de nous retourner le contrat signé : nous vous communiquerons alors nos coordonnées bancaires pour l’acompte.",
     "",
     "Bien cordialement,",
-    "Cheffe Huguette — 07 83 74 89 71 | cuilleredor4@gmail.com",
+    "Cheffe Huguette — 07 83 74 89 71 | contact@cuilleredor.fr",
   ].join("\n");
   return { subject, body };
 }

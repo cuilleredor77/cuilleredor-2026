@@ -14,7 +14,7 @@ import {
   type RequestRow,
 } from "./quote";
 
-const REPLY_TO = "cuilleredor4@gmail.com";
+const REPLY_TO = "contact@cuilleredor.fr";
 export const PLACE_NOTE = "Lieu retenu pour les km : ";
 export const TRAVEL_FROM_TOWN = "Estimation depuis la commune : montant ajusté avec l’adresse exacte du lieu";
 export const TRAVEL_TO_QUOTE = "Frais de déplacement : à chiffrer selon l’adresse exacte du lieu de réception.";

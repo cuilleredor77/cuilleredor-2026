@@ -43,7 +43,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
           <div className="dv-title">DEVIS POUR</div>
         </header>
         <div className="dv-company">
-          8 Allée des Bois, 77240 Vert-Saint-Denis · Tél : 07 83 74 89 71 · cuilleredor4@gmail.com · SIRET : 889 933 800 00019
+          8 Allée des Bois, 77240 Vert-Saint-Denis · Tél : 07 83 74 89 71 · contact@cuilleredor.fr · SIRET : 889 933 800 00019
         </div>
         <table className="dv-client">
           <tbody>
@@ -107,7 +107,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
             <div className="dv-box" />
           </div>
         </div>
-        <footer className="dv-foot">Cuillère d’Or — 8 Allée des Bois, 77240 Vert-Saint-Denis — SIRET 889 933 800 00019 — cuilleredor4@gmail.com — 07 83 74 89 71 — TVA non applicable (art. 293 B du CGI)</footer>
+        <footer className="dv-foot">Cuillère d’Or — 8 Allée des Bois, 77240 Vert-Saint-Denis — SIRET 889 933 800 00019 — contact@cuilleredor.fr — 07 83 74 89 71 — TVA non applicable (art. 293 B du CGI)</footer>
       </section>
 
       {/* ================= SERVICES COMPLÉMENTAIRES ================= */}
@@ -127,7 +127,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
               ))}
             </tbody>
           </table>
-          <p>Pour toute question ou demande de personnalisation : 07 83 74 89 71 • cuilleredor4@gmail.com</p>
+          <p>Pour toute question ou demande de personnalisation : 07 83 74 89 71 • contact@cuilleredor.fr</p>
         </section>
       ) : null}
 
@@ -273,7 +273,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
             <div className="dv-box" />
           </div>
         </div>
-        <footer className="dv-foot">Cuillère d’Or — 8 Allée des Bois, 77240 Vert-Saint-Denis — SIRET 889 933 800 00019 — cuilleredor4@gmail.com — 07 83 74 89 71 — TVA non applicable (art. 293 B du CGI)</footer>
+        <footer className="dv-foot">Cuillère d’Or — 8 Allée des Bois, 77240 Vert-Saint-Denis — SIRET 889 933 800 00019 — contact@cuilleredor.fr — 07 83 74 89 71 — TVA non applicable (art. 293 B du CGI)</footer>
       </section>
     </div>
   );
