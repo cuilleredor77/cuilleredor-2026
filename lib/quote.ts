@@ -164,6 +164,9 @@ export type EstimateOption = { id: string; label: string; amount: number };
 
 export const lineTotal = (line: QuoteLine) => round2(line.qty * line.price);
 
+/** Déplacement dont la distance n’est pas encore connue : affiché « à chiffrer ». */
+export const isTravelPending = (line: QuoteLine) => /d[ée]placement/i.test(line.label) && !(line.qty > 0);
+
 export function tierPrice(formula: FormulaKey, totalGuests: number): number {
   const meta = FORMULAS[formula];
   if (meta.flat !== undefined) return meta.flat;
@@ -345,6 +348,16 @@ export function buildDefaultQuote(req: RequestRow): Quote {
       unit: "km AR",
       label: "Frais de déplacement aller-retour",
       detail: "Depuis 8 Allée des Bois, 77240 Vert-Saint-Denis",
+      price: PRICES.km,
+    });
+  } else {
+    // Lieu inconnu : la ligne reste visible avec le prix au km, montant « à chiffrer ».
+    lines.push({
+      id: "deplacement",
+      qty: 0,
+      unit: "km AR",
+      label: "Frais de déplacement aller-retour",
+      detail: "À chiffrer selon l’adresse exacte du lieu de réception (depuis 8 Allée des Bois, 77240 Vert-Saint-Denis)",
       price: PRICES.km,
     });
   }
@@ -567,13 +580,14 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
   const doc = withContract ? "Votre devis et votre contrat" : "Votre devis";
   const linkLabel = withContract ? "voir mon devis et mon contrat" : "voir mon devis";
   const guests = `${req.adults} adultes${req.children ? ` + ${req.children} enfants` : ""}${req.providers ? ` + ${req.providers} prestataires` : ""}`;
-  const hasTravel = quote.lines.some((l) => /d[ée]placement/i.test(l.label));
+  const travel = quote.lines.find((l) => /d[ée]placement/i.test(l.label));
+  const travelText = !travel ? "" : isTravelPending(travel) ? `, hors frais de déplacement (${formatEUR(travel.price)}/km aller-retour, à chiffrer avec l’adresse du lieu)` : ", déplacement inclus";
   const recap: string[] = [
     `Événement : ${type}${dateLong ? `, ${dateLong}` : ""}`,
     `Lieu : ${req.event_place || "à préciser"}`,
     `Prestation : ${quote.summary.split(" — ")[0]}`,
     `Convives : ${guests}`,
-    `Total : ${formatEUR(totals.total)}${hasTravel ? ", déplacement inclus" : ""}`,
+    `Total : ${formatEUR(totals.total)}${travelText}`,
     totals.fullAtSignature
       ? "Règlement : intégral à la signature (événement dans moins de deux mois)"
       : `Règlement : acompte de 30 % à la signature (${formatEUR(totals.deposit)}), solde de ${formatEUR(totals.balance)} au plus tard le ${formatDateFR(totals.balanceDue)}`,

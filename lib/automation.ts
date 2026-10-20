@@ -84,7 +84,6 @@ export async function prepareAndNotify(id: number, origin: string): Promise<void
     const quote = buildDefaultQuote({ ...row, km, quote_json: "" });
     const travel = quote.lines.find((line) => line.id === "deplacement");
     if (travel && precision === "ville") travel.detail = TRAVEL_FROM_TOWN;
-    if (!km && precision === "departement") quote.note = TRAVEL_TO_QUOTE;
     await db()
       .prepare(
         `UPDATE requests SET updated_at = ?, km = ?, quote_json = ?, internal_notes = ?, quote_version = quote_version + 1,
