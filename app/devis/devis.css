@@ -108,7 +108,8 @@
 }
 @media print {
   .dv-toolbar, .site-header, .floating-actions { display: none !important; }
-  .dv-wrap { background: #fff; padding: 0; }
+  html, body, main { background: #fff !important; }
+  .dv-wrap { background: #fff; padding: 0; min-height: 0; }
   .dv-doc { max-width: none; margin: 0; padding: 0; }
   .dv-page { box-shadow: none; margin: 0; padding: 0; page-break-after: always; break-after: page; }
   .dv-page:last-child { page-break-after: auto; break-after: auto; }
