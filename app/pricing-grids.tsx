@@ -86,6 +86,7 @@ export default function PricingGrids() {
             <p className="pricing-tier-note">
               Prix par adulte, service compris. Tarifs dégressifs selon le
               nombre total de convives (adultes, enfants et prestataires).
+              Avec vin d’honneur : 4 cocktails au choix en option, +5 €/pers.
             </p>
           </div>
         </details>
@@ -125,6 +126,9 @@ export default function PricingGrids() {
                 </tr>
               </tbody>
             </table>
+            <p className="pricing-tier-note">
+              Avec vin d’honneur : 4 cocktails au choix en option, +5 €/pers.
+            </p>
           </div>
         </details>
         <details data-formule="assiette" open={openFormula === "assiette"}>
@@ -163,6 +167,9 @@ export default function PricingGrids() {
                 </tr>
               </tbody>
             </table>
+            <p className="pricing-tier-note">
+              Avec vin d’honneur : 4 cocktails au choix en option, +5 €/pers.
+            </p>
           </div>
         </details>
         <details data-formule="aperitifs" open={openFormula === "aperitifs"}>
@@ -181,7 +188,7 @@ export default function PricingGrids() {
           <div className="fixed-price-detail">
             <div>
               <span>Comprend</span>
-              <p>10 pièces salées ou sucrées au choix · cocktails en option</p>
+              <p>10 pièces salées ou sucrées au choix · en option : 4 cocktails au choix, +5 €/pers.</p>
             </div>
             <strong>
               25 € <small>par personne</small>

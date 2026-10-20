@@ -85,6 +85,8 @@ type OptionDef = {
   basis?: (guests: number, totalGuests: number) => number;
   qtyLabel?: string;
   help?: string;
+  /** Option proposée seulement pour certaines formules (ex. cocktails avec un vin d’honneur). */
+  when?: (formula: Formula, service: Service) => boolean;
 };
 
 const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
@@ -117,8 +119,17 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
         help: "1 serveur par tranche de 50 convives, calculé automatiquement.",
       },
       {
+        id: "honorCocktails",
+        label: "4 cocktails au choix par personne (vin d’honneur ou cocktail dînatoire)",
+        unit: 5,
+        unitLabel: "5 €/pers.",
+        kind: "toggle",
+        basis: (guests) => guests,
+        when: (formula, service) => service === "avec-vin" && ["buffet", "plateau", "assiette", "aperitifs"].includes(formula),
+      },
+      {
         id: "cocktails",
-        label: "Cocktails (1 litre pour environ 4 convives)",
+        label: "Cocktails supplémentaires, au-delà des 4 cocktails (1 litre pour environ 4 convives)",
         unit: 10,
         unitLabel: "10 €/litre",
         kind: "qty",
@@ -380,6 +391,7 @@ export default function PricingCalculator() {
     });
   for (const category of isChef ? [] : OPTION_CATEGORIES) {
     for (const def of category.options) {
+      if (def.when && !def.when(formula, service)) continue;
       const value = optionValues[def.id] || 0;
       const amount = optionAmount(def, value, guests, totalGuests);
       if (amount <= 0) continue;
@@ -690,7 +702,7 @@ export default function PricingCalculator() {
                   </small>
                 </label>
               )}
-              {category.options.map((def) =>
+              {category.options.filter((def) => !def.when || def.when(formula, service)).map((def) =>
                 def.kind === "toggle" ? (
                   <label className="calculator-option-toggle" key={def.id}>
                     <input
