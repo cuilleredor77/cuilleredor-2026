@@ -384,6 +384,8 @@ export function parseQuote(row: RequestRow): Quote {
       const q = JSON.parse(row.quote_json) as Quote;
       // Ancienne mention « catalogue en ligne sur cuilleredor.fr/liseuse » : remplacée par la ligne Catalogue des conditions.
       if (q.note && q.note.includes("liseuse")) q.note = "";
+      // Anciens devis : formule, contact et distance retirés des remarques (déjà ailleurs).
+      if (q.remarks && q.remarks.trim() !== "—") q.remarks = clientRemarks(q.remarks) || "—";
       if (Array.isArray(q.lines)) return q;
     } catch {
       /* on retombe sur le devis par défaut */
@@ -663,11 +665,21 @@ export function receivedAt(iso: string): string {
  * « Options / remarques » du devis : on retire ce qui est déjà ailleurs ou interne
  * (formule demandée, contact souhaité, distance indiquée) et on garde les options et le message du client.
  */
+/** Retire un message d’erreur technique resté dans d’anciennes demandes (« Unexpected token '<' … is not valid JSON »). */
+export function withoutTechNoise(text: string): string {
+  return (text || "").replace(/\s*\(Unexpected token[\s\S]*?is not valid JSON\)/g, "");
+}
+
 export function clientRemarks(text: string): string {
-  return (text || "")
+  return withoutTechNoise(text)
+    // Certains anciens textes ont perdu leurs retours à la ligne : on recoupe avant chaque intitulé connu.
+    .replace(/\s*(?=(Formule demandée|Options|Contact souhaité|Distance indiquée)\s*:)/g, "\n")
     .split("\n")
     .map((l) => l.trim())
-    .filter((l) => l && !/^(Formule demandée|Contact souhaité|Distance indiquée)\s*:/i.test(l))
-    .map((l) => l.replace(/^Options\s*:\s*/i, ""))
+    .filter((l) => l && !/^(Contact souhaité|Distance indiquée)\s*:/i.test(l))
+    // « Formule demandée » : retirée si c'est le nom de la formule (déjà dans « Prestation souhaitée »),
+    // gardée sans l'intitulé si le client y a écrit ses choix de plats.
+    .filter((l) => !/^Formule demandée\s*:[\s\p{Extended_Pictographic}+\u200d\ufe0f]*(Formule\b|Vin d.honneur|Repas seul|Repas\s*\()/iu.test(l))
+    .map((l) => l.replace(/^(Options|Formule demandée)\s*:\s*/i, ""))
     .join("\n");
 }

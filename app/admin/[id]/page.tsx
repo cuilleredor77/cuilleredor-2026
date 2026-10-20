@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, SOURCE_LABEL, receivedAt, charterEmail, computeTotals, formatDateFR,
+  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, SOURCE_LABEL, receivedAt, withoutTechNoise, charterEmail, computeTotals, formatDateFR,
   formatEUR, isTravelPending, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
@@ -212,7 +212,7 @@ export default function Editor() {
               <div className="adm-client">
                 <p><b>Prestation :</b> {serviceModeLabel(req.service_mode)} · <b>Wedding planner :</b> {weddingPlannerLabel(req.wedding_planner)}{req.vendors_found ? <> · <b>Prestataires trouvés :</b> {req.vendors_found}</> : null}</p>
                 {req.budget ? <p><b>Budget indiqué :</b> {req.budget.replace(/\s*€\s*$/, "")} €</p> : null}
-                {req.message ? <p className="adm-msg"><b>Message du client :</b>{"\n"}{req.message}</p> : null}
+                {req.message ? <p className="adm-msg"><b>Message du client :</b>{"\n"}{withoutTechNoise(req.message)}</p> : null}
                 {req.selection_text ? <p><b>Plats choisis :</b> {req.selection_text}</p> : null}
               </div>
             )}
@@ -275,7 +275,7 @@ export default function Editor() {
               <label>Date d’émission<input type="date" value={quote.issuedOn} onChange={(e) => setQ({ issuedOn: e.target.value })} /></label>
               <label className="chk"><input type="checkbox" checked={quote.includeComplementary} onChange={(e) => setQ({ includeComplementary: e.target.checked })} /> Joindre la page « Services complémentaires »</label>
               <label className="wide">Prestation souhaitée<input value={quote.summary} onChange={(e) => setQ({ summary: e.target.value })} /></label>
-              <label className="wide">Options / remarques<input value={quote.remarks} onChange={(e) => setQ({ remarks: e.target.value })} /></label>
+              <label className="wide">Options / remarques<textarea rows={2} value={quote.remarks} onChange={(e) => setQ({ remarks: e.target.value })} /></label>
               <label className="wide">Mention libre sous les conditions (facultatif)<textarea rows={2} value={quote.note} onChange={(e) => setQ({ note: e.target.value })} /></label>
             </div>
           </section>
