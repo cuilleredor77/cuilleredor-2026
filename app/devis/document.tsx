@@ -23,6 +23,21 @@ const COMPLEMENTARY: Array<{ title: string; rows: Array<[string, string]> }> = [
 
 const fmtQty = (n: number) => String(n).replace(".", ",");
 
+// Regroupe le détail d'une ligne (« Titre : · 1. a · 2. b · Autre titre : · … ») en blocs titre + liste.
+function groupDetail(parts: string[]) {
+  const groups: Array<{ title: string; items: string[]; numbered: boolean }> = [];
+  for (const part of parts) {
+    if (/ :$/.test(part)) { groups.push({ title: part, items: [], numbered: false }); continue; }
+    if (!groups.length) groups.push({ title: "", items: [], numbered: false });
+    const g = groups[groups.length - 1];
+    const m = /^\d+\.\s*(.*)$/.exec(part);
+    if (m) g.numbered = true;
+    g.items.push(m ? m[1] : part);
+  }
+  return groups.filter((g) => g.title || g.items.length);
+}
+
+
 export default function QuoteDocument({ row }: { row: RequestRow }) {
   const quote = parseQuote(row);
   const totals = computeTotals(quote, row.event_date);
@@ -76,10 +91,15 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
                     <td className="r">{formatEUR(line.price)}</td>
                     <td className="r">{formatEUR(lineTotal(line))}</td>
                   </tr>
-                  {parts.map((part, i) => (
-                    <tr key={i} className={`dv-sub${i === parts.length - 1 ? " dv-sub-last" : ""}${/ :$/.test(part) ? " dv-sub-h" : /^\d+\./.test(part) ? " dv-sub-n" : ""}`}>
+                  {groupDetail(parts).map((g, i, all) => (
+                    <tr key={i} className={`dv-sub dv-sub-group${i === all.length - 1 ? " dv-sub-last" : ""}`}>
                       <td />
-                      <td colSpan={3}>{part}</td>
+                      <td colSpan={3}>
+                        {g.title ? <div className="dv-group-title">{g.title}</div> : null}
+                        {g.numbered
+                          ? <ol className={`dv-cols${g.items.length > 2 ? " dv-cols-2" : ""}`}>{g.items.map((it, k) => <li key={k}>{it}</li>)}</ol>
+                          : <ul className={`dv-cols${g.items.length > 2 ? " dv-cols-2" : ""}`}>{g.items.map((it, k) => <li key={k}>{it}</li>)}</ul>}
+                      </td>
                     </tr>
                   ))}
                 </Fragment>
