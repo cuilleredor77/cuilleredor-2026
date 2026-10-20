@@ -372,7 +372,7 @@ export function buildDefaultQuote(req: RequestRow): Quote {
     lines,
     issuedOn: todayISO(),
     summary: `${summaryFor(req)} — ${guestsText}`,
-    remarks: req.message ? req.message.slice(0, 280) : "—",
+    remarks: clientRemarks(req.message).slice(0, 280) || "—",
     note: "",
     includeComplementary: true,
   };
@@ -655,4 +655,17 @@ export function receivedAt(iso: string): string {
   const p = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }).formatToParts(d);
   const g = (t: string) => p.find((x) => x.type === t)?.value || "";
   return `${g("day")}/${g("month")}/${g("year")} à ${g("hour")}h${g("minute")}`;
+}
+
+/**
+ * « Options / remarques » du devis : on retire ce qui est déjà ailleurs ou interne
+ * (formule demandée, contact souhaité, distance indiquée) et on garde les options et le message du client.
+ */
+export function clientRemarks(text: string): string {
+  return (text || "")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l && !/^(Formule demandée|Contact souhaité|Distance indiquée)\s*:/i.test(l))
+    .map((l) => l.replace(/^Options\s*:/i, "Options demandées :"))
+    .join("\n");
 }

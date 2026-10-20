@@ -9,6 +9,7 @@ import {
   lineTotal,
   parseQuote,
   type RequestRow,
+  clientRemarks,
 } from "../../lib/quote";
 
 const COMPLEMENTARY: Array<{ title: string; rows: Array<[string, string]> }> = [
@@ -44,6 +45,8 @@ function groupDetail(parts: string[]) {
 
 export default function QuoteDocument({ row, quoteOnly = false }: { row: RequestRow; quoteOnly?: boolean }) {
   const quote = parseQuote(row);
+  // Les anciens devis gardent la formule et le contact dans les remarques : on les filtre aussi à l’affichage.
+  const remarks = quote.remarks.trim() === "—" ? "" : clientRemarks(quote.remarks);
   const totals = computeTotals(quote, row.event_date);
   const eventLong = row.event_date ? formatDateFR(row.event_date, true) : "";
   const issued = formatDateFR(quote.issuedOn);
@@ -77,7 +80,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
           </table>
         </header>
         <p className="dv-sum"><b>Prestation souhaitée :</b> {quote.summary}</p>
-        {quote.remarks && quote.remarks.trim() !== "—" ? <p className="dv-sum"><b>Options / remarques :</b> {quote.remarks}</p> : null}
+        {remarks ? <p className="dv-sum dv-remarks"><b>Options / remarques :</b> {remarks}</p> : null}
 
         <table className="dv-lines">
           <thead>

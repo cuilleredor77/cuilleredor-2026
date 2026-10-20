@@ -166,3 +166,4 @@
 
 /* Le site impose une largeur minimale aux tableaux : on la retire dans le devis */
 .dv-page table { min-width: 0; }
+.dv-remarks { white-space: pre-line; }
