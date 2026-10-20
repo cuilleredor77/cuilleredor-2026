@@ -38,7 +38,22 @@ export default function Editor() {
   useEffect(() => { load(); }, [load]);
 
   const totals = useMemo(() => (quote && req ? computeTotals(quote, req.event_date) : null), [quote, req]);
-  const alerts = useMemo(() => (req && quote && totals ? quoteAlerts(req, quote, totals) : []), [req, quote, totals]);
+  // Google Agenda : alerte quand 3 événements ou plus sont déjà prévus à la date demandée.
+  const [agenda, setAgenda] = useState<{ count: number; titles: string[] } | null>(null);
+  const eventDate = req?.event_date || "";
+  useEffect(() => {
+    setAgenda(null);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) return;
+    const timer = setTimeout(() => {
+      fetch(`/api/admin/agenda?date=${eventDate}`).then((r) => r.json()).then((d) => setAgenda(d.agenda)).catch(() => {});
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [eventDate]);
+  const alerts = useMemo(() => {
+    const list = req && quote && totals ? quoteAlerts(req, quote, totals) : [];
+    if (agenda && agenda.count >= 3) list.unshift(`Déjà ${agenda.count} événements dans ton agenda ce jour-là (${agenda.titles.join(", ")}) : vérifie la disponibilité.`);
+    return list;
+  }, [req, quote, totals, agenda]);
 
   if (!req || !quote || !totals) return <p className="adm-muted">Chargement…</p>;
 

@@ -109,6 +109,10 @@ async function notifyReviewer(row: RequestRow, origin: string): Promise<void> {
   const quote = parseQuote(row);
   const totals = computeTotals(quote, row.event_date);
   const alerts = quoteAlerts(row, quote, totals);
+  const agenda = row.event_date ? await agendaOnDate(row.event_date) : null;
+  if (agenda && agenda.count >= AGENDA_LIMIT) {
+    alerts.unshift(`Déjà ${agenda.count} événements dans ton agenda ce jour-là (${agenda.titles.join(", ")}) : vérifie la disponibilité avant d’envoyer.`);
+  }
   const key = await approvalKey(row.token);
   const sendUrl = key ? `${origin}/envoyer/${row.token}?k=${key}` : "";
   const viewUrl = `${origin}/devis/${row.token}`;
@@ -147,6 +151,23 @@ ${alerts.length ? `<div style="margin:14px 0;padding:12px 14px;background:#fff7e
 </div>`;
   const result = await sendMail({ to, subject, text, html });
   if (!result.ok) console.error("notifyReviewer", row.id, result.error);
+}
+
+export const AGENDA_LIMIT = 3;
+
+/** Événements déjà inscrits dans le Google Agenda de la cheffe à cette date (via le script de la feuille). null si indisponible. */
+export async function agendaOnDate(date: string): Promise<{ count: number; titles: string[] } | null> {
+  const url = setting("GSHEET_FINDER_URL");
+  const secret = setting("GFORM_SECRET");
+  if (!url || !secret || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+  try {
+    const res = await fetch(`${url}?action=agenda&date=${date}&cle=${encodeURIComponent(secret)}`, { signal: AbortSignal.timeout(15000) });
+    const data = (await res.json()) as { count?: number; titles?: string[] };
+    return typeof data.count === "number" ? { count: data.count, titles: data.titles || [] } : null;
+  } catch (error) {
+    console.error("agendaOnDate", date, error);
+    return null;
+  }
 }
 
 /** Coche « Devis envoyé » sur la ligne du client dans le Google Sheet (via le script de la feuille). Ne lève jamais d'erreur. */
