@@ -699,6 +699,8 @@ export const SOURCE_LABEL: Record<string, string> = {
   site: "Formulaire du site",
   google_sheet: "Google Form",
   manuel: "Saisie manuelle",
+  wix: "Ancien site (Wix)",
+  mariages_net: "Mariages.net",
 };
 
 // Date et heure de réception, à l’heure de Paris (ex. « 20/10/2026 à 12h30 »).
