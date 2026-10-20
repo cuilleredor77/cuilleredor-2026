@@ -223,7 +223,14 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         <p>Après règlement du solde, aucun ajustement à la baisse ne sera accepté. Toute hausse reste possible sous réserve de faisabilité.</p>
         <p><b>Modes de paiement acceptés</b></p>
         <ul>
-          <li>Virement bancaire — coordonnées communiquées séparément à la signature</li>
+          <li>Virement bancaire sur le compte Qonto de Cuillère d’Or :
+            <div className="dv-rib">
+              <div><span>IBAN</span><b>FR76 1695 8000 0103 6634 1336 613</b></div>
+              <div><span>BIC</span><b>QNTOFRP1XXX</b></div>
+              <div><span>Banque</span><b>Qonto</b></div>
+              <div><span>Référence</span><b>{`CDO ${row.client_name} ${row.event_date ? formatDateShort(row.event_date) : ""}`.trim()}</b></div>
+            </div>
+          </li>
           <li>Espèces</li>
         </ul>
 

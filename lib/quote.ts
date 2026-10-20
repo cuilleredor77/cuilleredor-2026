@@ -579,7 +579,7 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
     `Devis valable jusqu’au ${formatDateFR(totals.validUntil)}`,
   ];
   const steps = withContract
-    ? ["Retournez-nous le contrat signé.", `Nous vous envoyons nos coordonnées bancaires pour ${totals.fullAtSignature ? "le règlement" : "l’acompte"}.`]
+    ? ["Retournez-nous le contrat signé.", `Réglez ${totals.fullAtSignature ? `le montant total (${formatEUR(totals.total)})` : `l’acompte (${formatEUR(totals.deposit)})`} par virement : les coordonnées bancaires figurent dans le contrat.`]
     : ["Confirmez-nous votre accord sur ce devis.", `Nous vous envoyons le contrat à signer, puis nos coordonnées bancaires pour ${totals.fullAtSignature ? "le règlement" : "l’acompte"}.`];
   const subject = `${withContract ? "Votre devis et contrat" : "Votre devis"} Cuillère d’Or — ${req.event_type} du ${req.event_date ? formatDateShort(req.event_date) : ""} — ${req.client_name}`;
   const intro = `Merci pour votre demande. Nous sommes disponibles pour votre ${type}${dateLong ? ` du ${dateLong}` : ""}.`;
