@@ -80,7 +80,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
 
         <table className="dv-lines">
           <thead>
-            <tr><th>Quantité</th><th className="c" /><th>Description</th><th className="r">Prix unitaire</th><th className="r">Total</th></tr>
+            <tr><th>Quantité</th><th className="c dv-check" /><th>Description</th><th className="r dv-pu">Prix unitaire</th><th className="r">Total</th></tr>
           </thead>
           <tbody>
             {[
@@ -97,12 +97,12 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
                         <td className="c">{fmtQty(line.qty)} {line.unit}</td>
                         <td className="c dv-check">☑</td>
                         <td>{line.label}</td>
-                        <td className="r">{formatEUR(line.price)}</td>
+                        <td className="r dv-pu">{formatEUR(line.price)}</td>
                         <td className="r b">{formatEUR(lineTotal(line))}</td>
                       </tr>
                       {groupDetail(parts).map((g, i, all) => (
                         <tr key={i} className={`dv-sub dv-sub-group${i === all.length - 1 ? " dv-sub-last" : ""}`}>
-                          <td /><td />
+                          <td /><td className="dv-check" />
                           <td colSpan={3}>
                             {g.title ? <div className="dv-group-title">{g.title}</div> : null}
                             {g.numbered

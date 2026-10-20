@@ -87,6 +87,11 @@
 
 @media (max-width: 640px) {
   .dv-head, .dv-parties { grid-template-columns: 1fr; }
+  .dv-lines .dv-check, .dv-lines .dv-pu { display: none; }
+  .dv-toolbar { flex-wrap: wrap; }
+  .dv-print-group { flex-wrap: wrap; }
+  .dv-lines tr.dv-sub-n td + td, .dv-cols { padding-left: 18px; }
+  .dv-cols-2 { column-count: 1; }
   .dv-totalbar { width: 100%; }
   .dv-lines td:first-child { white-space: nowrap; }
   .dv-lines td, .dv-lines th { padding: 9px 10px; }
