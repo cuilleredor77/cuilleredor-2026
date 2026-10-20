@@ -390,7 +390,7 @@ export function parseQuote(row: RequestRow): Quote {
       if (q.note && q.note.includes("liseuse")) q.note = "";
       // Anciens devis : formule, contact et distance retirés des remarques (déjà ailleurs).
       if (q.remarks && q.remarks.trim() !== "—") q.remarks = clientRemarks(q.remarks) || "—";
-      if (Array.isArray(q.lines)) return q;
+      if (Array.isArray(q.lines)) return { ...q, lines: travelLast(q.lines) };
     } catch {
       /* on retombe sur le devis par défaut */
     }
@@ -742,6 +742,8 @@ export function formOptions(message: string, adults: number, totalGuests: number
       const preset = rule && OPTION_PRESETS.find((p) => p.id === rule.preset);
       if (!preset) { rest.push(part); continue; }
       if (lines.some((l) => l.id === `form-${preset.id}`)) continue;
+      // Un seul kit vaisselle : le premier cité (le plus précis) l’emporte.
+      if (preset.id.startsWith("kit-") && lines.some((l) => l.id.startsWith("form-kit-"))) continue;
       const line = presetToLine(preset, adults, totalGuests);
       const qty = rule!.qty?.(part);
       lines.push({ ...line, id: `form-${preset.id}`, qty: qty || line.qty });
@@ -752,4 +754,10 @@ export function formOptions(message: string, adults: number, totalGuests: number
     return rest.length ? `Options : ${rest.join(", ")}` : "";
   });
   return { lines, message: kept.filter(Boolean).join("\n") };
+}
+
+/** Les frais de déplacement restent toujours la dernière ligne du devis. */
+export function travelLast(lines: QuoteLine[]): QuoteLine[] {
+  const travel = (l: QuoteLine) => l.id === "deplacement" || /d[ée]placement/i.test(l.label);
+  return [...lines.filter((l) => !travel(l)), ...lines.filter(travel)];
 }

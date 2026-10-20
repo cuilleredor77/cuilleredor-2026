@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
+  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, travelLast, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
   formatEUR, isTravelPending, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
@@ -284,13 +284,13 @@ export default function Editor() {
             <div className="adm-inline">
               <select value={presetId} onChange={(e) => {
                 const preset = OPTION_PRESETS.find((p) => p.id === e.target.value);
-                if (preset) setQ({ lines: [...quote.lines, presetToLine(preset, req.adults, totalGuests)] });
+                if (preset) setQ({ lines: travelLast([...quote.lines, presetToLine(preset, req.adults, totalGuests)]) });
                 setPresetId("");
               }}>
                 <option value="">+ Ajouter une option du catalogue…</option>
                 {OPTION_PRESETS.map((p) => <option key={p.id} value={p.id}>{p.label} — {p.price} €/{p.unit}</option>)}
               </select>
-              <button className="adm-btn" onClick={() => setQ({ lines: [...quote.lines, { id: `l-${Date.now()}`, qty: 1, unit: "forfait", label: "Nouvelle ligne", price: 0 }] })}>+ Ligne libre</button>
+              <button className="adm-btn" onClick={() => setQ({ lines: travelLast([...quote.lines, { id: `l-${Date.now()}`, qty: 1, unit: "forfait", label: "Nouvelle ligne", price: 0 }]) })}>+ Ligne libre</button>
             </div>
           </section>
 
