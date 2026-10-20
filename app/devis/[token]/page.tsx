@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import type { Metadata } from "next";
-import { getRequestByToken } from "../../../lib/server";
+import { getRequestByToken, isAdmin } from "../../../lib/server";
 import { quoteFileName } from "../../../lib/quote";
 import QuoteDocument from "../document";
 import PrintButton from "../print-button";
@@ -17,11 +18,18 @@ export default async function QuotePage({ params, searchParams }: { params: Prom
   if (!/^[a-f0-9]{36}$/.test(token)) notFound();
   const row = await getRequestByToken(token);
   if (!row || !row.quote_json) notFound();
+  // Le bouton « Préparer le mail » n’apparaît que pour l’administratrice connectée.
+  const admin = await isAdmin(new Request("https://cuilleredor.fr/", { headers: { cookie: (await headers()).get("cookie") || "" } }));
   return (
     <main className="dv-wrap">
       <div className="dv-toolbar">
         <span>{quoteOnly ? "Devis" : "Devis et contrat"} — {row.client_name}</span>
-        <PrintButton fileName={quoteFileName(row)} quoteOnly={quoteOnly} />
+        <div className="dv-toolbar-actions">
+          <PrintButton fileName={quoteFileName(row)} quoteOnly={quoteOnly} />
+          {admin ? (
+            <a className="dv-print dv-mail" href={`/admin/${row.id}?mail=1${quoteOnly ? "&doc=devis" : ""}`} target="_blank" rel="noopener noreferrer">✉ Préparer le mail</a>
+          ) : null}
+        </div>
       </div>
       <QuoteDocument row={row} quoteOnly={quoteOnly} />
     </main>

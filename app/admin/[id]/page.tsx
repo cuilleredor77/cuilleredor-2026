@@ -29,6 +29,9 @@ export default function Editor() {
     if (res.status === 401) { window.location.href = "/admin"; return; }
     const data = await res.json();
     setReq(data.request); setQuote(data.quote); setDirty(!data.request.quote_json);
+    // Ouverture directe de la fenêtre e-mail depuis la page du devis (?mail=1&doc=devis)
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("mail") === "1") { setWithContract(params.get("doc") !== "devis"); setMail(true); }
   }, [id]);
   useEffect(() => { load(); }, [load]);
 
