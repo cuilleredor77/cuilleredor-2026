@@ -610,7 +610,7 @@ export function unavailableEmail(req: RequestRow): { subject: string; html: stri
 }
 
 /** E-mail client au modèle Cuillère d’Or : intro, tableau récapitulatif, informations complémentaires, signature. */
-export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link: string, withContract: boolean): { subject: string; html: string; text: string } {
+export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link: string, withContract: boolean, unavailable = false): { subject: string; html: string; text: string } {
   const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const first = firstName(req.client_name);
   const dateLong = req.event_date ? formatDateFR(req.event_date) : "";
@@ -619,7 +619,10 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
   // Sans date valable (vide ou déjà passée), on ne peut pas confirmer la disponibilité : on la demande.
   const knownDate = Boolean(req.event_date) && req.event_date >= quote.issuedOn;
   const subject = `${withContract ? "Votre devis et contrat" : "Votre devis"} Cuillère d’Or — ${req.event_type}${knownDate ? ` du ${formatDateShort(req.event_date)}` : ""} — ${req.client_name}`;
-  const intro1 = knownDate
+  const intro1 = unavailable
+    // Pas disponibles à cette date, mais le devis est envoyé au cas où le projet évolue.
+    ? `Merci pour votre demande pour votre ${type}${knownDate ? ` du ${dateLong}` : ""}${req.event_place ? ` (${req.event_place})` : ""}. Malheureusement, nous ne sommes pas disponibles à cette date. Nous vous adressons tout de même votre devis, au cas où votre projet évoluerait (autre date, autre format) : n’hésitez pas à revenir vers nous.`
+    : knownDate
     ? `Merci pour votre demande. Nous vous confirmons notre disponibilité pour votre ${type} du ${dateLong}${req.event_place ? ` (${req.event_place})` : ""}.`
     : `Merci pour votre demande pour votre ${type}${req.event_place ? ` (${req.event_place})` : ""}. La date de l’événement ne nous est pas parvenue : pourriez-vous nous l’indiquer ? Tant que nous ne la connaissons pas, nous ne pouvons pas vous confirmer notre disponibilité.`;
   // Sans lien : le devis (et le contrat) part en pièce jointe PDF.

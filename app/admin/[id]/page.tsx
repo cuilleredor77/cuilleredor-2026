@@ -41,6 +41,7 @@ export default function Editor() {
   // Google Agenda : alerte quand 3 événements ou plus sont déjà prévus à la date demandée.
   const [agenda, setAgenda] = useState<{ count: number; titles: string[]; off: string[] } | null>(null);
   const [negative, setNegative] = useState(false);
+  const [unavailableQuote, setUnavailableQuote] = useState(false);
   const [agendaStatus, setAgendaStatus] = useState<"" | "loading" | "off" | "error" | "ok">("");
   const eventDate = req?.event_date || "";
   useEffect(() => {
@@ -123,7 +124,7 @@ export default function Editor() {
     if (!confirm(`Envoyer le devis à ${req!.client_email} ${warn} ?`)) return;
     setBusy(true); setMsg("");
     const attachments = files.map(({ filename, content }) => ({ filename, content }));
-    const res = await fetch(`/api/admin/requests/${id}/send`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ withContract, attachments }) });
+    const res = await fetch(`/api/admin/requests/${id}/send`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ withContract, attachments, unavailable: unavailableQuote }) });
     const data = await res.json();
     setBusy(false);
     if (!res.ok) { setMsg(data.error || "Envoi impossible."); return; }
@@ -145,7 +146,7 @@ export default function Editor() {
   const fullLink = `${origin}/devis/${req.token}`;
   const quoteLink = `${fullLink}?doc=devis`;
   const link = withContract ? fullLink : quoteLink;
-  const { subject, html, text } = negative ? unavailableEmail(req) : charterEmail(req, quote, totals, "", withContract);
+  const { subject, html, text } = negative ? unavailableEmail(req) : charterEmail(req, quote, totals, "", withContract, unavailableQuote);
   // Gmail ne reçoit que l’objet par l’adresse : le corps mis en forme se colle (Cmd+V) après « Copier l’e-mail mis en forme ».
   const gmail = `https://mail.google.com/mail/?view=cm&fs=1&authuser=cuilleredor4%40gmail.com&to=${encodeURIComponent(req.client_email)}&su=${encodeURIComponent(subject)}`;
   async function copyFormatted() {
@@ -325,9 +326,10 @@ export default function Editor() {
           <div className="adm-card adm-mail" onClick={(e) => e.stopPropagation()}>
             <h2>E-mail au client</h2>
             <div className="adm-seg">
-              <button className={!negative && !withContract ? "on" : ""} onClick={() => { setNegative(false); setWithContract(false); setCopied(""); }}>Devis seul</button>
-              <button className={!negative && withContract ? "on" : ""} onClick={() => { setNegative(false); setWithContract(true); setCopied(""); }}>Devis + contrat</button>
-              <button className={negative ? "on" : ""} onClick={() => { setNegative(true); setCopied(""); }}>Indisponible</button>
+              <button className={!negative && !unavailableQuote && !withContract ? "on" : ""} onClick={() => { setNegative(false); setUnavailableQuote(false); setWithContract(false); setCopied(""); }}>Devis seul</button>
+              <button className={!negative && !unavailableQuote && withContract ? "on" : ""} onClick={() => { setNegative(false); setUnavailableQuote(false); setWithContract(true); setCopied(""); }}>Devis + contrat</button>
+              <button className={unavailableQuote ? "on" : ""} onClick={() => { setNegative(false); setUnavailableQuote(true); setWithContract(false); setCopied(""); }}>Indispo + devis</button>
+              <button className={negative ? "on" : ""} onClick={() => { setNegative(true); setUnavailableQuote(false); setCopied(""); }}>Indisponible</button>
             </div>
             <p><b>À :</b> {req.client_email || <em>(adresse manquante)</em>}</p>
             <p><b>Objet :</b> {subject}</p>
