@@ -35,7 +35,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
 
   return (
     <div className="dv-doc">
-      <style>{`@media print { @page { @top-left { content: "Cuillère d’Or — Devis et contrat — ${row.client_name.replace(/["\\]/g, "")}${row.event_date ? " — " + formatDateShort(row.event_date) : ""}"; font: 9px Arial, sans-serif; color: #6b6b6b; } @bottom-right { content: "Page " counter(page) " / " counter(pages); font: 9px Arial, sans-serif; color: #6b6b6b; } } }`}</style>
+      <style>{`@media print { @page { @top-left { content: "Cuillère d’Or — ${row.client_name.replace(/["\\]/g, "")}${row.event_date ? " — " + formatDateShort(row.event_date) : ""}"; font: 9px Arial, sans-serif; color: #6b6b6b; } @bottom-right { content: "Page " counter(page) " / " counter(pages); font: 9px Arial, sans-serif; color: #6b6b6b; } } }`}</style>
       {/* ================= DEVIS ================= */}
       <section className="dv-page">
         <header className="dv-head">

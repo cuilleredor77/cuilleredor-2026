@@ -2,6 +2,11 @@
 .dv-wrap { background: #ece8de; min-height: 100vh; padding: 0 0 48px; font-family: Arial, Helvetica, sans-serif; color: #1a1a1a; }
 .dv-toolbar { position: sticky; top: 0; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px clamp(14px, 4vw, 40px); background: #1a1a1a; color: #f7f4ec; font-size: 14px; }
 .dv-print { background: #d4af37; color: #1a1a1a; border: 0; border-radius: 999px; padding: 10px 18px; font-weight: 700; font-size: 13px; cursor: pointer; }
+.dv-toolbar > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dv-print-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.dv-print { white-space: nowrap; }
+.dv-print-label { font-size: 13px; color: #d9d2bd; }
+.dv-print-alt { background: transparent; color: #f7f4ec; box-shadow: inset 0 0 0 1.5px #d4af37; }
 .dv-doc { max-width: 820px; margin: 24px auto 0; padding: 0 12px; }
 .dv-page { background: #fff; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14); padding: clamp(18px, 5vw, 48px); margin-bottom: 24px; font-size: 13px; line-height: 1.5; }
 .dv-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; border-bottom: 2px solid #b8932a; padding-bottom: 12px; }
@@ -42,6 +47,7 @@
   .dv-lines td, .dv-lines th { padding: 9px 10px; }
   .dv-terms li { grid-template-columns: 1fr; gap: 2px; }
   .dv-sign { grid-template-columns: 1fr; }
+  .dv-print-label { display: none; }
 }
 @media print {
   .dv-toolbar, .site-header, .floating-actions { display: none !important; }
@@ -49,6 +55,8 @@
   .dv-doc { max-width: none; margin: 0; padding: 0; }
   .dv-page { box-shadow: none; margin: 0; padding: 0; page-break-after: always; break-after: page; }
   .dv-page:last-child { page-break-after: auto; break-after: auto; }
+  body.dv-quote-only .dv-contract { display: none !important; }
+  body.dv-quote-only .dv-page:not(.dv-contract) { page-break-after: auto; break-after: auto; }
   .dv-contract h3, .dv-contract h4 { break-after: avoid; }
   .dv-sign, .dv-terms, .dv-lines tr { break-inside: avoid; }
   @page { size: A4; margin: 16mm 14mm; }
