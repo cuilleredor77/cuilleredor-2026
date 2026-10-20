@@ -92,6 +92,11 @@ const worker = {
       ? withSecurityHeaders
       : (response: Response) => response;
 
+    // « cuilleredor.fr/liseuse » (sans barre finale) mène à la liseuse du catalogue.
+    if (url.pathname === "/liseuse") {
+      return new Response(null, { status: 301, headers: { location: `/liseuse/${url.search}${url.hash}` } });
+    }
+
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
       const response = await handleImageOptimization(request, {

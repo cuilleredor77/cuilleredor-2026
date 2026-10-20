@@ -35,6 +35,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
 
   return (
     <div className="dv-doc">
+      <style>{`@media print { @page { @top-left { content: "Cuillère d’Or — Devis et contrat — ${row.client_name.replace(/["\\]/g, "")}${row.event_date ? " — " + formatDateShort(row.event_date) : ""}"; font: 9px Arial, sans-serif; color: #6b6b6b; } @bottom-right { content: "Page " counter(page) " / " counter(pages); font: 9px Arial, sans-serif; color: #6b6b6b; } } }`}</style>
       {/* ================= DEVIS ================= */}
       <section className="dv-page">
         <header className="dv-head">
@@ -70,7 +71,7 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
                 <td>{fmtQty(line.qty)} {line.unit}</td>
                 <td>
                   ☑ {line.label}
-                  {line.detail ? <div className="dv-detail">{line.detail}</div> : null}
+                  {line.detail ? <ul className="dv-detail">{line.detail.split(" · ").map((part) => <li key={part}>{part}</li>)}</ul> : null}
                 </td>
                 <td className="r">{formatEUR(line.price)}</td>
                 <td className="r">{formatEUR(lineTotal(line))}</td>
@@ -80,13 +81,19 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
           </tbody>
         </table>
 
-        <p className="dv-conditions">
-          Devis valable 30 jours à compter de sa date d’émission. Les tarifs et disponibilités ne sont garantis qu’après signature et versement de l’acompte. Le montant total des prestations s’élève à {formatEUR(totals.total)}.{" "}
+        <p className="dv-conditions"><b>Conditions</b></p>
+        <ul className="dv-terms">
+          <li><b>Total des prestations</b><span>{formatEUR(totals.total)}</span></li>
           {totals.fullAtSignature
-            ? <>L’événement ayant lieu dans moins de 2 mois, la totalité du montant, soit {formatEUR(totals.total)}, est à régler à la signature.</>
-            : <>Après acceptation et signature, 30 % sont à verser à la signature, soit {formatEUR(totals.deposit)}. Le solde restant de {formatEUR(totals.balance)} sera à régler deux mois avant l’événement, soit au plus tard le {formatDateFR(totals.balanceDue)}.</>}
-          {quote.note ? <> {quote.note}</> : null}
-        </p>
+            ? <li><b>Règlement</b><span>L’événement ayant lieu dans moins de 2 mois, la totalité ({formatEUR(totals.total)}) est à régler à la signature.</span></li>
+            : <>
+                <li><b>Acompte (30 %)</b><span>{formatEUR(totals.deposit)} à la signature</span></li>
+                <li><b>Solde</b><span>{formatEUR(totals.balance)} au plus tard le {formatDateFR(totals.balanceDue)}</span></li>
+              </>}
+          <li><b>Validité</b><span>30 jours à compter du {issued}. Tarifs et disponibilités garantis après signature et versement {totals.fullAtSignature ? "du règlement" : "de l’acompte"}.</span></li>
+          <li><b>Catalogue</b><span>Formules, menus et services complémentaires : <a href="https://cuilleredor.fr/liseuse/">cuilleredor.fr/liseuse/</a></span></li>
+          {quote.note && !quote.note.includes("liseuse") ? <li><b>Remarque</b><span>{quote.note}</span></li> : null}
+        </ul>
 
         <div className="dv-sign">
           <div>

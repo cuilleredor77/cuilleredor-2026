@@ -9,22 +9,28 @@
 .dv-title { font-size: 22px; font-weight: 700; letter-spacing: 0.08em; color: #6b5420; }
 .dv-company { margin: 8px 0 14px; font-size: 11px; color: #5e5e5e; }
 .dv-client { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-.dv-client th { text-align: left; width: 34%; padding: 3px 8px 3px 0; font-weight: 700; vertical-align: top; }
-.dv-client td { padding: 3px 0; }
-.dv-sum { margin: 6px 0; }
+.dv-client th { text-align: left; width: 32%; padding: 8px 14px; font-weight: 700; vertical-align: top; background: #faf6ea; border-bottom: 1px solid #ece4cc; }
+.dv-client td { padding: 8px 14px; border-bottom: 1px solid #ece4cc; }
+.dv-page .dv-client th { text-transform: none; letter-spacing: normal; font-size: 13px; color: #5a4618; }
+.dv-sum { margin: 8px 0; }
 .dv-lines, .dv-comp { width: 100%; border-collapse: collapse; margin: 14px 0; }
-.dv-lines th { background: #1a1a1a; color: #f7f4ec; text-align: left; padding: 7px 8px; font-size: 12px; }
-.dv-lines td, .dv-comp td { padding: 7px 8px; border-bottom: 1px solid #e3ddcc; vertical-align: top; }
+.dv-lines th { background: #1a1a1a; color: #f7f4ec; text-align: left; padding: 10px 14px; font-size: 12px; }
+.dv-lines td, .dv-comp td { padding: 10px 14px; border-bottom: 1px solid #e3ddcc; vertical-align: top; }
 .dv-lines .r, .dv-comp .r, .dv-lines th.r { text-align: right; white-space: nowrap; }
 .dv-band td { background: #f3ecd8; font-weight: 700; letter-spacing: 0.06em; font-size: 12px; }
-.dv-detail { font-size: 11px; color: #6b6b6b; margin-top: 2px; }
+.dv-detail { font-size: 11.5px; color: #555; margin: 6px 0 0; padding-left: 16px; }
+.dv-detail li { margin: 2px 0; }
 .dv-total td { font-weight: 700; font-size: 14px; border-top: 2px solid #1a1a1a; background: #faf6ea; }
-.dv-conditions { font-size: 12px; margin: 14px 0; }
+.dv-conditions { font-size: 12px; margin: 18px 0 0; }
+.dv-terms { margin: 6px 0 14px; padding: 0; list-style: none; font-size: 12.5px; }
+.dv-terms li { display: grid; grid-template-columns: 170px 1fr; gap: 12px; padding: 6px 14px; border-bottom: 1px solid #eee7d3; }
+.dv-terms li b { color: #1a1a1a; }
+.dv-terms a { color: #6b5420; }
 .dv-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 22px; }
 .dv-sign p { margin: 4px 0; }
 .dv-signname { font-weight: 700; }
 .dv-box { height: 70px; border: 1px dashed #b8932a; margin-top: 8px; }
-.dv-foot { margin-top: 22px; padding-top: 8px; border-top: 1px solid #d9d2bd; font-size: 10px; color: #6b6b6b; text-align: center; }
+.dv-page .dv-foot { margin-top: 22px; padding: 10px 0 0; border-top: 1px solid #d9d2bd; background: none; font-size: 10.5px; line-height: 1.5; color: #555; text-align: center; }
 .dv-h2 { font-size: 18px; letter-spacing: 0.08em; color: #6b5420; margin: 0 0 8px; }
 .dv-contract h3 { font-size: 13px; margin: 18px 0 4px; letter-spacing: 0.04em; color: #1a1a1a; border-bottom: 1px solid #d9d2bd; padding-bottom: 3px; }
 .dv-contract h4 { font-size: 12px; margin: 10px 0 2px; }
@@ -33,6 +39,8 @@
 .dv-fait { margin-top: 18px !important; font-weight: 700; }
 @media (max-width: 640px) {
   .dv-lines td:first-child { white-space: nowrap; }
+  .dv-lines td, .dv-lines th { padding: 9px 10px; }
+  .dv-terms li { grid-template-columns: 1fr; gap: 2px; }
   .dv-sign { grid-template-columns: 1fr; }
 }
 @media print {
@@ -42,6 +50,6 @@
   .dv-page { box-shadow: none; margin: 0; padding: 0; page-break-after: always; break-after: page; }
   .dv-page:last-child { page-break-after: auto; break-after: auto; }
   .dv-contract h3, .dv-contract h4 { break-after: avoid; }
-  .dv-sign { break-inside: avoid; }
+  .dv-sign, .dv-terms, .dv-lines tr { break-inside: avoid; }
   @page { size: A4; margin: 16mm 14mm; }
 }
