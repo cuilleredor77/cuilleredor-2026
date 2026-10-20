@@ -197,6 +197,7 @@ export const OPTION_PRESETS: OptionPreset[] = [
   { id: "plus-viande", label: "Viande ou poisson en plus", unit: "pers.", price: 5, basis: "adults" },
   { id: "plus-entree", label: "Entrée ou dessert en plus (service à l’assiette)", unit: "pers.", price: 5, basis: "adults" },
   { id: "avocat", label: "Avocat surprise sur glace carbonique (supplément entrée)", unit: "pers.", price: 3, basis: "adults" },
+  { id: "dechets", label: "Gestion des déchets alimentaires (hors verre)", unit: "forfait", price: 50, basis: "one" },
   { id: "installation", label: "Installation complète (mise en place du lieu et du matériel)", unit: "forfait", price: 150, basis: "one" },
   { id: "dressage", label: "Dressage des tables (nappes, assiettes, verres et couverts)", unit: "forfait", price: 250, basis: "one", detail: "Compris si la vaisselle est louée avec la cheffe" },
   { id: "maitre-hotel", label: "Maître d’hôtel (coordonne l’équipe et le lieu jusqu’à la fin de soirée)", unit: "forfait", price: 160, basis: "one" },

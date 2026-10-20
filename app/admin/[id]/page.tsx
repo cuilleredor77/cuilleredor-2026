@@ -177,6 +177,18 @@ export default function Editor() {
                 </div>
               ))}
             </div>
+            <label className="adm-check">
+              <input
+                type="checkbox"
+                checked={quote.lines.some((l) => l.id === "dechets" || /d[ée]chets/i.test(l.label))}
+                onChange={(e) => setQ({
+                  lines: e.target.checked
+                    ? [...quote.lines.filter((l) => !/d[ée]placement/i.test(l.label)), { id: "dechets", qty: 1, unit: "forfait", label: "Gestion des déchets alimentaires (hors verre)", price: 50 }, ...quote.lines.filter((l) => /d[ée]placement/i.test(l.label))]
+                    : quote.lines.filter((l) => !(l.id === "dechets" || /d[ée]chets/i.test(l.label))),
+                })}
+              />
+              Gestion des déchets alimentaires (hors verre) — 50 € <span className="adm-muted">· cochée par défaut, à décocher si le lieu garde les déchets</span>
+            </label>
             <div className="adm-inline">
               <select value={presetId} onChange={(e) => {
                 const preset = OPTION_PRESETS.find((p) => p.id === e.target.value);
