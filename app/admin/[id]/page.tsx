@@ -43,6 +43,7 @@ export default function Editor() {
   // Google Agenda : alerte quand 3 événements ou plus sont déjà prévus à la date demandée.
   const [agenda, setAgenda] = useState<{ count: number; titles: string[]; off: string[] } | null>(null);
   const [negative, setNegative] = useState(false);
+  const [secondFormula, setSecondFormula] = useState("assiette");
   const [dragFrom, setDragFrom] = useState<number | null>(null);
   const [dragOver, setDragOver] = useState<number | null>(null);
   const [unavailableQuote, setUnavailableQuote] = useState(false);
@@ -87,6 +88,19 @@ export default function Editor() {
     lines.splice(to, 0, moved);
     setQ({ lines: travelLast(lines) });
   };
+
+  // Second devis : même demande, autre formule (ouvert dans un nouvel onglet).
+  async function createSecondQuote() {
+    if (dirty && !(await save())) return;
+    if (!confirm(`Créer un second devis pour ${req!.client_name} avec la formule « ${FORMULAS[secondFormula as keyof typeof FORMULAS].label} » ?`)) return;
+    setBusy(true);
+    const res = await fetch(`/api/admin/requests/${id}/duplicate`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ formula: secondFormula }) });
+    const data = await res.json();
+    setBusy(false);
+    if (!res.ok) { setMsg(data.error || "Création impossible."); return; }
+    setMsg(`Second devis créé (demande n°${data.id}).`);
+    window.location.href = `/admin/${data.id}`;
+  }
 
   async function removeRequest() {
     if (!confirm(`Supprimer définitivement la demande de ${req!.client_name || "ce client"} ? Cette action est irréversible.`)) return;
@@ -194,6 +208,12 @@ export default function Editor() {
           <a className="adm-btn" href={fullLink} target="_blank" rel="noopener noreferrer" onClick={(e) => openSaved(e, fullLink)}>Devis + contrat ↗</a>
           <button className="adm-btn" onClick={() => save({ status: req.status })} disabled={busy || !dirty}>{dirty ? "Enregistrer" : "Enregistré"}</button>
           <button className="adm-btn adm-gold" onClick={async () => { if (!dirty || (await save())) setMail(true); }} disabled={busy}>Préparer l’e-mail →</button>
+          <span className="adm-second">
+            <select aria-label="Formule du second devis" value={secondFormula} onChange={(e) => setSecondFormula(e.target.value)}>
+              {FORMULA_KEYS.map((k) => <option key={k} value={k}>{FORMULAS[k].label}</option>)}
+            </select>
+            <button className="adm-btn" onClick={createSecondQuote} disabled={busy}>➕ Second devis</button>
+          </span>
           <button className="adm-btn adm-danger" onClick={removeRequest} disabled={busy}>🗑 Supprimer</button>
         </div>
       </header>
