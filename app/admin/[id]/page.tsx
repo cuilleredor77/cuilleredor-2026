@@ -161,7 +161,7 @@ export default function Editor() {
                   <input type="number" step="0.1" min={0} value={req.km ?? ""} onChange={(e) => setField("km", e.target.value === "" ? null : Number(e.target.value))} />
                   <button type="button" className="adm-btn" onClick={computeKm}>Calculer les km</button>
                   {req.event_place.trim() ? (
-                    <a className="adm-btn" href={mapsLink(req.event_place)} target="_blank" rel="noopener noreferrer" title="Itinéraire depuis Vert-Saint-Denis : multiplier la distance par 2 pour l’aller-retour">🗺 Google Maps ↗</a>
+                    <a className="adm-btn" href={mapsLink(req.event_place)} target="_blank" rel="noopener noreferrer" title="Itinéraire aller-retour depuis Vert-Saint-Denis">🗺 Lien itinéraire AR ↗</a>
                   ) : null}
                 </span>
               </label>
@@ -282,7 +282,8 @@ export default function Editor() {
 
 const DEPOT = "8 Allée des Bois, 77240 Vert-Saint-Denis";
 
-/** Itinéraire en voiture depuis le dépôt jusqu’au lieu saisi (distance aller : ×2 pour l’aller-retour). */
+/** « Lien itinéraire » comme dans le Google Sheet : dépôt → lieu → dépôt, Google affiche directement les km aller-retour. */
 function mapsLink(place: string): string {
-  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(DEPOT)}&destination=${encodeURIComponent(place.trim())}&travelmode=driving`;
+  const stop = (s: string) => encodeURIComponent(s.trim()).replace(/%20/g, "+");
+  return `https://www.google.com/maps/dir/${stop(DEPOT)}/${stop(place)}/${stop(DEPOT)}/`;
 }
