@@ -84,8 +84,8 @@ export default function QuoteDocument({ row }: { row: RequestRow }) {
           </thead>
           <tbody>
             {[
-              { title: "PRESTATIONS INCLUSES", lines: quote.lines.filter((l) => INCLUDED_IDS.has(l.id)) },
-              { title: "OPTIONS", lines: quote.lines.filter((l) => !INCLUDED_IDS.has(l.id)) },
+              { title: "PRESTATIONS INCLUSES", lines: quote.lines.filter((l) => INCLUDED_IDS.has(l.id) || l.id.startsWith("inc-")) },
+              { title: "OPTIONS", lines: quote.lines.filter((l) => !INCLUDED_IDS.has(l.id) && !l.id.startsWith("inc-")) },
             ].filter((sec) => sec.lines.length).map((sec) => (
               <Fragment key={sec.title}>
                 <tr className="dv-band"><td colSpan={5}>{sec.title}</td></tr>
