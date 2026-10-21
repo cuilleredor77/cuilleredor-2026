@@ -108,7 +108,7 @@ async function notifyReviewer(row: RequestRow, origin: string): Promise<void> {
   const to = setting("REVIEW_EMAIL");
   if (!to) return;
   const quote = parseQuote(row);
-  const totals = computeTotals(quote, row.event_date);
+  const totals = computeTotals(quote, row.event_date, row.service_mode);
   const alerts = quoteAlerts(row, quote, totals);
   const agenda = row.event_date ? await agendaOnDate(row.event_date) : null;
   if (agenda && agenda.off.length) {
@@ -199,7 +199,7 @@ export async function sendQuoteToClient(row: RequestRow, origin: string, withCon
   if (!row.quote_json) return { ok: false, error: "Le devis n’est pas encore calculé." };
   if (!row.client_email) return { ok: false, error: "E-mail du client manquant." };
   const quote = parseQuote(row);
-  const totals = computeTotals(quote, row.event_date);
+  const totals = computeTotals(quote, row.event_date, row.service_mode);
   const link = `${origin}/devis/${row.token}${withContract ? "" : "?doc=devis"}`;
   // Avec pièces jointes, le mail dit « ci-joint en PDF » ; sans, il garde le lien en ligne.
   // Mail modifié à la main dans l’admin : on envoie exactement cette version.

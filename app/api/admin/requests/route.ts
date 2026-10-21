@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     .prepare("SELECT * FROM requests ORDER BY created_at ASC")
     .all<RequestRow>();
   const rows = results.map((row) => {
-    const totals = computeTotals(parseQuote(row), row.event_date);
+    const totals = computeTotals(parseQuote(row), row.event_date, row.service_mode);
     return {
       id: row.id,
       createdAt: row.created_at,

@@ -75,11 +75,11 @@ export function PaymentSchedule({ rows, payments = [], caution, cautionDue }: { 
           {received ? <tr className="dv-sched-sum"><td>Reste à régler</td><td className="r">{formatEUR(Math.max(0, total - received))}</td><td colSpan={2}>sur {formatEUR(total)} · déjà reçu : {formatEUR(received)}</td></tr> : null}
         </tbody>
       </table>
-      <table className="dv-lines dv-sched dv-caution">
+      {caution ? <table className="dv-lines dv-sched dv-caution">
         <tbody>
           <tr><td className="b">Caution<br /><small>hors prix, restituée si aucun retard</small></td><td className="r b">{formatEUR(caution)}</td><td>{cautionDue}</td><td>{cautionPaid ? status(cautionPaid) : <span className="dv-due">À verser</span>}</td></tr>
         </tbody>
-      </table>
+      </table> : null}
     </>
   );
 }
@@ -95,11 +95,11 @@ export function ScheduleCards({ rows, caution, cautionDue }: { rows: ScheduleRow
           <span>{r.due}</span>
         </div>
       ))}
-      <div className="dv-paycard dv-paycard-caution">
+      {caution ? <div className="dv-paycard dv-paycard-caution">
         <small>Caution · hors prix</small>
         <b>{formatEUR(caution)}</b>
         <span>{cautionDue} · restituée si aucun retard</span>
-      </div>
+      </div> : null}
     </div>
   );
 }
@@ -121,7 +121,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
   const quote = parseQuote(row);
   // Les anciens devis gardent la formule et le contact dans les remarques : on les filtre aussi à l’affichage.
   const remarks = quote.remarks.trim() === "—" ? "" : clientRemarks(quote.remarks);
-  const totals = computeTotals(quote, row.event_date);
+  const totals = computeTotals(quote, row.event_date, row.service_mode);
   const eventLong = row.event_date ? formatDateFR(row.event_date, true) : "";
   const issued = formatDateFR(quote.issuedOn);
   const guests =
@@ -289,7 +289,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
               <li>Solde (70 %) : {formatEUR(totals.balance)} — à régler au plus tard le {formatDateFR(totals.balanceDue)}</li>
             </>
           )}
-          <li>Caution (hors prix des prestations) : {formatEUR(totals.caution)}, {cautionDue(totals).toLowerCase()} — restituée si aucun retard constaté</li>
+          {totals.caution ? <li>Caution (hors prix des prestations) : {formatEUR(totals.caution)}, {cautionDue(totals).toLowerCase()} — restituée si aucun retard constaté</li> : null}
         </ul>
         <PaymentSchedule rows={scheduleRows(totals)} payments={quote.payments} caution={totals.caution} cautionDue={cautionDue(totals)} />
         <p>Le Prestataire se réserve le droit de suspendre la prestation en cas de non-paiement du solde, sans obligation de remboursement des sommes déjà versées.</p>
@@ -362,7 +362,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         <h4>4.5 – Wedding cake fourni par le Client</h4>
         <p>Le Client et son fournisseur demeurent responsables de la fabrication, du transport et de la conservation du wedding cake jusqu’à sa remise aux équipes CDO.</p>
         <h4>4.6 – Matériel et vaisselle</h4>
-        <p>La vaisselle et le linge de table ne sont pas inclus dans la prestation de base et doivent être prévus en location auprès du Prestataire ou d’un tiers. Le Client est responsable de toute perte, casse ou détérioration du matériel mis à disposition. Les frais de remplacement seront retenus sur la caution ou refacturés.</p>
+        <p>La vaisselle et le linge de table ne sont pas inclus dans la prestation de base et doivent être prévus en location auprès du Prestataire ou d’un tiers. Le Client est responsable de toute perte, casse ou détérioration du matériel mis à disposition. Les frais de remplacement seront {totals.caution ? "retenus sur la caution ou refacturés" : "refacturés"}.</p>
         <h4>4.7 – Comportement des invités</h4>
         <p>Le Client demeure seul responsable du comportement de ses invités. Cuillère d’Or ne pourra être tenue responsable des incidents liés à une consommation excessive d’alcool.</p>
 

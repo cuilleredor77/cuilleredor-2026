@@ -19,7 +19,7 @@ export async function GET(request: Request, ctx: { params: Promise<{ id: string 
   if (!row) return json({ error: "Demande introuvable" }, { status: 404 });
   const quote = parseQuote(row);
   const amendments = (await db().prepare("SELECT * FROM amendments WHERE request_id = ? ORDER BY number").bind(row.id).all()).results;
-  return json({ request: row, quote, totals: computeTotals(quote, row.event_date), sheetFinderUrl: setting("GSHEET_FINDER_URL"), amendments });
+  return json({ request: row, quote, totals: computeTotals(quote, row.event_date, row.service_mode), sheetFinderUrl: setting("GSHEET_FINDER_URL"), amendments });
 }
 
 export async function PUT(request: Request, ctx: { params: Promise<{ id: string }> }) {
@@ -119,7 +119,7 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
     row = await getRequestById(existing.id);
   }
   const saved = parseQuote(row!);
-  return json({ ok: true, request: row, quote: saved, totals: computeTotals(saved, row!.event_date) });
+  return json({ ok: true, request: row, quote: saved, totals: computeTotals(saved, row!.event_date, row!.service_mode) });
 }
 
 // Suppression définitive (demandes de test, doublons). Demandée depuis la fiche, avec confirmation.

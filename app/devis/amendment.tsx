@@ -21,8 +21,8 @@ export default function AmendmentDocument({ row, amendment }: { row: RequestRow;
   const changes = amendmentChanges(before, after);
   const previous = computeTotals(before.quote, before.event_date).total;
   // Le règlement suit le contrat signé : même acompte, solde recalculé sur le nouveau total.
-  const contract = computeTotals(signed.quote, signed.event_date);
-  const next = computeTotals({ ...after.quote, issuedOn: signed.quote.issuedOn }, after.event_date);
+  const contract = computeTotals(signed.quote, signed.event_date, row.service_mode);
+  const next = computeTotals({ ...after.quote, issuedOn: signed.quote.issuedOn }, after.event_date, row.service_mode);
   const diff = next.total - previous;
   // Paiements : ceux de la fiche telle qu’elle est aujourd’hui (dates de réception et de confirmation).
   const current = parseQuote(row);

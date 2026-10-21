@@ -43,7 +43,7 @@ export default function Editor() {
   }, [id]);
   useEffect(() => { load(); }, [load]);
 
-  const totals = useMemo(() => (quote && req ? computeTotals(quote, req.event_date) : null), [quote, req]);
+  const totals = useMemo(() => (quote && req ? computeTotals(quote, req.event_date, req.service_mode) : null), [quote, req]);
   // Google Agenda : alerte quand 3 événements ou plus sont déjà prévus à la date demandée.
   const [agenda, setAgenda] = useState<{ count: number; titles: string[]; off: string[] } | null>(null);
   const [negative, setNegative] = useState(false);
@@ -523,7 +523,7 @@ export default function Editor() {
             <div><dt>{totals.fullAtSignature ? "À la signature (100 %)" : "Acompte (30 %)"}</dt><dd>{formatEUR(totals.deposit)}</dd></div>
             {!totals.fullAtSignature ? <div><dt>Solde (70 %)</dt><dd>{formatEUR(totals.balance)}</dd></div> : null}
             {!totals.fullAtSignature && totals.balanceDue ? <div><dt>Solde dû le</dt><dd>{formatDateFR(totals.balanceDue)}</dd></div> : null}
-            <div><dt>Caution</dt><dd>{formatEUR(totals.caution)}</dd></div>
+            <div><dt>Caution</dt><dd>{totals.caution ? formatEUR(totals.caution) : "aucune (livraison)"}</dd></div>
             <div><dt>Valable jusqu’au</dt><dd>{formatDateFR(totals.validUntil)}</dd></div>
           </dl>
           <div className="adm-pay">
@@ -546,7 +546,7 @@ export default function Editor() {
               {([
                 ["Acompte", totals.fullAtSignature ? totals.total : totals.deposit],
                 ["Solde", Math.max(0, totals.total - paidTotal(quote))],
-                ["Caution", totals.caution],
+                ...(totals.caution ? [["Caution", totals.caution] as [string, number]] : []),
                 ["Autre", 0],
               ] as Array<[string, number]>).map(([label, amount]) => (
                 <button key={label} type="button" className="adm-btn" onClick={() => {

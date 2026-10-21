@@ -25,7 +25,7 @@ export default async function SendPage({
   const row = await getRequestByToken(token);
   if (!row || !row.quote_json) notFound();
   const quote = parseQuote(row);
-  const totals = computeTotals(quote, row.event_date);
+  const totals = computeTotals(quote, row.event_date, row.service_mode);
   const alerts = quoteAlerts(row, quote, totals);
 
   return (
