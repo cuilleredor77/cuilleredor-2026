@@ -120,6 +120,12 @@ export default function AdminHome() {
     setItems((cur) => (cur || []).map((it) => (it.id === id ? { ...it, status: "envoye", sentAt: now } : it)));
   }
 
+  async function quickAction(id: number, body: Record<string, unknown>, patch: Partial<Item>) {
+    const res = await fetch(`/api/admin/requests/${id}`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+    if (!res.ok) { setError("Impossible d’enregistrer."); return; }
+    setItems((cur) => (cur || []).map((it) => (it.id === id ? { ...it, ...patch } : it)));
+  }
+
   const showBadge = Boolean(query.trim()) || filter === "all";
 
   if (auth === "loading") return <p className="adm-muted">Chargement…</p>;
@@ -210,6 +216,11 @@ export default function AdminHome() {
                 </span>
                 {buckets.get(it.id) === "relancer" && !query.trim() ? (
                   <button type="button" className="adm-btn adm-relance" onClick={(e) => { e.preventDefault(); e.stopPropagation(); markRelaunched(it.id); }}>Relancé ✓</button>
+                ) : (buckets.get(it.id) === "relire" || buckets.get(it.id) === "verifier") && !query.trim() ? (
+                  <span className="adm-quick">
+                    <button type="button" className="adm-btn" title="Réponse déjà faite par mail, Mariages.net ou téléphone : passe en attente" onClick={(e) => { e.preventDefault(); e.stopPropagation(); quickAction(it.id, { answered: true }, { status: "envoye", sentAt: new Date().toISOString() }); }}>Déjà répondu ✓</button>
+                    <button type="button" className="adm-btn" onClick={(e) => { e.preventDefault(); e.stopPropagation(); quickAction(it.id, { status: "archivee" }, { status: "archivee" }); }}>Archiver</button>
+                  </span>
                 ) : showBadge ? <span className={`adm-badge s-${it.status}`}>{STATUS_LABEL[it.status] || it.status}</span> : <span />}
               </a>
             </li>
