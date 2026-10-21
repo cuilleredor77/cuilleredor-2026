@@ -43,7 +43,7 @@ export default function AdminHome() {
   const [auth, setAuth] = useState<"loading" | "login" | "ok">("loading");
   const [filter, setFilter] = useState<string>("relire");
   const [query, setQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"recues" | "evt-proche" | "evt-loin">("recues");
+  const [sortBy, setSortBy] = useState<"recues" | "evt-proche" | "evt-loin" | "couverts" | "montant">("recues");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [offOnly, setOffOnly] = useState(false);
@@ -84,6 +84,9 @@ export default function AdminHome() {
     const byEvent = (a: Item, b: Item) => (a.eventDate || "9999").localeCompare(b.eventDate || "9999");
     if (sortBy === "evt-proche") return list.sort(byEvent);
     if (sortBy === "evt-loin") return list.sort((a, b) => byEvent(b, a));
+    // Plus grands d’abord : nombre total de couverts (adultes + enfants + prestataires) ou montant du devis.
+    if (sortBy === "couverts") return list.sort((a, b) => (b.adults + b.children + b.providers) - (a.adults + a.children + a.providers));
+    if (sortBy === "montant") return list.sort((a, b) => b.total - a.total);
     // Relances : les envois les plus anciens d’abord ; ailleurs, les demandes les plus récentes d’abord.
     return filter === "relancer" && !q && !dateFilter
       ? list.sort((a, b) => (a.sentAt || "").localeCompare(b.sentAt || ""))
@@ -133,6 +136,8 @@ export default function AdminHome() {
             <option value="recues">Réception la plus récente</option>
             <option value="evt-proche">Date d’événement la plus proche</option>
             <option value="evt-loin">Date d’événement la plus lointaine</option>
+            <option value="couverts">Nombre de couverts (le plus grand)</option>
+            <option value="montant">Montant du devis (le plus élevé)</option>
           </select>
         </label>
         <label>Événement du <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></label>
