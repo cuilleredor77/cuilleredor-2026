@@ -397,7 +397,7 @@ export function buildDefaultQuote(req: RequestRow): Quote {
     ? `${adults} couverts`
     : `${adults} adultes${children ? ` + ${children} enfants` : ""}${providers ? ` + ${providers} prestataires` : ""}`;
 
-  return {
+  const quote: Quote = {
     lines,
     issuedOn: todayISO(),
     summary: `${summaryFor(req)} — ${guestsText}`,
@@ -405,6 +405,27 @@ export function buildDefaultQuote(req: RequestRow): Quote {
     note: "",
     includeComplementary: true,
   };
+  // Brunch demandé pour le lendemain : devis présenté sur 2 jours.
+  return brunch ? twoDayQuote(req, quote) : quote;
+}
+
+/**
+ * Modèle « 2 jours » : jour 1 = l’événement (lignes actuelles), jour 2 = brunch du lendemain
+ * avec service, gestion des déchets et déplacement chiffrés comme le jour 1.
+ */
+export function twoDayQuote(req: RequestRow, quote: Quote): Quote {
+  const day1 = `${(req.event_type || "Événement").toUpperCase()}${req.event_date ? ` (${formatDateShort(req.event_date)})` : ""}`;
+  const day2 = `BRUNCH DU LENDEMAIN${req.event_date ? ` (${formatDateShort(addDays(req.event_date, 1))})` : ""}`;
+  const asked = quote.lines.find((l) => l.id === "brunch-lendemain" || l.id === "inc-brunch-j2");
+  const rest = quote.lines.filter((l) => l !== asked).map((l) => ({ ...l, day: day1 }));
+  const travel = rest.find((l) => /d[ée]placement/i.test(l.label));
+  const waste = rest.some((l) => /d[ée]chets/i.test(l.label));
+  const second: QuoteLine[] = [
+    { id: "inc-brunch-j2", qty: asked?.qty || req.adults || 0, unit: "pers.", label: "Formule Brunch signature avec service compris", detail: FORMULAS.brunch.detail, price: FORMULAS.brunch.flat!, day: day2 },
+    ...(waste ? [{ id: "inc-dechets-j2", qty: 1, unit: "forfait", label: "Gestion des déchets alimentaires (hors verre)", price: 50, day: day2 }] : []),
+    ...(travel ? [{ ...travel, id: "inc-deplacement-j2", day: day2 }] : []),
+  ];
+  return { ...quote, days: [day1, day2], lines: groupOrder([...rest, ...second]) };
 }
 
 export function parseQuote(row: RequestRow): Quote {

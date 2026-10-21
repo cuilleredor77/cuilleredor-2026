@@ -4,7 +4,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { useParams } from "next/navigation";
 import {
   FORMULAS, FORMULA_KEYS, OPTION_PRESETS, mariagesNetReply, honorWineLines, isHonorWineLine, travelLast, isIncluded, withGroup, groupOrder, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
-  formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, amendmentChanges, paidTotal, type Payment, parseSnapshot, snapshotOf, type Amendment, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
+  formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, amendmentChanges, twoDayQuote, paidTotal, type Payment, parseSnapshot, snapshotOf, type Amendment, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
 const STATUS: Array<[string, string]> = [
@@ -439,7 +439,14 @@ export default function Editor() {
           </section>
 
           <section className="adm-card">
-            <div className="adm-split"><h2>Lignes du devis</h2><button className="adm-btn" onClick={regenerate} disabled={busy}>↻ Régénérer depuis la demande</button></div>
+            <div className="adm-split"><h2>Lignes du devis</h2>
+              <span className="adm-inline">
+                {quote.days?.some((d) => d.trim()) ? null : (
+                  <button className="adm-btn" title="Jour 1 = l’événement, jour 2 = brunch du lendemain (brunch, déchets et déplacement chiffrés)" onClick={() => setQ(twoDayQuote(req, quote))}>📅 Modèle 2 jours (+ brunch du lendemain)</button>
+                )}
+                <button className="adm-btn" onClick={regenerate} disabled={busy}>↻ Régénérer depuis la demande</button>
+              </span>
+            </div>
             <div className="adm-lines">
               <p className="adm-group-title">Prestations incluses</p>
               {includedCount === 0 ? <OptionsBar onDrop={() => dragFrom !== null && dropOnSeparator(dragFrom)} active={dragFrom !== null} /> : null}
