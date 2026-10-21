@@ -35,6 +35,8 @@ export async function GET(request: Request) {
       total: totals.total,
       sentAt: row.sent_at,
       hasQuote: Boolean(row.quote_json),
+      // Demandes Mariages.net : lien direct pour y répondre (pas d’e-mail du client).
+      replyUrl: row.internal_notes.match(/Répondre : (https:\/\/\S+)/)?.[1] || "",
     };
   });
   return json({ requests: rows });

@@ -6,7 +6,7 @@ import { FORMULAS, FORMULA_KEYS, SOURCE_LABEL, receivedAt, offPeriod, formatDate
 type Item = {
   id: number; createdAt: string; source: string; status: string; name: string; email: string; phone: string;
   eventType: string; eventDate: string; place: string; formula: string; adults: number;
-  children: number; providers: number; total: number; sentAt: string | null; hasQuote: boolean;
+  children: number; providers: number; total: number; sentAt: string | null; hasQuote: boolean; replyUrl: string;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -187,6 +187,14 @@ export default function AdminHome() {
             <li key={it.id}>
               <a href={`/admin/${it.id}`} className="adm-row">
                 <span className="adm-l1">
+                  {it.source === "mariages_net" ? (
+                    <span
+                      className="adm-mnet"
+                      role="link"
+                      title="Demande Mariages.net : répondre sur leur site"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (it.replyUrl) window.open(it.replyUrl, "_blank", "noopener"); }}
+                    >💍 Mariages.net{it.replyUrl ? " ↗" : ""}</span>
+                  ) : null}
                   {offPeriod(it.eventDate) ? <span className="adm-off" title="Huguette est OFF à cette date">⛔ OFF</span> : null}
                   <strong>{it.name || "Sans nom"}</strong> — {it.eventType} · {it.eventDate ? formatDateShort(it.eventDate) : "date ?"} · {it.place || "lieu ?"}
                 </span>
@@ -197,7 +205,7 @@ export default function AdminHome() {
                   <span className={late ? "adm-late" : ""}>
                     reçue le {receivedAt(it.createdAt)}{it.sentAt ? "" : ` (${wait === 0 ? "aujourd’hui" : `il y a ${wait} j`})`}
                   </span>
-                  {it.sentAt ? ` · envoyé le ${formatDateShort(it.sentAt)}` : ""}
+                  {it.sentAt ? ` · devis envoyé le ${receivedAt(it.sentAt)}` : ""}
                   {" · "}{meta.label} · {it.adults} adulte{it.adults > 1 ? "s" : ""}{it.children ? ` + ${it.children} enf.` : ""}{it.providers ? ` + ${it.providers} prest.` : ""}
                 </span>
                 {buckets.get(it.id) === "relancer" && !query.trim() ? (
