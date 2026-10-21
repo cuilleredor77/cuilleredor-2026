@@ -235,3 +235,5 @@
 .adm-en { display: grid; gap: 4px; margin-top: 4px; padding: 4px 6px; border-left: 3px solid #1c4a8a; background: #f2f6fc; border-radius: 4px; }
 .adm-en input { font-size: 13px; }
 .adm-en-label { color: #1c4a8a; }
+
+.adm-seg-lang { margin-top: 6px; }

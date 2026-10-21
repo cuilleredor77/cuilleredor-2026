@@ -1,6 +1,6 @@
 // Version anglaise du devis et du contrat : formats (montants, dates, unités) et traduction des libellés du catalogue.
 // Les textes propres à un client (menu, remarque…) se saisissent en anglais dans la fiche (labelEn, detailEn, noteEn…).
-import { formatDateFR, formatEUR, type QuoteLine } from "./quote";
+import { PRICES, firstName, formatDateFR, formatDateShort, formatEUR, isLodgingPending, isTravelPending, lineTotal, round2, type Quote, type QuoteLine, type RequestRow, type Totals } from "./quote";
 
 export type Lang = "fr" | "en";
 
@@ -133,4 +133,99 @@ export function guestsLine(row: { formula: string; adults: number; children: num
   return row.formula === "chef"
     ? `${row.adults} covers`
     : `${row.adults} adults${row.children ? ` + ${row.children} children` : ""}${row.providers ? ` + ${row.providers} vendors` : ""}`;
+}
+
+// ---------- Mails en anglais (même modèle que les mails français) ----------
+
+const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+export const EMAIL_SIGNATURE_EN = `<table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;margin-top:4px"><tr>`
+  + `<td style="padding:0 14px 0 0;border-right:2px solid #c9a227;vertical-align:middle"><img src="https://cuilleredor.fr/logo-cuillere-dor.png" alt="Cuillère d’Or" width="96" style="display:block;width:96px;height:auto"></td>`
+  + `<td style="padding:0 0 0 14px;vertical-align:middle;font-size:13px;line-height:1.5;color:#1a1a1a"><strong>Chef Huguette MVUNDA</strong><br><span style="color:#6b5420">Cuillère d’Or — caterer</span><br>`
+  + `<a href="tel:+33783748971" style="color:#1a1a1a;text-decoration:none">+33 7 83 74 89 71</a> · <a href="mailto:contact@cuilleredor.fr" style="color:#1a1a1a">contact@cuilleredor.fr</a><br>`
+  + `<a href="https://cuilleredor.fr" target="_blank" rel="noopener noreferrer" style="color:#8b6914">cuilleredor.fr</a></td></tr></table>`;
+
+const SIGN_TEXT_EN = ["Kind regards,", "Cuillère d’Or", "", "Chef Huguette MVUNDA — Cuillère d’Or, caterer", "+33 7 83 74 89 71 · contact@cuilleredor.fr · cuilleredor.fr"];
+
+/** Mail de devis en anglais : même structure que charterEmail (intro, récapitulatif, informations, signature). */
+export function charterEmailEn(req: RequestRow, quote: Quote, totals: Totals, link: string, withContract: boolean, unavailable = false): { subject: string; html: string; text: string } {
+  const lang: Lang = "en";
+  const m = (n: number) => money(n, lang);
+  const first = firstName(req.client_name);
+  const dateLong = req.event_date ? dateText(req.event_date, lang) : "";
+  const type = eventTypeText(req.event_type || "event", lang).toLowerCase();
+  const docs = withContract ? "your quote and the catering service agreement" : "your quote";
+  const knownDate = Boolean(req.event_date) && req.event_date >= quote.issuedOn;
+  const subject = `${withContract ? "Your quote and agreement" : "Your quote"} from Cuillère d’Or — ${eventTypeText(req.event_type, lang)}${knownDate ? ` on ${formatDateShort(req.event_date)}` : ""} — ${req.client_name}`;
+  const intro1 = unavailable
+    ? `Thank you for your enquiry about your ${type}${knownDate ? ` on ${dateLong}` : ""}${req.event_place ? ` (${req.event_place})` : ""}. Unfortunately, we are not available on that date. We are nevertheless sending you your quote in case your plans change (another date, another format): please do not hesitate to get back to us.`
+    : knownDate
+    ? `Thank you for your enquiry. We are pleased to confirm our availability for your ${type} on ${dateLong}${req.event_place ? ` (${req.event_place})` : ""}.`
+    : `Thank you for your enquiry about your ${type}${req.event_place ? ` (${req.event_place})` : ""}. We have not received the date of the event: could you let us know? Until we have it, we cannot confirm our availability.`;
+  const intro2 = link ? `You will find ${docs} online, downloadable as a PDF:` : `Please find ${docs} attached as a PDF.`;
+  const rows = quote.lines.map((l) => {
+    const pending = isTravelPending(l) || isLodgingPending(l);
+    const qty = isTravelPending(l) ? `${m(l.price)}/km round trip` : isLodgingPending(l) ? "—" : `${l.qty} ${unitText(l.unit, lang)} × ${m(l.price)}`;
+    return { label: lineLabel(l, lang), qty, total: pending ? "to be quoted" : m(lineTotal(l)) };
+  });
+  const deposit = knownDate ? totals.deposit : round2(totals.total * PRICES.depositRate);
+  const balance = knownDate ? totals.balance : round2(totals.total - deposit);
+  const infos = [
+    `Quote validity: 30 days (until ${dateText(totals.validUntil, lang)}).`,
+    totals.fullAtSignature && knownDate
+      ? `Confirmation: as the event takes place in less than two months, the booking will be confirmed upon signature${withContract ? " of the agreement" : ""} and payment in full, i.e. ${m(totals.total)}.`
+      : `Confirmation: the booking will be confirmed upon signature${withContract ? " of the agreement" : " of the quote"} and payment of a 30% deposit, i.e. ${m(deposit)}. The remaining balance of ${m(balance)} is payable ${totals.balanceDue && knownDate ? `no later than ${dateText(totals.balanceDue, lang)}` : "no later than two months before the event"}.`,
+    !totals.caution ? "" : `Security deposit: ${m(totals.caution)}, payable ${totals.fullAtSignature && knownDate ? "upon signature" : `with the balance${totals.balanceDue && knownDate ? `, no later than ${dateText(totals.balanceDue, lang)}` : ""}`}, to cover any delay. It is not part of the price and is refunded if no delay occurs.`,
+    withContract ? "Payment by bank transfer: the bank details are included in the agreement." : "",
+  ].filter(Boolean);
+  const reread = withContract ? "Please read and check the quote and the agreement carefully before signing them." : "Please read and check the quote carefully before signing it.";
+  const discover = "Discover our world and all our packages on our website, and browse our online catalogue to compose your menu:";
+  const td = "padding:11px 14px;border-bottom:1px solid #e6dccb;font-size:14px";
+  const table = `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:8px 0 18px;font-family:Arial,Helvetica,sans-serif">`
+    + `<tr style="background:#0f1a14"><th style="padding:12px 14px;text-align:left;color:#c9a227;font-size:14px">Service</th><th style="padding:12px 14px;text-align:center;color:#c9a227;font-size:14px">Qty</th><th style="padding:12px 14px;text-align:right;color:#c9a227;font-size:14px">Total</th></tr>`
+    + rows.map((r, i) => `<tr style="background:${i % 2 ? "#ffffff" : "#f6efe4"}"><td style="${td}">${esc(r.label)}</td><td style="${td};text-align:center;white-space:nowrap">${esc(r.qty)}</td><td style="${td};text-align:right;white-space:nowrap">${esc(r.total)}</td></tr>`).join("")
+    + `<tr style="background:#0f1a14"><td colspan="2" style="padding:13px 14px;color:#ffffff;font-weight:bold;font-size:15px">TOTAL</td><td style="padding:13px 14px;text-align:right;color:#c9a227;font-weight:bold;font-size:15px;white-space:nowrap">${esc(m(totals.total))}</td></tr></table>`;
+  const bold = (t: string) => esc(t).replace(/(€[\d,]+\.\d\d)/g, "<strong>$1</strong>").replace(/(no later than )([^,.]+(?:, \d{4})?)/, "$1<strong>$2</strong>");
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#1a1a1a;max-width:680px">`
+    + `<p>Hello ${esc(first)},</p><p>${esc(intro1)}</p>`
+    + (link ? `<p>${esc(intro2)} <a href="${link}" target="_blank" rel="noopener noreferrer">${withContract ? "view my quote and agreement" : "view my quote"}</a></p>` : `<p>${esc(intro2)}</p>`)
+    + `<p>Here is a summary of your quote:</p>${table}`
+    + `<p style="margin:0 0 6px"><strong>Additional information:</strong></p>`
+    + `<ul style="margin:0 0 16px;padding-left:22px">${infos.map((t) => `<li style="margin-bottom:4px">${bold(t)}</li>`).join("")}</ul>`
+    + `<p>${esc(reread)}</p>`
+    + `<p>${esc(discover)} <a href="https://cuilleredor.fr" target="_blank" rel="noopener noreferrer">cuilleredor.fr</a> · <a href="https://catalogue.cuilleredor.fr" target="_blank" rel="noopener noreferrer">online catalogue</a></p>`
+    + `<p>I remain at your entire disposal for any question or adjustment.</p>`
+    + `<p style="margin:18px 0 0">Kind regards,</p><p style="margin:2px 0 22px"><strong>Cuillère d’Or</strong></p>${EMAIL_SIGNATURE_EN}</div>`;
+  const text = [
+    `Hello ${first},`, "", intro1, "", link ? `${intro2} ${link}` : intro2, "",
+    "Here is a summary of your quote:",
+    ...rows.map((r) => `- ${r.label}: ${r.qty} = ${r.total}`),
+    `TOTAL: ${m(totals.total)}`, "",
+    "Additional information:", ...infos.map((t) => `- ${t}`), "",
+    reread, "",
+    `${discover} https://cuilleredor.fr · online catalogue: https://catalogue.cuilleredor.fr`, "",
+    "I remain at your entire disposal for any question or adjustment.", "",
+    ...SIGN_TEXT_EN,
+  ].join("\n");
+  return { subject, html, text };
+}
+
+/** Réponse négative en anglais (date indisponible). */
+export function unavailableEmailEn(req: RequestRow): { subject: string; html: string; text: string } {
+  const lang: Lang = "en";
+  const first = firstName(req.client_name);
+  const type = eventTypeText(req.event_type || "event", lang).toLowerCase();
+  const when = req.event_date ? ` on ${dateText(req.event_date, lang)}` : "";
+  const subject = `Your Cuillère d’Or enquiry — ${eventTypeText(req.event_type, lang)}${req.event_date ? ` on ${formatDateShort(req.event_date)}` : ""} — ${req.client_name}`;
+  const paras = [
+    "Thank you for your enquiry and for your interest in Cuillère d’Or.",
+    `Unfortunately, we are not available for your ${type}${when} and will therefore not be able to cater for it.`,
+    "If your date is flexible, please feel free to suggest another one: we would be delighted to prepare a quote for you.",
+    "We wish you a wonderful celebration.",
+  ];
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#1a1a1a;max-width:680px">`
+    + `<p>Hello ${esc(first)},</p>${paras.map((t) => `<p>${esc(t)}</p>`).join("")}`
+    + `<p style="margin:18px 0 0">Kind regards,</p><p style="margin:2px 0 22px"><strong>Cuillère d’Or</strong></p>${EMAIL_SIGNATURE_EN}</div>`;
+  const text = [`Hello ${first},`, "", ...paras.flatMap((t) => [t, ""]), ...SIGN_TEXT_EN].join("\n");
+  return { subject, html, text };
 }

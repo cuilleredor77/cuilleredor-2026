@@ -6,7 +6,7 @@ import {
   FORMULAS, FORMULA_KEYS, OPTION_PRESETS, mariagesNetReply, honorWineLines, isHonorWineLine, travelLast, isIncluded, withGroup, groupOrder, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
   formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, amendmentChanges, parseSignature, twoDayQuote, paidTotal, type Payment, parseSnapshot, snapshotOf, type Amendment, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
-import { autoEn } from "../../../lib/devis-en";
+import { autoEn, charterEmailEn, unavailableEmailEn } from "../../../lib/devis-en";
 
 const STATUS: Array<[string, string]> = [
   ["nouvelle", "Nouvelle"], ["en_cours", "En cours"], ["devis_pret", "Devis prêt"], ["envoye", "Envoyé"],
@@ -71,6 +71,8 @@ export default function Editor() {
   const [mnet, setMnet] = useState(false);
   // Version du mail modifiée à la main dans l’aperçu (null = modèle proposé).
   const [edited, setEdited] = useState<{ subject: string; html: string; text: string } | null>(null);
+  // Langue du mail au client (et du lien vers le devis).
+  const [mailLang, setMailLang] = useState<"fr" | "en">("fr");
   const [agendaStatus, setAgendaStatus] = useState<"" | "loading" | "off" | "error" | "ok">("");
   const eventDate = req?.event_date || "";
   useEffect(() => {
@@ -244,7 +246,7 @@ export default function Editor() {
     if (!confirm(`Envoyer le devis à ${req!.client_email} ${warn} ?`)) return;
     setBusy(true); setMsg("");
     const attachments = files.map(({ filename, content }) => ({ filename, content }));
-    const res = await fetch(`/api/admin/requests/${id}/send`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ withContract, attachments, unavailable: unavailableQuote, custom: edited }) });
+    const res = await fetch(`/api/admin/requests/${id}/send`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ withContract, attachments, unavailable: unavailableQuote, custom: edited, lang: mailLang }) });
     const data = await res.json();
     setBusy(false);
     if (!res.ok) { setMsg(data.error || "Envoi impossible."); return; }
@@ -265,8 +267,12 @@ export default function Editor() {
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const fullLink = `${origin}/devis/${req.token}`;
   const quoteLink = `${fullLink}?doc=devis`;
-  const link = withContract ? fullLink : quoteLink;
-  const model = mnet ? mariagesNetReply(req) : negative ? unavailableEmail(req) : charterEmail(req, quote, totals, "", withContract, unavailableQuote);
+  const en = mailLang === "en" && !mnet;
+  const link = `${withContract ? fullLink : quoteLink}${en ? `${withContract ? "?" : "&"}lang=en` : ""}`;
+  const model = mnet ? mariagesNetReply(req)
+    : negative ? (en ? unavailableEmailEn(req) : unavailableEmail(req))
+    : en ? charterEmailEn(req, quote, totals, "", withContract, unavailableQuote)
+    : charterEmail(req, quote, totals, "", withContract, unavailableQuote);
   const mnetUrl = req.internal_notes.match(/Répondre : (https:\/\/\S+)/)?.[1] || "";
   const { subject, html, text } = edited ?? model;
   // Gmail ne reçoit que l’objet par l’adresse : le corps mis en forme se colle (Cmd+V) après « Copier l’e-mail mis en forme ».
@@ -620,6 +626,12 @@ export default function Editor() {
               <button className={!mnet && unavailableQuote ? "on" : ""} onClick={() => { setMnet(false); setNegative(false); setUnavailableQuote(true); setWithContract(false); setCopied(""); }}>Indispo + devis</button>
               <button className={!mnet && negative ? "on" : ""} onClick={() => { setMnet(false); setNegative(true); setUnavailableQuote(false); setCopied(""); }}>Indisponible</button>
             </div>
+            {mnet ? null : (
+              <div className="adm-seg adm-seg-lang" role="group" aria-label="Langue du mail">
+                <button className={mailLang === "fr" ? "on" : ""} onClick={() => { setMailLang("fr"); setCopied(""); }}>🇫🇷 Français</button>
+                <button className={mailLang === "en" ? "on" : ""} onClick={() => { setMailLang("en"); setCopied(""); }}>🇬🇧 English</button>
+              </div>
+            )}
             <p><b>À :</b> {req.client_email || <em>(adresse manquante)</em>}</p>
             <MailEditor model={model} edited={edited} onChange={setEdited} />
             {copied ? <p className="adm-note">{copied}</p> : null}
