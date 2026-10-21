@@ -264,12 +264,16 @@ export default function QuoteDocument({ row, quoteOnly = false, lang = "fr" }: {
               </Fragment>
             ))}
           </tbody>
+          {variants.length ? (
+            <tfoot>
+              <tr className="dv-total-var">
+                <td colSpan={4}>{en ? "TOTAL" : "TOTAL PRESTATIONS"}</td>
+                {variants.map((n, i) => <td key={n} className="r"><small>{n} {en ? "guests" : "couverts"}</small>{m(vTotals[i].total)}</td>)}
+              </tr>
+            </tfoot>
+          ) : null}
         </table>
-        {variants.length ? (
-          <div className="dv-totalbar dv-totalbar-var">
-            {variants.map((n, i) => <div key={n}><span>{en ? `TOTAL — ${n} GUESTS` : `TOTAL — ${n} COUVERTS`}</span><span>{m(vTotals[i].total)}</span></div>)}
-          </div>
-        ) : <div className="dv-totalbar"><span>{en ? "TOTAL" : "TOTAL PRESTATIONS"}</span><span>{m(totals.total)}</span></div>}
+        {variants.length ? null : <div className="dv-totalbar"><span>{en ? "TOTAL" : "TOTAL PRESTATIONS"}</span><span>{m(totals.total)}</span></div>}
 
         <p className="dv-conditions"><b>{en ? "Payment terms" : "Conditions de règlement"}</b></p>
         {quote.payments?.length ? null : <ScheduleCards rows={scheduleRows(totals, lang)} caution={totals.caution} cautionDue={cautionDue(totals, lang)} lang={lang} />}
