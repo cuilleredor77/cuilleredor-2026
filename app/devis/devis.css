@@ -257,3 +257,6 @@
   .dv-paycard b { font-size: 14px; }
   .dv-fineprint { font-size: 10.5px; margin: 3px 0 6px; }
 }
+
+/* Contrat : sous-parties des articles (3.1 – Horaires…) en gras */
+.dv-contract h4 { font-weight: 700; color: #1a1a1a; }
