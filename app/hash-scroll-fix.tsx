@@ -28,6 +28,10 @@ export default function HashScrollFix() {
       if (target?.closest(".mobile-menu nav a") || !target?.closest(".mobile-menu")) menu.open = false;
     };
     document.addEventListener("click", closeMobileMenu);
+    // Mobile : catégories du menu (viandes, poissons…) refermées pour raccourcir la page.
+    if (window.matchMedia("(max-width: 720px)").matches) {
+      document.querySelectorAll<HTMLDetailsElement>("details.formula-menu-category-flat").forEach((d) => { d.open = false; });
+    }
     schedule();
     window.addEventListener("load", schedule);
     window.addEventListener("hashchange", schedule);

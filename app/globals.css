@@ -7228,3 +7228,41 @@ html[data-selected-formula] .formula-menu-list>details[open]{display:block;anima
 }
 .hero-image picture { display: contents; }
 @media (max-width: 720px) { .hero .hero-image img { object-position: 72% center; } }
+
+/* ---------- Relecture du site (21/10/2026) ---------- */
+/* Catégories du menu : volets (fermés sur mobile, toujours ouverts sur ordinateur). */
+details.formula-menu-category-flat > summary { list-style: none; }
+details.formula-menu-category-flat > summary::-webkit-details-marker { display: none; }
+@media (min-width: 721px) {
+  details.formula-menu-category-flat > summary { pointer-events: none; }
+}
+@media (max-width: 720px) {
+  details.formula-menu-category-flat > summary { cursor: pointer; display: flex; align-items: center; justify-content: space-between; min-height: 44px; }
+  details.formula-menu-category-flat > summary h4 { margin: 0; }
+  details.formula-menu-category-flat > summary::after { content: "+"; font-size: 1.3rem; line-height: 1; color: #c5a059; }
+  details.formula-menu-category-flat[open] > summary::after { content: "–"; }
+
+  /* Formules : bandeau à faire défiler du doigt au lieu de 4 rangées. */
+  .offers.offers-picker {
+    display: flex !important;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 12px;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .offers.offers-picker::-webkit-scrollbar { display: none; }
+  .offers.offers-picker .offer-card { flex: 0 0 62%; scroll-snap-align: start; }
+  .offers.offers-picker { scroll-padding-left: 20px; }
+  .offers.offers-picker .offer-card:first-of-type { margin-left: 20px; }
+  .offers.offers-picker .offer-card:last-of-type { margin-right: 20px; }
+}
+/* Catalogue : liens secondaires sur une ligne lisible. */
+.catalogue-preview-note a { text-underline-offset: 3px; }
+/* Contact : fond uni, délai de réponse. */
+.contact { background: #f4f2ed !important; background-image: none !important; }
+.contact::before, .contact::after { display: none !important; }
+.contact address .contact-delay { margin: 6px 0 0; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.14); color: #d4af37 !important; font-size: 0.92rem; font-weight: 600; opacity: 1; }

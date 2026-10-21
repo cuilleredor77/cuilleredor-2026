@@ -98,14 +98,15 @@ function MenuCategory({
   keyPrefix: string;
 }) {
   return (
-    <div className="formula-menu-category-flat">
-      <h4>{category.title}</h4>
+    // Volet ouvert sur ordinateur ; refermé sur mobile (voir hash-scroll-fix) pour raccourcir la page.
+    <details className="formula-menu-category-flat" open>
+      <summary><h4>{category.title}</h4></summary>
       <ul>
         {category.items.map((item) => (
           <li key={`${keyPrefix}-${item}`}>{item}</li>
         ))}
       </ul>
-    </div>
+    </details>
   );
 }
 
@@ -771,7 +772,7 @@ export default function Home() {
 
       <section className="intro section-pad">
         <div>
-          <p className="eyebrow dark">01 — Formules & menus</p>
+          <p className="eyebrow dark">Formules & menus</p>
           <h2>
             Comment vos invités
             <br />
@@ -780,26 +781,14 @@ export default function Home() {
         </div>
         <div className="intro-copy">
           <p>
-            Choisissez le style de réception et découvrez son menu, puis
-            estimez votre événement : le devis personnalisé par e-mail vous
-            est proposé juste après.
+            Choisissez le style de réception : son menu s’ouvre juste en
+            dessous. Estimez ensuite votre événement, le devis personnalisé
+            vous est envoyé par e-mail.
           </p>
-          <ol className="journey-steps">
-            <li className="active">
-              <span>01</span>Choisir
-            </li>
-            <li>
-              <span>02</span>Estimer & recevoir le devis
-            </li>
-          </ol>
         </div>
       </section>
 
       <section className="offers offers-picker" id="formules">
-        <p className="offers-picker-hint">
-          La carte de notre traiteur à Brunoy, formule par formule. Cliquez sur
-          une formule&nbsp;: son menu s’ouvre juste en dessous.
-        </p>
         {offers.map((offer) => (
           <a
             className="offer-card"
@@ -1185,7 +1174,7 @@ export default function Home() {
 
       <section className="pricing section-pad" id="tarifs">
         <div className="pricing-heading">
-          <p className="eyebrow dark">02 — Estimez votre événement</p>
+          <p className="eyebrow dark">Estimez votre événement</p>
           <p className="pricing-help">
             <Phone size={17} aria-hidden="true" />
             <span>
@@ -1194,8 +1183,8 @@ export default function Home() {
             </span>
           </p>
         </div>
-        <PricingGrids />
         <PricingCalculator />
+        <PricingGrids />
         <div className="quote-inline" id="devis">
           <QuoteChooser formUrl={QUOTE_FORM} />
         </div>
@@ -1220,41 +1209,18 @@ export default function Home() {
             </a>
             <a
               className="button button-dark"
-              href="https://catalogue.cuilleredor.fr"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Choisir mes plats
-            </a>
-            <a
-              className="button button-dark"
-              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf?v=6"
+              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf?v=20"
               download
             >
               Télécharger le PDF
             </a>
           </div>
           <p className="catalogue-preview-note">
-            Disponible en français et en anglais (bouton FR / EN dans le
-            catalogue en ligne) ·{" "}
-            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf?v=6" download>
-              PDF English
-            </a>
-            <br />
-            Pour imprimer :{" "}
-            <a
-              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR-HD-impression.pdf?v=6"
-              download
-            >
-              PDF haute définition (18 Mo)
-            </a>{" "}
-            ·{" "}
-            <a
-              href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN-HD-print.pdf?v=6"
-              download
-            >
-              English HD
-            </a>
+            <a href="https://catalogue.cuilleredor.fr" target="_blank" rel="noreferrer">Choisir mes plats en ligne</a>
+            {" · "}
+            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf?v=20" download>English PDF</a>
+            {" · "}
+            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR-HD-impression.pdf?v=20" download>Haute définition pour imprimer (18 Mo)</a>
           </p>
         </div>
         <a
@@ -1388,6 +1354,7 @@ export default function Home() {
               Vert-Saint-Denis
             </span>
           </span>
+          <p className="contact-delay">Réponse sous 48 h, devis compris.</p>
         </address>
       </section>
 
@@ -1423,7 +1390,7 @@ export default function Home() {
             Recevoir mon devis <ArrowRight size={16} />
           </a>
           <nav className="footer-legal" aria-label="Informations légales">
-            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf?v=6">Catalogue PDF</a>
+            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf?v=20">Catalogue PDF</a>
             <a href="/mentions-legales">Mentions légales</a>
             <a href="/politique-confidentialite">Confidentialité</a>
           </nav>
