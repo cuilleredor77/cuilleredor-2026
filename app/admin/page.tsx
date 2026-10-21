@@ -176,7 +176,7 @@ export default function AdminHome() {
         </label>
         <label>Événement du <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></label>
         <label>au <input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></label>
-        <button type="button" className={`adm-chip ${offOnly ? "on" : ""}`} onClick={() => setOffOnly(!offOnly)}>⛔ Pendant un OFF</button>
+        <button type="button" className={`adm-chip ${offOnly ? "on" : ""}`} onClick={() => setOffOnly(!offOnly)}>⛔ OFF ou date complète</button>
         {dateFilter ? <button type="button" className="adm-linkbtn" onClick={() => { setFrom(""); setTo(""); setOffOnly(false); }}>Effacer les dates</button> : null}
       </div>
       </details>
@@ -201,7 +201,7 @@ export default function AdminHome() {
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (it.replyUrl) window.open(it.replyUrl, "_blank", "noopener"); }}
                     >💍 Mariages.net{it.replyUrl ? " ↗" : ""}</span>
                   ) : null}
-                  {offPeriod(it.eventDate) ? <span className="adm-off" title="Huguette est OFF à cette date">⛔ OFF</span> : null}
+                  {offPeriod(it.eventDate) ? <span className="adm-off" title={offPeriod(it.eventDate)!.label}>⛔ {offPeriod(it.eventDate)!.full ? "COMPLET" : "OFF"}</span> : null}
                   <strong>{it.name || "Sans nom"}</strong> — {it.eventType} · {it.eventDate ? formatDateShort(it.eventDate) : "date ?"} · {it.place || "lieu ?"}
                 </span>
                 <b className="adm-total">{formatEUR(it.total)}</b>

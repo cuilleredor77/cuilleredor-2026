@@ -599,7 +599,9 @@ export function quoteAlerts(req: RequestRow, quote: Quote, totals: Totals): stri
   const off = offPeriod(req.event_date);
   if ((req.km || 0) > LODGING_FROM_KM && !quote.lines.some((l) => /logement/i.test(l.label))) out.push(`Lieu à ${req.km} km aller-retour (plus de ${LODGING_FROM_KM} km) : pense aux frais de logement de l’équipe.`);
   if (quote.lines.some(isLodgingPending)) out.push("Frais de logement à chiffrer : saisis le montant dans la ligne « Frais de logement ».");
-  if (off) out.push(`⛔ Huguette est OFF ce jour-là (${off.label}) : répondre avec « Indisponible » ou « Indispo + devis ».`);
+  if (off) out.push(off.full
+    ? `⛔ Date complète — ${off.label} : répondre avec « Indisponible » ou « Indispo + devis ».`
+    : `⛔ Huguette est OFF ce jour-là (${off.label}) : répondre avec « Indisponible » ou « Indispo + devis ».`);
   const key: FormulaKey = isFormulaKey(req.formula) ? req.formula : "buffet";
   if (!req.client_email) out.push("E-mail du client manquant.");
   if (!req.event_date) out.push("Date de l’événement manquante : le mail demande la date et ne confirme pas la disponibilité.");
@@ -845,11 +847,14 @@ export function brunchNextDay(message: string, adults: number): QuoteLine | null
 }
 
 // Périodes OFF d’Huguette (dates incluses). Les demandes à ces dates reçoivent une réponse négative.
-export const OFF_PERIODS: Array<{ from: string; to: string; label: string }> = [
+// Dates complètes (déjà 3 événements ou plus, ou « plus de dispo ») : même traitement, badge « COMPLET ».
+export const OFF_PERIODS: Array<{ from: string; to: string; label: string; full?: boolean }> = [
   { from: "2027-08-21", to: "2027-09-01", label: "OFF du 21/08 au 01/09/2027" },
+  { from: "2027-05-29", to: "2027-05-29", full: true, label: "COMPLET le 29/05/2027 : 5 événements (mariages Matabishi-Ratsimbazafy 230 pers., Flegny-Seguy jour 1 86 pers., Marsile-Cochini 100 pers., séminaire JEFE Productions) + « OFF – Plus de dispo »" },
+  { from: "2027-08-07", to: "2027-08-07", full: true, label: "COMPLET le 07/08/2027 : 3 mariages (Dominguez 135 pers., Natadjou 76 pers. en attente d’acompte, Gautier Marine 80 + 10 pers. à suivre)" },
 ];
 
-export function offPeriod(date: string): { from: string; to: string; label: string } | null {
+export function offPeriod(date: string): { from: string; to: string; label: string; full?: boolean } | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date || "")) return null;
   return OFF_PERIODS.find((p) => date >= p.from && date <= p.to) || null;
 }
