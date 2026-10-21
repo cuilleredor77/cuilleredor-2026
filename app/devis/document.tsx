@@ -84,14 +84,23 @@ export function PaymentSchedule({ rows, payments = [], caution, cautionDue }: { 
   );
 }
 
-/** Échéances d’un devis pas encore réglé : lignes de la liste « Conditions » (plus compact qu’un tableau). */
-export function ScheduleItems({ rows, caution, cautionDue }: { rows: ScheduleRow[]; caution: number; cautionDue: string }) {
-  const lower = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
+/** Échéances d’un devis pas encore réglé : un encadré par paiement, la caution à part (hors prix). */
+export function ScheduleCards({ rows, caution, cautionDue }: { rows: ScheduleRow[]; caution: number; cautionDue: string }) {
   return (
-    <>
-      {rows.map((r) => <li key={r.label}><b>{r.label}</b><span>{formatEUR(r.amount)} — {lower(r.due)}</span></li>)}
-      <li><b>Caution</b><span>{formatEUR(caution)} — {lower(cautionDue)} · hors prix, restituée si aucun retard</span></li>
-    </>
+    <div className="dv-paycards">
+      {rows.map((r) => (
+        <div key={r.label} className="dv-paycard">
+          <small>{r.label}</small>
+          <b>{formatEUR(r.amount)}</b>
+          <span>{r.due}</span>
+        </div>
+      ))}
+      <div className="dv-paycard dv-paycard-caution">
+        <small>Caution · hors prix</small>
+        <b>{formatEUR(caution)}</b>
+        <span>{cautionDue} · restituée si aucun retard</span>
+      </div>
+    </div>
   );
 }
 
@@ -189,14 +198,14 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         </table>
         <div className="dv-totalbar"><span>TOTAL PRESTATIONS</span><span>{formatEUR(totals.total)}</span></div>
 
-        <p className="dv-conditions"><b>Conditions</b></p>
-        <ul className="dv-terms">
-          {quote.payments?.length ? null : <ScheduleItems rows={scheduleRows(totals)} caution={totals.caution} cautionDue={cautionDue(totals)} />}
-          <li><b>Validité</b><span>30 jours (jusqu’au {formatDateFR(totals.validUntil)}) · tarifs et date garantis après signature et {totals.fullAtSignature ? "règlement" : "acompte"}</span></li>
-          <li><b>Catalogue</b><span>Formules, menus et services complémentaires : <a href="https://catalogue.cuilleredor.fr/" target="_blank" rel="noopener noreferrer">catalogue.cuilleredor.fr</a></span></li>
-          {quote.note ? <li><b>Remarque</b><span>{quote.note}</span></li> : null}
-        </ul>
+        <p className="dv-conditions"><b>Conditions de règlement</b></p>
+        {quote.payments?.length ? null : <ScheduleCards rows={scheduleRows(totals)} caution={totals.caution} cautionDue={cautionDue(totals)} />}
         {quote.payments?.length ? <PaymentSchedule rows={scheduleRows(totals)} payments={quote.payments} caution={totals.caution} cautionDue={cautionDue(totals)} /> : null}
+        <p className="dv-fineprint">
+          <b>Validité :</b> 30 jours, jusqu’au {formatDateFR(totals.validUntil)} — tarifs et date garantis après signature et {totals.fullAtSignature ? "règlement" : "acompte"}.
+          {" "}<b>Catalogue :</b> formules, menus et services sur <a href="https://catalogue.cuilleredor.fr/" target="_blank" rel="noopener noreferrer">catalogue.cuilleredor.fr</a>.
+          {quote.note ? <><br /><b>Remarque :</b> {quote.note}</> : null}
+        </p>
 
         <div className="dv-sign">
           <div>
