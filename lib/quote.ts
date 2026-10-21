@@ -127,6 +127,7 @@ export type Quote = {
   includeComplementary: boolean; // page « Services complémentaires »
   balanceDue?: string; // AAAA-MM-JJ : échéance du solde fixée à la main (sinon 2 mois avant l’événement)
   payments?: Payment[]; // règlements reçus (acompte, solde, caution…)
+  noCaution?: boolean; // caution retirée à la main pour ce devis
 };
 
 /** Règlement reçu : date de réception et date à laquelle la réception a été confirmée au client. */
@@ -514,7 +515,7 @@ export function computeTotals(quote: Quote, eventDate: string, serviceMode = "se
     balanceDue: fullAtSignature || !eventDate ? "" : quote.balanceDue || nextWorkingDay(addMonths(eventDate, -2)),
     fullAtSignature,
     validUntil: addDays(quote.issuedOn, PRICES.validDays),
-    caution: serviceMode === "livraison" || serviceMode === "emporter" ? 0 : PRICES.caution,
+    caution: quote.noCaution || serviceMode === "livraison" || serviceMode === "emporter" ? 0 : PRICES.caution,
   };
 }
 

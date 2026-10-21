@@ -508,6 +508,7 @@ export default function Editor() {
             <div className="adm-grid">
               <label>Date d’émission<input type="date" value={quote.issuedOn} onChange={(e) => setQ({ issuedOn: e.target.value })} /></label>
               <label>Solde dû le (vide = 2 mois avant)<input type="date" value={quote.balanceDue || ""} onChange={(e) => setQ({ balanceDue: e.target.value || undefined })} /></label>
+              <label className="chk"><input type="checkbox" checked={!quote.noCaution && req.service_mode !== "livraison" && req.service_mode !== "emporter"} disabled={req.service_mode === "livraison" || req.service_mode === "emporter"} onChange={(e) => setQ({ noCaution: !e.target.checked || undefined })} /> Caution de 250 € {req.service_mode === "livraison" || req.service_mode === "emporter" ? "(jamais pour une livraison ou une vente à emporter)" : "(décocher pour la retirer de ce devis)"}</label>
               <label className="chk"><input type="checkbox" checked={quote.includeComplementary} onChange={(e) => setQ({ includeComplementary: e.target.checked })} /> Joindre la page « Services complémentaires »</label>
               <label className="wide">Prestation souhaitée<input value={quote.summary} onChange={(e) => setQ({ summary: e.target.value })} /></label>
               <label className="wide">Options / remarques<textarea rows={2} value={quote.remarks} onChange={(e) => setQ({ remarks: e.target.value })} /></label>
@@ -523,7 +524,7 @@ export default function Editor() {
             <div><dt>{totals.fullAtSignature ? "À la signature (100 %)" : "Acompte (30 %)"}</dt><dd>{formatEUR(totals.deposit)}</dd></div>
             {!totals.fullAtSignature ? <div><dt>Solde (70 %)</dt><dd>{formatEUR(totals.balance)}</dd></div> : null}
             {!totals.fullAtSignature && totals.balanceDue ? <div><dt>Solde dû le</dt><dd>{formatDateFR(totals.balanceDue)}</dd></div> : null}
-            <div><dt>Caution</dt><dd>{totals.caution ? formatEUR(totals.caution) : "aucune (sans service)"}</dd></div>
+            <div><dt>Caution</dt><dd>{totals.caution ? formatEUR(totals.caution) : "aucune"}</dd></div>
             <div><dt>Valable jusqu’au</dt><dd>{formatDateFR(totals.validUntil)}</dd></div>
           </dl>
           <div className="adm-pay">
