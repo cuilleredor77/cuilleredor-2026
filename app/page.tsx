@@ -613,9 +613,10 @@ export default function Home() {
           />
         </a>
         <nav className="desktop-nav" aria-label="Navigation principale">
-          <a href="#formules">1. Formules & menus</a>
-          <a href="#calculateur">2. Estimation & devis</a>
+          <a href="#formules">Formules</a>
+          <a href="#calculateur">Tarifs</a>
           <a href="#feuilleter">Catalogue</a>
+          <a href="#contact">Contact</a>
         </nav>
         <a className="header-cta" href="#calculateur">
           <span className="header-cta-long">Estimer mon événement</span>
@@ -628,23 +629,28 @@ export default function Home() {
             <span className="mobile-menu-label">Menu</span>
           </summary>
           <nav>
-            <a href="#formules">1. Formules & menus</a>
-            <a href="#calculateur">2. Estimation & devis</a>
-            <a href="#feuilleter">Feuilleter le catalogue</a>
+            <a href="#formules">Formules</a>
+            <a href="#calculateur">Tarifs & estimation</a>
+            <a href="#feuilleter">Catalogue</a>
+            <a href="#contact">Contact</a>
           </nav>
         </details>
       </header>
 
       <section className="hero" id="accueil">
         <div className="hero-image">
-          <ResponsiveImage
-            base="/plantains"
-            sizes="100vw"
-            width={1200}
-            height={797}
-            alt="Plat de bananes plantains dressé par Cuillère d'Or"
-            loading="eager"
-          />
+          {/* Mobile : photo verticale pour remplir l’écran sans zoom ; ordinateur : plantains. */}
+          <picture>
+            <source media="(max-width: 720px)" srcSet="/hero-plating-900.webp 900w, /hero-plating-1200.webp 1200w" sizes="100vw" />
+            <ResponsiveImage
+              base="/plantains"
+              sizes="100vw"
+              width={1200}
+              height={797}
+              alt="Plat dressé par Cuillère d'Or"
+              loading="eager"
+            />
+          </picture>
         </div>
         <div className="hero-content">
           <p className="eyebrow">Service traiteur · Catalogue 2027 · 2028</p>
@@ -1384,6 +1390,13 @@ export default function Home() {
           </span>
         </address>
       </section>
+
+      {/* Mobile : barre de contact toujours visible (remplace la flèche « remonter »). */}
+      <nav className="mobile-contact-bar" aria-label="Contacter Cuillère d’Or">
+        <a href="#calculateur" className="primary">Estimer</a>
+        <a href="https://wa.me/33783748971" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a href="tel:+33783748971">Appeler</a>
+      </nav>
 
       <div className="floating-actions" aria-label="Actions rapides">
         <a
