@@ -7,6 +7,8 @@ import {
   formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, amendmentChanges, parseSignature, twoDayQuote, paidTotal, type Payment, parseSnapshot, snapshotOf, type Amendment, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 import { autoEn, charterEmailEn, unavailableEmailEn } from "../../../lib/devis-en";
+import type { Invoice } from "../../../lib/invoice";
+import Invoices from "./invoices";
 
 const STATUS: Array<[string, string]> = [
   ["nouvelle", "Nouvelle"], ["en_cours", "En cours"], ["devis_pret", "Devis prêt"], ["envoye", "Envoyé"],
@@ -28,6 +30,7 @@ export default function Editor() {
   const [presetId, setPresetId] = useState("");
   const [amendments, setAmendments] = useState<Amendment[]>([]);
   const [amendReason, setAmendReason] = useState("");
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
   // Textes anglais du devis (version English) : affichés sur demande.
   const [showEn, setShowEn] = useState(false);
 
@@ -35,7 +38,7 @@ export default function Editor() {
     const res = await fetch(`/api/admin/requests/${id}`, { cache: "no-store" });
     if (res.status === 401) { window.location.href = "/admin"; return; }
     const data = await res.json();
-    setReq(data.request); setQuote(data.quote); setDirty(!data.request.quote_json); setSheetFinder(data.sheetFinderUrl || ""); setAmendments(data.amendments || []);
+    setReq(data.request); setQuote(data.quote); setDirty(!data.request.quote_json); setSheetFinder(data.sheetFinderUrl || ""); setAmendments(data.amendments || []); setInvoices(data.invoices || []);
     // Demande Mariages.net : la réponse type est proposée par défaut (pas d’e-mail du client).
     if (data.request.source === "mariages_net") setMnet(true);
     // Ouverture directe de la fenêtre e-mail depuis la page du devis (?mail=1&doc=devis)
@@ -383,6 +386,8 @@ export default function Editor() {
               )}
             </section>
           ) : null}
+
+          <Invoices id={id} token={req.token} invoices={invoices} setInvoices={setInvoices} />
 
           <section className="adm-card">
             <h2>La demande</h2>

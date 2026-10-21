@@ -296,3 +296,7 @@
 .dv-lang a { padding: 6px 12px; color: #f7f4ec; text-decoration: none; font-size: 13px; font-weight: 600; }
 .dv-lang a.on { background: #c9a227; color: #1a1a1a; }
 .dv-langnote { font-size: 11px; color: #666; font-style: italic; margin-top: 10px; }
+/* Facture */
+.dv-lines.dv-inv { table-layout: fixed; }
+.dv-lines.dv-inv td:first-child { white-space: normal; overflow-wrap: anywhere; }
+.dv-inv-detail { font-size: 11.5px; color: #555; margin-top: 3px; white-space: normal; font-weight: 400; }

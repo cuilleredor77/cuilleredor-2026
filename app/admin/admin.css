@@ -237,3 +237,12 @@
 .adm-en-label { color: #1c4a8a; }
 
 .adm-seg-lang { margin-top: 6px; }
+.adm-invoices .adm-inv-new { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.adm-invoices .adm-inv-new .adm-btn { padding: 4px 12px; font-size: 12.5px; min-height: 34px; }
+.adm-inv-edit { margin: 10px 0 14px; padding: 12px; background: #faf6ea; border: 1px solid #e6dcc0; border-radius: 10px; }
+.adm-inv-edit .adm-btn { min-height: 32px; font-size: 12px; margin: 4px 0; }
+.adm-inv-line { display: grid; grid-template-columns: 2fr 2fr 60px 70px 80px 90px 20px; gap: 6px; align-items: center; margin: 4px 0; }
+.adm-inv-line input { min-width: 0; padding: 6px 8px; font-size: 12.5px; }
+.adm-inv-line b { font-size: 12.5px; text-align: right; }
+.adm-inv-ded { grid-template-columns: 1fr 100px 20px; }
+@media (max-width: 720px) { .adm-inv-line { grid-template-columns: 1fr 1fr; } }

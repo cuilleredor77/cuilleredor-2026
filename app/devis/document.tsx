@@ -322,7 +322,7 @@ export default function QuoteDocument({ row, quoteOnly = false, lang = "fr" }: {
 type ContractProps = { row: RequestRow; quote: Quote; totals: Totals; signed: Signature | null; guests: string; eventLong: string; issued: string; note: string };
 
 /** Coordonnées bancaires (Qonto), communes aux deux langues. */
-function BankDetails({ row, lang }: { row: RequestRow; lang: Lang }) {
+export function BankDetails({ row, lang }: { row: RequestRow; lang: Lang }) {
   const en = lang === "en";
   return (
     <div className="dv-rib">

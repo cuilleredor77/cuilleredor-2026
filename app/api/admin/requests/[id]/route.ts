@@ -19,7 +19,8 @@ export async function GET(request: Request, ctx: { params: Promise<{ id: string 
   if (!row) return json({ error: "Demande introuvable" }, { status: 404 });
   const quote = parseQuote(row);
   const amendments = (await db().prepare("SELECT * FROM amendments WHERE request_id = ? ORDER BY number").bind(row.id).all()).results;
-  return json({ request: row, quote, totals: computeTotals(quote, row.event_date, row.service_mode), sheetFinderUrl: setting("GSHEET_FINDER_URL"), amendments });
+  const invoices = (await db().prepare("SELECT * FROM invoices WHERE request_id = ? ORDER BY year, seq").bind(row.id).all()).results;
+  return json({ request: row, quote, totals: computeTotals(quote, row.event_date, row.service_mode), sheetFinderUrl: setting("GSHEET_FINDER_URL"), amendments, invoices });
 }
 
 export async function PUT(request: Request, ctx: { params: Promise<{ id: string }> }) {

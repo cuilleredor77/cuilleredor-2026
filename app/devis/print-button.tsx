@@ -41,3 +41,17 @@ export function AmendmentPrintButton({ fileName }: { fileName: string }) {
     </div>
   );
 }
+
+export function InvoicePrintButton({ fileName, label }: { fileName: string; label: string }) {
+  const print = () => {
+    const previous = document.title;
+    document.title = fileName;
+    window.print();
+    setTimeout(() => { document.title = previous; }, 1500);
+  };
+  return (
+    <div className="dv-print-group">
+      <button type="button" className="dv-print" onClick={print}>{label}</button>
+    </div>
+  );
+}
