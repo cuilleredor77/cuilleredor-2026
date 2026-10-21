@@ -300,3 +300,8 @@
 .dv-lines.dv-inv { table-layout: fixed; }
 .dv-lines.dv-inv td:first-child { white-space: normal; overflow-wrap: anywhere; }
 .dv-inv-detail { font-size: 11.5px; color: #555; margin-top: 3px; white-space: normal; font-weight: 400; }
+/* Variantes de couverts (ex. 210 / 220) */
+.dv-lines th.dv-var { white-space: nowrap; line-height: 1.25; }
+.dv-totalbar-var { display: grid; grid-template-columns: 1fr; gap: 4px; width: 56%; padding: 0; background: none; }
+.dv-totalbar-var > div { display: flex; justify-content: space-between; gap: 24px; background: #8b6914; color: #fff; padding: 7px 14px; }
+@media print { .dv-totalbar-var > div { padding: 4px 12px; } }

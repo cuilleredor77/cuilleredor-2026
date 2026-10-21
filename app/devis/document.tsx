@@ -2,6 +2,10 @@
 import { Fragment } from "react";
 import {
   computeTotals,
+  guestVariants,
+  quoteForGuests,
+  scalesWithGuests,
+  variantBase,
   formatDateShort,
   isTravelPending,
   isIncluded,
@@ -164,13 +168,19 @@ export default function QuoteDocument({ row, quoteOnly = false, lang = "fr" }: {
   const summary = textIn(quote.summary, quote.summaryEn, lang);
   const note = quote.note ? textIn(quote.note, quote.noteEn, lang) : "";
   const totals = computeTotals(quote, row.event_date, row.service_mode);
+  // Variantes de couverts (ex. 210 / 220) : une colonne de total par variante, la base (la plus grande) sert à l’échéancier.
+  const variants = guestVariants(quote);
+  const vBase = variantBase(quote);
+  const vTotals = variants.map((n) => computeTotals(quoteForGuests(quote, n), row.event_date, row.service_mode));
+  const cols = 5 + Math.max(0, variants.length - 1);
   const days = (quote.days || []).map((d) => d.trim()).filter(Boolean);
   // Signature en ligne, affichée seulement sur la version du devis qui a été signée.
   const sig = parseSignature(row);
   const signed = sig && sig.version === row.quote_version ? sig : null;
   const eventLong = row.event_date ? dateText(row.event_date, lang, true) : "";
   const issued = dateText(quote.issuedOn, lang);
-  const guests = guestsLine(row, lang);
+  const guestsBase = guestsLine(row, lang);
+  const guests = variants.length && row.adults === vBase ? guestsBase.replace(String(vBase), `${variants.slice(0, -1).join(", ")} ${en ? "to" : "à"} ${vBase}`) : guestsBase;
   const eventType = eventTypeText(row.event_type, lang);
   const m = (n: number) => money(n, lang);
 
@@ -203,7 +213,7 @@ export default function QuoteDocument({ row, quoteOnly = false, lang = "fr" }: {
 
         <table className="dv-lines">
           <thead>
-            <tr><th>{en ? "Quantity" : "Quantité"}</th><th className="c dv-check" /><th>Description</th><th className="r dv-pu">{en ? "Unit price" : "Prix unitaire"}</th><th className="r">Total</th></tr>
+            <tr><th>{en ? "Quantity" : "Quantité"}</th><th className="c dv-check" /><th>Description</th><th className="r dv-pu">{en ? "Unit price" : "Prix unitaire"}</th>{variants.length ? variants.map((n) => <th key={n} className="r dv-var">Total<br />{n} {en ? "guests" : "couverts"}</th>) : <th className="r">Total</th>}</tr>
           </thead>
           <tbody>
             {(days.length
@@ -222,23 +232,25 @@ export default function QuoteDocument({ row, quoteOnly = false, lang = "fr" }: {
                 ]
             ).filter((sec) => sec.lines.length).map((sec) => (
               <Fragment key={sec.title}>
-                <tr className="dv-band"><td colSpan={5}>{sec.title}</td></tr>
+                <tr className="dv-band"><td colSpan={cols}>{sec.title}</td></tr>
                 {sec.lines.map((line) => {
                   const detail = lineDetail(line, lang);
                   const parts = detail ? detail.split(" · ") : [];
                   return (
                     <Fragment key={line.id}>
                       <tr className={parts.length ? "dv-has-detail" : undefined}>
-                        <td className="c">{isTravelPending(line) || (isLodgingPending(line) && !(line.qty > 0)) ? "—" : `${fmtQty(line.qty, lang)} ${unitText(line.unit, lang)}`}</td>
+                        <td className="c">{isTravelPending(line) || (isLodgingPending(line) && !(line.qty > 0)) ? "—" : scalesWithGuests(line, vBase) ? `${variants.map((n) => fmtQty(n, lang)).join(" / ")} ${unitText(line.unit, lang)}` : `${fmtQty(line.qty, lang)} ${unitText(line.unit, lang)}`}</td>
                         <td className="c dv-check">☑</td>
                         <td>{lineLabel(line, lang)}</td>
                         <td className="r dv-pu">{isLodgingPending(line) ? "—" : `${m(line.price)}${isTravelPending(line) ? "/km" : ""}`}</td>
-                        <td className="r b">{isTravelPending(line) || isLodgingPending(line) ? (en ? "to be quoted" : "à chiffrer") : m(lineTotal(line))}</td>
+                        {(variants.length ? variants : [0]).map((n) => (
+                          <td key={n} className="r b">{isTravelPending(line) || isLodgingPending(line) ? (en ? "to be quoted" : "à chiffrer") : m(lineTotal(n && scalesWithGuests(line, vBase) ? { ...line, qty: n } : line))}</td>
+                        ))}
                       </tr>
                       {groupDetail(parts).map((g, i, all) => (
                         <tr key={i} className={`dv-sub dv-sub-group${i === all.length - 1 ? " dv-sub-last" : ""}`}>
                           <td /><td className="dv-check" />
-                          <td colSpan={3}>
+                          <td colSpan={cols - 2}>
                             {g.title ? <div className="dv-group-title">{g.title}</div> : null}
                             {g.numbered
                               ? <ol className={`dv-cols${g.items.length > 2 ? " dv-cols-2" : ""}`}>{g.items.map((it, k) => <li key={k}>{it}</li>)}</ol>
@@ -253,19 +265,25 @@ export default function QuoteDocument({ row, quoteOnly = false, lang = "fr" }: {
             ))}
           </tbody>
         </table>
-        <div className="dv-totalbar"><span>{en ? "TOTAL" : "TOTAL PRESTATIONS"}</span><span>{m(totals.total)}</span></div>
+        {variants.length ? (
+          <div className="dv-totalbar dv-totalbar-var">
+            {variants.map((n, i) => <div key={n}><span>{en ? `TOTAL — ${n} GUESTS` : `TOTAL — ${n} COUVERTS`}</span><span>{m(vTotals[i].total)}</span></div>)}
+          </div>
+        ) : <div className="dv-totalbar"><span>{en ? "TOTAL" : "TOTAL PRESTATIONS"}</span><span>{m(totals.total)}</span></div>}
 
         <p className="dv-conditions"><b>{en ? "Payment terms" : "Conditions de règlement"}</b></p>
         {quote.payments?.length ? null : <ScheduleCards rows={scheduleRows(totals, lang)} caution={totals.caution} cautionDue={cautionDue(totals, lang)} lang={lang} />}
         {quote.payments?.length ? <PaymentSchedule rows={scheduleRows(totals, lang)} payments={quote.payments} caution={totals.caution} cautionDue={cautionDue(totals, lang)} lang={lang} /> : null}
         {en ? (
           <p className="dv-fineprint">
+            {variants.length > 1 ? <><b>Payment schedule</b> based on {vBase} guests{variants.filter((n) => n !== vBase).map((n) => { const t = vTotals[variants.indexOf(n)]; return <Fragment key={n}>; for {n} guests: {t.fullAtSignature ? `payment of ${m(t.total)}` : `deposit of ${m(t.deposit)}, balance of ${m(t.balance)}`}</Fragment>; })}. The final number of guests is confirmed before the balance.<br /></> : null}
             <b>Validity:</b> 30 days (until {dateText(totals.validUntil, lang)}); prices and date guaranteed upon signature and {totals.fullAtSignature ? "payment" : "deposit"}.
             {" "}<b>Catalogue:</b> <a href="https://catalogue.cuilleredor.fr/" target="_blank" rel="noopener noreferrer">catalogue.cuilleredor.fr</a>.
             {note ? <><br /><b>Note:</b> {note}</> : null}
           </p>
         ) : (
           <p className="dv-fineprint">
+            {variants.length > 1 ? <><b>Échéancier</b> calculé sur {vBase} couverts{variants.filter((n) => n !== vBase).map((n) => { const t = vTotals[variants.indexOf(n)]; return <Fragment key={n}> ; pour {n} couverts : {t.fullAtSignature ? `règlement de ${m(t.total)}` : `acompte de ${m(t.deposit)}, solde de ${m(t.balance)}`}</Fragment>; })}. Le nombre définitif de couverts est confirmé avant le solde.<br /></> : null}
             <b>Validité :</b> 30 jours, jusqu’au {dateText(totals.validUntil, lang)} — tarifs et date garantis après signature et {totals.fullAtSignature ? "règlement" : "acompte"}.
             {" "}<b>Catalogue :</b> formules, menus et services sur <a href="https://catalogue.cuilleredor.fr/" target="_blank" rel="noopener noreferrer">catalogue.cuilleredor.fr</a>.
             {note ? <><br /><b>Remarque :</b> {note}</> : null}

@@ -131,6 +131,7 @@ export type Quote = {
   balanceDue?: string; // AAAA-MM-JJ : échéance du solde fixée à la main (sinon 2 mois avant l’événement)
   payments?: Payment[]; // règlements reçus (acompte, solde, caution…)
   noCaution?: boolean; // caution retirée à la main pour ce devis
+  guestVariants?: number[]; // nombre de couverts à comparer côte à côte (ex. [210, 220]) : une colonne de total par variante
   days?: string[]; // prestation sur plusieurs jours : une section par jour (ex. « MARIAGE (14/05/2027) »)
   summaryEn?: string; // textes du devis en anglais (version English du devis et du contrat)
   remarksEn?: string;
@@ -562,6 +563,23 @@ export type Totals = {
 };
 
 /** Livraison ou vente à emporter : pas de caution (pas d’équipe sur place). */
+/** Variantes de couverts : les lignes par convive (quantité = nombre de couverts de base) suivent la variante. */
+export function guestVariants(quote: Quote): number[] {
+  const v = [...new Set((quote.guestVariants || []).filter((n) => n > 0))].sort((a, b) => a - b);
+  return v.length > 1 ? v : [];
+}
+export function variantBase(quote: Quote): number {
+  return Math.max(...guestVariants(quote), 0);
+}
+const PER_GUEST_UNIT = /^(pers|kit|couvert|unité|enf)/i;
+export function scalesWithGuests(line: QuoteLine, base: number): boolean {
+  return base > 0 && line.qty === base && PER_GUEST_UNIT.test(line.unit);
+}
+export function quoteForGuests(quote: Quote, guests: number): Quote {
+  const base = variantBase(quote);
+  return { ...quote, lines: quote.lines.map((l) => (scalesWithGuests(l, base) ? { ...l, qty: guests } : l)) };
+}
+
 export function computeTotals(quote: Quote, eventDate: string, serviceMode = "service"): Totals {
   const total = round2(quote.lines.reduce((sum, l) => sum + lineTotal(l), 0));
   const days = eventDate ? daysBetween(quote.issuedOn, eventDate) : 999;
