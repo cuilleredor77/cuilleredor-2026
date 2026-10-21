@@ -5,10 +5,11 @@ const ARCHIVE_AFTER_DAYS = 45;
 
 export async function GET(request: Request) {
   if (!(await isAdmin(request))) return json({ error: "Non autorisé" }, { status: 401 });
-  // Archivage automatique : demandes reçues il y a plus de 45 jours, ni signées ni avec acompte.
+  // Archivage automatique : 45 jours sans activité (depuis le dernier envoi ou la dernière relance, sinon la réception),
+  // sauf demandes signées ou avec acompte.
   const limit = new Date(Date.now() - ARCHIVE_AFTER_DAYS * 86_400_000).toISOString();
   await db()
-    .prepare("UPDATE requests SET status = 'archivee', updated_at = ? WHERE created_at < ? AND status NOT IN ('archivee', 'abandonnee', 'signe', 'acompte')")
+    .prepare("UPDATE requests SET status = 'archivee', updated_at = ? WHERE COALESCE(sent_at, created_at) < ? AND status NOT IN ('archivee', 'abandonnee', 'signe', 'acompte')")
     .bind(new Date().toISOString(), limit)
     .run();
   const { results } = await db()

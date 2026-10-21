@@ -22,7 +22,7 @@ const TABS: Array<[string, string, string]> = [
   ["relancer", "À relancer", "Devis envoyé il y a 7 à 45 jours, événement à venir"],
   ["confirmes", "Confirmés", "Contrat signé ou acompte reçu"],
   ["sans_reponse", "Sans réponse", "Devis envoyé il y a plus de 45 jours, sans retour"],
-  ["archives", "Archives", "Événements passés, demandes abandonnées et demandes reçues il y a plus de 45 jours (archivées automatiquement, sauf signées)"],
+  ["archives", "Archives", "Événements passés, demandes abandonnées et demandes sans activité depuis 45 jours (archivées automatiquement : depuis le dernier envoi ou la dernière relance, sinon la réception ; sauf signées)"],
   ["all", "Toutes", "Toutes les demandes"],
 ];
 const QUIET = ["sans_reponse", "archives", "all"];
