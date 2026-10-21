@@ -185,6 +185,8 @@ export type Signature = {
   version: number; // quote_version signée
   total: number;
   hash: string; // SHA-256 du devis signé (quote_json)
+  email?: string; // adresse vérifiée par le code envoyé avant la signature
+  method?: "code-email";
 };
 
 export function parseSignature(row: Pick<RequestRow, "signature_json">): Signature | null {

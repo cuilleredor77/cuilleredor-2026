@@ -9,17 +9,29 @@ export default function SignBox({ token, quoteOnly, clientName, total }: { token
   const [image, setImage] = useState<"" | "accepte" | "refuse">("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  // Étape 2 : code reçu par e-mail (adresse masquée affichée au client).
+  const [sentTo, setSentTo] = useState("");
+  const [code, setCode] = useState("");
   const docs = quoteOnly ? "le devis" : "le devis et le contrat de prestation";
   const ready = accept && name.trim().length >= 3 && (quoteOnly || image !== "");
 
-  async function sign() {
+  async function askCode() {
     if (!ready || busy) return;
-    if (!confirm(`Confirmer la signature de ${docs} (${total}) au nom de « ${name.trim()} » ?`)) return;
+    setBusy(true); setError("");
+    const res = await fetch(`/api/devis/${token}/sign/code`, { method: "POST" });
+    const data = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (!res.ok) { setError(data.error || "Le code n’a pas pu être envoyé. Réessayez ou appelez-nous au 07 83 74 89 71."); return; }
+    setSentTo(data.email); setCode("");
+  }
+
+  async function sign() {
+    if (!ready || busy || code.replace(/\D/g, "").length !== 6) return;
     setBusy(true); setError("");
     const res = await fetch(`/api/devis/${token}/sign`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ name, accept, doc: quoteOnly ? "devis" : "contrat", image: image || undefined }),
+      body: JSON.stringify({ name, accept, doc: quoteOnly ? "devis" : "contrat", image: image || undefined, code }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) { setBusy(false); setError(data.error || "La signature n’a pas pu être enregistrée. Réessayez ou appelez-nous au 07 83 74 89 71."); return; }
@@ -44,9 +56,22 @@ export default function SignBox({ token, quoteOnly, clientName, total }: { token
       <label className="dv-signbox-name">Vos nom et prénom (valant signature)
         <input value={name} placeholder={clientName} autoComplete="name" onChange={(e) => setName(e.target.value)} />
       </label>
-      {error ? <p className="dv-signbox-error">{error}</p> : null}
-      <button type="button" className="dv-print" disabled={!ready || busy} onClick={sign}>{busy ? "Signature…" : "✍️ Signer"}</button>
-      <p className="dv-signbox-legal">Signature électronique simple : vos nom, date, heure et adresse de connexion sont enregistrés comme preuve de votre accord.</p>
+      {sentTo ? (
+        <div className="dv-signbox-code">
+          <label>Code reçu par e-mail à <b>{sentTo}</b> (valable 15 minutes)
+            <input inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="123456" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} />
+          </label>
+          {error ? <p className="dv-signbox-error">{error}</p> : null}
+          <button type="button" className="dv-print" disabled={!ready || busy || code.length !== 6} onClick={sign}>{busy ? "Signature…" : "✍️ Signer"}</button>
+          <button type="button" className="dv-linkbtn" disabled={busy} onClick={askCode}>Je n’ai pas reçu le code : le renvoyer</button>
+        </div>
+      ) : (
+        <>
+          {error ? <p className="dv-signbox-error">{error}</p> : null}
+          <button type="button" className="dv-print" disabled={!ready || busy} onClick={askCode}>{busy ? "Envoi du code…" : "Recevoir mon code de signature par e-mail"}</button>
+        </>
+      )}
+      <p className="dv-signbox-legal">Signature électronique simple : un code est envoyé à votre adresse e-mail pour confirmer votre identité. Vos nom, date, heure et adresse de connexion sont enregistrés comme preuve de votre accord.</p>
     </section>
   );
 }
