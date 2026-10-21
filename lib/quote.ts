@@ -177,8 +177,9 @@ export const lineTotal = (line: QuoteLine) => round2(line.qty * line.price);
 
 /** Déplacement dont la distance n’est pas encore connue : affiché « à chiffrer ». */
 export const isTravelPending = (line: QuoteLine) => /d[ée]placement/i.test(line.label) && !(line.qty > 0);
-/** Frais de logement de l’équipe : ligne « à chiffrer » tant que le prix n’est pas saisi. */
-export const isLodgingPending = (line: QuoteLine) => /logement/i.test(line.label) && !(line.price > 0);
+/** Ligne « à chiffrer » : logement sans prix, ou libellé « à chiffrer » tant que quantité et prix ne sont pas saisis. */
+export const isLodgingPending = (line: QuoteLine) =>
+  (/logement/i.test(line.label) && !(line.price > 0)) || (/à chiffrer/i.test(line.label) && !(line.price > 0 && line.qty > 0));
 export const LODGING_FROM_KM = 350;
 export const LODGING_LINE: QuoteLine = {
   id: "logement",
