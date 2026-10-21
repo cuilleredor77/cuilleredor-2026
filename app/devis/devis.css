@@ -170,3 +170,7 @@
 /* Le site impose une largeur minimale aux tableaux : on la retire dans le devis */
 .dv-page table { min-width: 0; }
 .dv-remarks { white-space: pre-line; }
+
+/* Avenant : tableau des modifications */
+.dv-amend td { font-size: 12.5px; }
+.dv-amend .dv-kind { white-space: nowrap; font-weight: 700; color: #6b5420; }

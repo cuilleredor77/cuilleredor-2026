@@ -187,3 +187,11 @@
 /* Actions rapides sur une demande à relire : déjà répondu / archiver */
 .adm-quick { justify-self: end; display: flex; gap: 6px; }
 .adm-quick .adm-btn { padding: 4px 10px; font-size: 12px; }
+
+/* Avenants d’un devis signé */
+.adm-amend { border-color: #b8932a; }
+.adm-amend-list, .adm-amend-changes { margin: 6px 0 10px; padding-left: 18px; font-size: 13.5px; }
+.adm-amend-list li { margin: 3px 0; }
+.adm-amend-changes li { margin: 2px 0; }
+.adm-amend label { display: grid; gap: 4px; margin: 8px 0; font-size: 13px; }
+.adm-linkbtn { margin-left: 8px; background: none; border: 0; color: #a33; text-decoration: underline; cursor: pointer; font-size: 12px; }

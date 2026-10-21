@@ -4,7 +4,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { useParams } from "next/navigation";
 import {
   FORMULAS, FORMULA_KEYS, OPTION_PRESETS, mariagesNetReply, honorWineLines, isHonorWineLine, travelLast, isIncluded, withGroup, groupOrder, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
-  formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
+  formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, amendmentChanges, parseSnapshot, snapshotOf, type Amendment, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
 const STATUS: Array<[string, string]> = [
@@ -25,12 +25,14 @@ export default function Editor() {
   const [sheetFinder, setSheetFinder] = useState("");
   const [files, setFiles] = useState<{ filename: string; content: string; size: number }[]>([]);
   const [presetId, setPresetId] = useState("");
+  const [amendments, setAmendments] = useState<Amendment[]>([]);
+  const [amendReason, setAmendReason] = useState("");
 
   const load = useCallback(async () => {
     const res = await fetch(`/api/admin/requests/${id}`, { cache: "no-store" });
     if (res.status === 401) { window.location.href = "/admin"; return; }
     const data = await res.json();
-    setReq(data.request); setQuote(data.quote); setDirty(!data.request.quote_json); setSheetFinder(data.sheetFinderUrl || "");
+    setReq(data.request); setQuote(data.quote); setDirty(!data.request.quote_json); setSheetFinder(data.sheetFinderUrl || ""); setAmendments(data.amendments || []);
     // Demande Mariages.net : la réponse type est proposée par défaut (pas d’e-mail du client).
     if (data.request.source === "mariages_net") setMnet(true);
     // Ouverture directe de la fenêtre e-mail depuis la page du devis (?mail=1&doc=devis)
@@ -126,6 +128,30 @@ export default function Editor() {
     list.splice(fromSlot < sep ? sep : sep + 1, 0, moved); // incluse → 1re option ; option → dernière incluse
     applySlots(list);
   };
+
+  // Avenants (devis signé) : différences entre la dernière version signée et la fiche telle qu’elle est maintenant.
+  const signed = req.status === "signe" || req.status === "acompte";
+  const lastAmendment = amendments[amendments.length - 1];
+  const reference = signed ? parseSnapshot(lastAmendment ? lastAmendment.after_json : req.signed_snapshot) : null;
+  const pendingChanges = reference ? amendmentChanges(reference, snapshotOf({ ...req, quote_json: JSON.stringify(quote) })) : [];
+  async function createAmendment() {
+    if (dirty && !(await save())) return;
+    if (!confirm(`Générer l’avenant n°${(lastAmendment?.number || 0) + 1} (${pendingChanges.length} modification${pendingChanges.length > 1 ? "s" : ""}) ?`)) return;
+    setBusy(true);
+    const res = await fetch(`/api/admin/requests/${id}/amendments`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ reason: amendReason }) });
+    const data = await res.json();
+    setBusy(false);
+    if (!res.ok) { setMsg(data.error || "Avenant impossible."); return; }
+    setAmendments(data.amendments); setAmendReason("");
+    setMsg(`Avenant n°${data.number} généré.`);
+    window.open(`/devis/${req!.token}/avenant/${data.number}`, "_blank", "noopener");
+  }
+  async function removeLastAmendment() {
+    if (!lastAmendment || !confirm(`Supprimer l’avenant n°${lastAmendment.number} ? Les modifications resteront dans la fiche et pourront être reprises dans un nouvel avenant.`)) return;
+    const res = await fetch(`/api/admin/requests/${id}/amendments`, { method: "DELETE" });
+    const data = await res.json();
+    if (res.ok) setAmendments(data.amendments); else setMsg(data.error || "Suppression impossible.");
+  }
 
   // Second devis : même demande, autre formule (ouvert dans un nouvel onglet).
   async function createSecondQuote() {
@@ -297,6 +323,37 @@ export default function Editor() {
 
       <div className="adm-cols">
         <div>
+          {signed ? (
+            <section className="adm-card adm-amend">
+              <h2>Avenants</h2>
+              {amendments.length ? (
+                <ul className="adm-amend-list">
+                  {amendments.map((a) => (
+                    <li key={a.id}>
+                      <a href={`/devis/${req.token}/avenant/${a.number}`} target="_blank" rel="noopener noreferrer">Avenant n°{a.number} ↗</a>
+                      <span> · {formatDateFR(a.created_at.slice(0, 10))}{a.reason ? ` · ${a.reason}` : ""}</span>
+                      {a.id === lastAmendment?.id ? <button type="button" className="adm-linkbtn" onClick={removeLastAmendment}>supprimer</button> : null}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              {!reference ? (
+                <p className="adm-muted">Version signée introuvable : repassez le statut sur Signé, puis modifiez le devis.</p>
+              ) : pendingChanges.length ? (
+                <>
+                  <p><b>{pendingChanges.length} modification{pendingChanges.length > 1 ? "s" : ""}</b> depuis {lastAmendment ? `l’avenant n°${lastAmendment.number}` : "la version signée"} :</p>
+                  <ul className="adm-amend-changes">
+                    {pendingChanges.map((c, i) => <li key={i}><b>{c.label}</b> : {c.before} → {c.after}</li>)}
+                  </ul>
+                  <label className="wide">Objet de l’avenant (facultatif)<input value={amendReason} placeholder="Ex. : 20 invités de plus, ajout du brunch" onChange={(e) => setAmendReason(e.target.value)} /></label>
+                  <button type="button" className="adm-btn adm-gold" disabled={busy} onClick={createAmendment}>📝 Générer l’avenant n°{(lastAmendment?.number || 0) + 1}</button>
+                </>
+              ) : (
+                <p className="adm-muted">Modifiez la demande ou les lignes du devis ci-dessous : les changements apparaîtront ici et pourront être regroupés dans un avenant.</p>
+              )}
+            </section>
+          ) : null}
+
           <section className="adm-card">
             <h2>La demande</h2>
             <div className="adm-grid">

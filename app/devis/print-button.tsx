@@ -26,3 +26,17 @@ export default function PrintButton({ fileName, quoteOnly = false }: { fileName:
     </div>
   );
 }
+
+export function AmendmentPrintButton({ fileName }: { fileName: string }) {
+  const print = () => {
+    const previous = document.title;
+    document.title = fileName;
+    window.print();
+    setTimeout(() => { document.title = previous; }, 1500);
+  };
+  return (
+    <div className="dv-print-group">
+      <button type="button" className="dv-print" onClick={print}>Télécharger l’avenant en PDF</button>
+    </div>
+  );
+}

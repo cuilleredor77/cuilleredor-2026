@@ -158,6 +158,7 @@ export type RequestRow = {
   service_mode: string; // service | livraison | emporter
   wedding_planner: string; // oui | non | recherche | ""
   vendors_found: string;
+  signed_snapshot?: string; // JSON Snapshot : devis tel que signé (référence du premier avenant)
 };
 
 export type EstimateOption = { id: string; label: string; amount: number };
@@ -891,3 +892,66 @@ export function honorWineLines(adults: number): QuoteLine[] {
 
 /** Lignes du vin d’honneur déjà présentes (anciens et nouveaux libellés). */
 export const isHonorWineLine = (l: QuoteLine) => l.id === "vin-honneur" || /vh-cocktails$/.test(l.id) || /^(Suppl\. )?vin d’honneur —/i.test(l.label);
+
+// ---------- Avenants ----------
+
+/** Photo du devis et des infos de l’événement à un instant donné (signature, avenant). */
+export type Snapshot = {
+  at: string;
+  quote: Quote;
+  event_date: string;
+  event_place: string;
+  event_type: string;
+  formula: string;
+  adults: number;
+  children: number;
+  providers: number;
+};
+
+export type Amendment = { id: number; request_id: number; number: number; created_at: string; reason: string; before_json: string; after_json: string };
+export type AmendmentChange = { kind: "info" | "ajout" | "retrait" | "modif"; label: string; before: string; after: string; delta: number };
+
+export function snapshotOf(row: RequestRow, at = new Date().toISOString()): Snapshot {
+  return {
+    at, quote: parseQuote(row), event_date: row.event_date, event_place: row.event_place, event_type: row.event_type,
+    formula: row.formula, adults: row.adults, children: row.children, providers: row.providers,
+  };
+}
+
+export function parseSnapshot(json: string | undefined | null): Snapshot | null {
+  if (!json) return null;
+  try { const s = JSON.parse(json) as Snapshot; return s && s.quote && Array.isArray(s.quote.lines) ? s : null; } catch { return null; }
+}
+
+const guestsText = (s: Snapshot) =>
+  `${s.adults} adultes${s.children ? ` + ${s.children} enfants` : ""}${s.providers ? ` + ${s.providers} prestataires` : ""}`;
+const lineText = (l: QuoteLine) =>
+  isTravelPending(l) || isLodgingPending(l) ? "à chiffrer" : `${String(l.qty).replace(".", ",")} ${l.unit} × ${formatEUR(l.price)}`;
+
+/** Différences entre deux versions : infos de l’événement puis lignes ajoutées, retirées ou modifiées. */
+export function amendmentChanges(before: Snapshot, after: Snapshot): AmendmentChange[] {
+  const out: AmendmentChange[] = [];
+  const info = (label: string, a: string, b: string) => { if (a.trim() !== b.trim()) out.push({ kind: "info", label, before: a || "—", after: b || "—", delta: 0 }); };
+  info("Date de l’événement", before.event_date ? formatDateFR(before.event_date) : "", after.event_date ? formatDateFR(after.event_date) : "");
+  info("Lieu", before.event_place, after.event_place);
+  info("Type d’événement", before.event_type, after.event_type);
+  info("Formule", FORMULAS[before.formula as FormulaKey]?.label || before.formula, FORMULAS[after.formula as FormulaKey]?.label || after.formula);
+  info("Invités", guestsText(before), guestsText(after));
+  const old = new Map(before.quote.lines.map((l) => [l.id, l]));
+  for (const l of after.quote.lines) {
+    const o = old.get(l.id);
+    if (!o) { out.push({ kind: "ajout", label: l.label, before: "—", after: lineText(l), delta: lineTotal(l) }); continue; }
+    old.delete(l.id);
+    if (o.qty !== l.qty || o.price !== l.price || o.label.trim() !== l.label.trim() || (o.unit || "") !== (l.unit || "") || (o.detail || "").trim() !== (l.detail || "").trim()) {
+      const what = o.label.trim() !== l.label.trim() ? `${o.label} → ${l.label}` : l.label;
+      const detailOnly = o.qty === l.qty && o.price === l.price && o.label.trim() === l.label.trim();
+      out.push({ kind: "modif", label: detailOnly ? `${what} (détail modifié)` : what, before: lineText(o), after: lineText(l), delta: round2(lineTotal(l) - lineTotal(o)) });
+    }
+  }
+  for (const o of old.values()) out.push({ kind: "retrait", label: o.label, before: lineText(o), after: "—", delta: -lineTotal(o) });
+  return out;
+}
+
+export function amendmentFileName(req: RequestRow, n: number): string {
+  return quoteFileName(req).replace(/_Devis_Contrat$/, `_Avenant_${n}`);
+}

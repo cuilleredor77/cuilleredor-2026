@@ -5,6 +5,7 @@ import {
   computeTotals,
   isFormulaKey,
   parseQuote,
+  snapshotOf,
   type Quote,
 } from "../../../../../lib/quote";
 
@@ -17,7 +18,8 @@ export async function GET(request: Request, ctx: { params: Promise<{ id: string 
   const row = await getRequestById(Number(id));
   if (!row) return json({ error: "Demande introuvable" }, { status: 404 });
   const quote = parseQuote(row);
-  return json({ request: row, quote, totals: computeTotals(quote, row.event_date), sheetFinderUrl: setting("GSHEET_FINDER_URL") });
+  const amendments = (await db().prepare("SELECT * FROM amendments WHERE request_id = ? ORDER BY number").bind(row.id).all()).results;
+  return json({ request: row, quote, totals: computeTotals(quote, row.event_date), sheetFinderUrl: setting("GSHEET_FINDER_URL"), amendments });
 }
 
 export async function PUT(request: Request, ctx: { params: Promise<{ id: string }> }) {
@@ -109,8 +111,13 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
     )
     .run();
 
-  const row = await getRequestById(existing.id);
+  let row = await getRequestById(existing.id);
   if (body.markSent && row) await markSheetSent(row);
+  // Passage en Signé / Acompte reçu : le devis tel que signé est gardé, référence des avenants.
+  if (row && (row.status === "signe" || row.status === "acompte") && !row.signed_snapshot) {
+    await db().prepare("UPDATE requests SET signed_snapshot = ? WHERE id = ?").bind(JSON.stringify(snapshotOf(row)), row.id).run();
+    row = await getRequestById(existing.id);
+  }
   const saved = parseQuote(row!);
   return json({ ok: true, request: row, quote: saved, totals: computeTotals(saved, row!.event_date) });
 }
