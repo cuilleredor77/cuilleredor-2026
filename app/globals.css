@@ -7277,3 +7277,6 @@ html[lang="en"][data-commercial-formula="plateau"] .formula-menu-list>[data-menu
 html[lang="en"][data-commercial-formula="assiette"] .formula-menu-list>[data-menu-formula="assiette"] summary strong:before,
 html[lang="en"][data-commercial-formula="aperitifs"] .formula-menu-list>[data-menu-formula="aperitifs"] summary strong:before,
 html[lang="en"][data-commercial-formula="brunch"] .formula-menu-list>[data-menu-formula="brunch"] summary strong:before { content: "Your " !important; color: #fff; }
+.desktop-nav { align-items: center; }
+.desktop-nav a.lang-switch { line-height: 1.4; margin-left: -6px; }
+.header-cta { white-space: nowrap; }

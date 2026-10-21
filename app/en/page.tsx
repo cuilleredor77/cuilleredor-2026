@@ -122,15 +122,15 @@ const offers = [
   {
     number: "01",
     title: "Buffet",
-    tone: "Friendly & generous",
+    tone: "Generous & sociable",
     image: "/brochettes",
     imageAlt: "Generous buffet prepared by Cuillère d’Or",
     description:
-      "A plentiful, constantly replenished table where everyone builds their plate at their own pace.",
+      "A plentiful buffet, regularly replenished, where each guest creates their own plate at their leisure.",
     firstLabel: "Menu",
     firstValue: "2 meats · 2 fish · 4 sides · 1 vegetable",
     secondLabel: "Prices",
-    secondValue: "Sliding prices for larger receptions",
+    secondValue: "Reduced rates for larger receptions",
     price: "€35 to €45",
     wineNote: "+€5 per guest with a cocktail reception",
     suffix: "/ guest · from 30 guests",
@@ -139,15 +139,15 @@ const offers = [
   {
     number: "02",
     title: "Platter service",
-    tone: "Smooth & comfortable",
+    tone: "Effortless & comfortable",
     image: "/realisation",
     imageAlt: "Selection of Cuillère d’Or dishes served on platters",
     description:
-      "The buffet menu, presented on platters and brought to each table, without interrupting your guests’ conversations.",
+      "All the variety of our buffet menu, beautifully arranged on sharing platters and brought to your table, so conversations flow uninterrupted.",
     firstLabel: "Menu",
     firstValue: "2 meats · 2 fish · 4 sides · 1 vegetable",
     secondLabel: "Ideal for",
-    secondValue: "Elegant receptions with seamless service",
+    secondValue: "Elegant receptions with smooth, relaxed table service",
     price: "€40 to €50",
     wineNote: "+€5 per guest with a cocktail reception",
     suffix: "/ guest · from 30 guests",
@@ -160,7 +160,7 @@ const offers = [
     image: "/assiette-traiteur",
     imageAlt: "Dish plated for a seated dinner",
     description:
-      "Each plate is arranged and served individually, at the pace of your reception.",
+      "Every dish is individually plated and served in harmony with the pace of your celebration.",
     firstLabel: "Menu",
     firstValue: "Starter · main course · side · dessert",
     secondLabel: "Ideal for",
@@ -177,11 +177,11 @@ const offers = [
     image: "/hero-bouchee",
     imageAlt: "Cuillère d’Or canapé creation",
     description:
-      "Ten savoury or sweet canapés of your choice to open your reception. Cocktails available as an option.",
+      "Choose ten savoury or sweet creations to begin your celebration. Cocktails are available as an optional extra.",
     firstLabel: "Includes",
     firstValue: "10 savoury or sweet canapés of your choice",
     secondLabel: "Ideal for",
-    secondValue: "Cocktail receptions, drinks parties and corporate events",
+    secondValue: "Wedding cocktail receptions, drinks receptions and corporate events",
     price: "€25",
     suffix: "/ guest · from 50 guests",
     cta: "Choose canapés",
@@ -193,12 +193,12 @@ const offers = [
     image: "/brunch/brunch-signature",
     imageAlt: "Cuillère d’Or Signature Brunch",
     description:
-      "A complete sweet and savoury package to keep the celebration going, effortlessly.",
+      "A complete selection of savoury and sweet favourites, perfect for extending the celebrations and bringing everyone together again.",
     firstLabel: "Includes",
     firstValue:
       "Pastries · pancakes · eggs · drinks · 10 pieces of your choice",
     secondLabel: "Ideal for",
-    secondValue: "The day after the wedding and daytime family gatherings",
+    secondValue: "Post-wedding brunches and daytime family celebrations",
     price: "€35",
     suffix: "/ guest · from 50 guests",
     cta: "Choose the brunch",
@@ -207,31 +207,31 @@ const offers = [
   {
     number: "06",
     title: "Barbecue Party",
-    tone: "Friendly & festive",
+    tone: "Relaxed & festive",
     image: "/poissons-grilles",
     imageAlt: "Cuillère d’Or barbecue grill",
     description:
-      "Generous grills cooked live, in a relaxed atmosphere, for sunny days.",
+      "Generous freshly grilled dishes served in a relaxed atmosphere, perfect for sunny days.",
     firstLabel: "Includes",
     firstValue: "Grills · salads · sides",
     secondLabel: "Ideal for",
-    secondValue: "Birthdays, family parties, meals with friends",
+    secondValue: "Birthdays, family celebrations and gatherings with friends",
     price: "€60",
     suffix: "/ guest · from 30 guests",
     cta: "Choose the barbecue",
   },
   {
     number: "07",
-    title: "Private chef",
-    tone: "Premium",
+    title: "Private chef at home",
+    tone: "Exclusive dining",
     image: "/service",
     imageAlt: "Table service by a Cuillère d’Or private chef",
     description:
-      "A turnkey experience at home: Chef Huguette brings the cooking, the tableware and the service.",
+      "A fully catered dining experience in the comfort of your home: Chef Huguette takes care of the food, the tableware and the service.",
     firstLabel: "Includes",
     firstValue: "Amuse-bouche · starter · main course · dessert · tableware · service",
     secondLabel: "Ideal for",
-    secondValue: "A reception at home, with nothing to organise",
+    secondValue: "Entertaining at home without having to organise a thing",
     price: "from €95",
     suffix: "/ guest · from 12 covers",
     cta: "Choose a private chef",
@@ -294,37 +294,37 @@ function OfferRecap({ formula }: { formula: string }) {
 // Noms repris du catalogue 2027-2028 (même ordre, même orthographe).
 const savoury = [
   { name: "Fried plantain", image: "/plantains-480.webp" },
-  { name: "Pikliz mini burger, plantain and chicken", image: "/dishes/burger-pikliz.webp" },
-  { name: "Salmon mini burger, aioli sauce", image: "/dishes/burger-saumon.webp" },
-  { name: "Tomato & tarragon mini cake, smoked mascarpone", image: "/dishes/mini-cake-tomate.webp" },
-  { name: "Sweet potato croquette, prawns, mango coulis, bird’s eye chilli", image: "/dishes/croquette-gambas.webp" },
-  { name: "Salt cod croquette, green curry cream", image: "/dishes/croquette-morue.webp" },
-  { name: "Yam croquette, red pepper cream", image: "/dishes/croquette-igname.webp" },
-  { name: "Fried banana, pulled beef, barbecue sauce", image: "/dishes/banane-boeuf.webp" },
-  { name: "Turmeric tartlet, mango, guacamole", image: "/dishes/tartelette-curcuma.webp" },
-  { name: "Beef mini burger", image: "/dishes/mini-burger.webp" },
-  { name: "Salmon finger roll", image: "/dishes/navette-saumon.webp" },
+  { name: "Mini burger with pikliz, plantain and chicken", image: "/dishes/burger-pikliz.webp" },
+  { name: "Mini salmon burger with aioli sauce", image: "/dishes/burger-saumon.webp" },
+  { name: "Mini tomato and tarragon cake with smoked mascarpone", image: "/dishes/mini-cake-tomate.webp" },
+  { name: "Sweet potato and king prawn croquette with mango coulis and bird’s eye chilli", image: "/dishes/croquette-gambas.webp" },
+  { name: "Salt cod croquette with green curry cream", image: "/dishes/croquette-morue.webp" },
+  { name: "Yam croquette with red pepper cream", image: "/dishes/croquette-igname.webp" },
+  { name: "Fried plantain with pulled beef and barbecue sauce", image: "/dishes/banane-boeuf.webp" },
+  { name: "Turmeric tartlet with mango and guacamole", image: "/dishes/tartelette-curcuma.webp" },
+  { name: "Mini beef burger", image: "/dishes/mini-burger.webp" },
+  { name: "Mini salmon brioche roll", image: "/dishes/navette-saumon.webp" },
   { name: "Beef or vegetable samosa", image: "/dishes/samoussa.webp" },
-  { name: "Chicken spring roll or tuna pastel", image: "/dishes/nems-pastels.webp" },
-  { name: "Chicken or beef mini skewer", image: "/dishes/mini-brochettes.webp" },
+  { name: "Chicken spring roll or tuna pastel pastry", image: "/dishes/nems-pastels.webp" },
+  { name: "Mini chicken or beef skewer", image: "/dishes/mini-brochettes.webp" },
   { name: "Mini wrap", image: "/dishes/mini-wraps.webp" },
-  { name: "Shrimp tempura", image: "/dishes/tempuras.webp" },
+  { name: "Prawn tempura", image: "/dishes/tempuras.webp" },
   { name: "Vegetarian tartlet", image: "/dishes/tartelettes-vegetariennes.webp" },
-  { name: "Braised watermelon, cucumber and feta · in season", image: "/dishes/pasteque-feta.webp" },
+  { name: "Seared watermelon with cucumber and feta · seasonal", image: "/dishes/pasteque-feta.webp" },
   { name: "Mini quiche Lorraine", image: "/dishes/mini-quiche-lorraine.webp" },
-  { name: "Grilled prawns or chicken tenders", image: "/dishes/gambas-tenders.webp" },
-  { name: "Foie gras sphere, hibiscus and coconut · December to March", image: "/dishes/foie-gras-hibiscus.webp" },
-  { name: "Tomato-mozzarella skewer", image: "/dishes/tomate-mozzarella.webp" },
+  { name: "Grilled king prawns or chicken tenders", image: "/dishes/gambas-tenders.webp" },
+  { name: "Foie gras sphere with hibiscus and coconut · December to March", image: "/dishes/foie-gras-hibiscus.webp" },
+  { name: "Tomato and mozzarella skewer", image: "/dishes/tomate-mozzarella.webp" },
 ];
 const sweet = [
-  { name: "Chocolate lava cake, whipped cream and cocoa", image: "/dishes/mi-cuit-chocolat.webp" },
-  { name: "Reinvented rice pudding, rice pearls and caramel", image: "/dishes/riz-au-lait.webp" },
+  { name: "Molten chocolate cake with whipped cream and cocoa", image: "/dishes/mi-cuit-chocolat.webp" },
+  { name: "Reimagined rice pudding with rice pearls and caramel", image: "/dishes/riz-au-lait.webp" },
   { name: "Speculoos tiramisu", image: "/dishes/tiramisu.webp" },
-  { name: "Seasonal fruit skewer or verrine", image: "/dishes/fruits-saison.webp" },
-  { name: "Panko-breaded rice fritter, classic", image: "/dishes/beignets-riz-panko.webp" },
-  { name: "Panko-breaded rice fritter, banana", image: "/dishes/beignets-banane.webp" },
-  { name: "Apple sponge cake (tôt-fait)", image: "/dishes/tot-fait-pommes.webp" },
-  { name: "Red berry or exotic fruit panna cotta", image: "/dishes/panna-cotta.webp" },
+  { name: "Seasonal fruit skewer or dessert verrine", image: "/dishes/fruits-saison.webp" },
+  { name: "Classic panko-crusted rice fritter", image: "/dishes/beignets-riz-panko.webp" },
+  { name: "Banana panko-crusted rice fritter", image: "/dishes/beignets-banane.webp" },
+  { name: "Rustic French apple cake", image: "/dishes/tot-fait-pommes.webp" },
+  { name: "Red berry or tropical fruit panna cotta", image: "/dishes/panna-cotta.webp" },
 ];
 
 const buffetCategories = [
@@ -332,7 +332,7 @@ const buffetCategories = [
     title: "Meats · choose 2",
     image: "/brochettes-480.webp",
     alt: "Meat skewers prepared by Cuillère d’Or",
-    items: ["Beef skewers", "Mutton", "Braised chicken"],
+    items: ["Beef skewers", "Mutton", "Chargrilled chicken"],
   },
   {
     title: "Fish · choose 2",
@@ -340,9 +340,9 @@ const buffetCategories = [
     alt: "Grilled fish prepared by Cuillère d’Or",
     items: [
       "Fried sea bream",
-      "Braised pangasius",
+      "Chargrilled pangasius",
       "Fried catfish",
-      "Nile perch",
+      "Nile perch (capitaine)",
       "Sea bass",
       "Salt cod",
     ],
@@ -353,10 +353,10 @@ const buffetCategories = [
     alt: "Plantains plated by Cuillère d’Or",
     items: [
       "Plantain",
-      "White rice, tomato red rice, Cantonese rice or curry rice",
+      "White rice, tomato rice, Cantonese-style fried rice or curry rice",
       "Cassava (kwanga)",
-      "Fritter",
-      "Attiéké",
+      "Fritters",
+      "Attiéké (fermented cassava couscous)",
     ],
   },
   {
@@ -365,7 +365,7 @@ const buffetCategories = [
     alt: "Assortment of Cuillère d’Or dishes and vegetables",
     items: [
       "Spinach in sauce, with or without smoked fish",
-      "Saka-saka / pondu",
+      "Saka-saka / pondu (cassava leaves)",
       "Seasonal vegetables",
     ],
   },
@@ -377,53 +377,53 @@ const platedCategories = [
     image: "/assiette-traiteur-480.webp",
     alt: "Starter plated by Cuillère d’Or",
     items: [
-      "Pan-seared prawns, smoked carrot tagliatelle",
-      "Crab quesadillas, corn cream and crispy polenta",
-      "Plantain, three-pepper sauce, pulled beef",
-      "Salmon tartare, mango salsa and guacamole",
-      "Soft-boiled egg, mushroom and morel cream, chive oil",
-      "Charred avocado, pan-seared prawns and guacamole cream",
+      "Pan-seared king prawns with smoked carrot tagliatelle",
+      "Crab quesadillas with sweetcorn cream and crispy polenta",
+      "Plantain with three-pepper sauce and pulled beef",
+      "Salmon tartare with mango salsa and guacamole",
+      "Soft-boiled egg with mushroom cream, morels and chive oil",
+      "Charred avocado with pan-seared king prawns and guacamole cream",
     ],
   },
   {
-    title: "Meats",
+    title: "Meat main courses",
     image: "/brochettes-480.webp",
     alt: "Meat prepared by Cuillère d’Or",
     items: [
       "Spice-roasted lamb chop",
-      "Beef fillet, chimichurri sauce",
+      "Beef fillet with chimichurri sauce",
       "Honey-glazed duck confit",
-      "Cajun-marinated caramelised lamb shank",
-      "Spiced beef chuck, slow-cooked for 7 hours",
-      "Braised chicken supreme, poulette sauce",
-      "Rack of veal in a herb and pistachio crust",
+      "Cajun-marinated, caramelised lamb shank",
+      "Seven-hour slow-cooked spiced beef chuck",
+      "Braised chicken supreme with creamy poulette sauce",
+      "Herb- and pistachio-crusted rack of veal",
     ],
   },
   {
-    title: "Fish",
+    title: "Fish main courses",
     image: "/poissons-grilles-480.webp",
     alt: "Fish plated by Cuillère d’Or",
     items: [
-      "Salmon fillet, cauliflower and passion fruit, coconut-turmeric-star anise sauce",
+      "Salmon fillet with cauliflower and passion fruit, coconut, turmeric and star anise sauce",
       "Sea bream fillet",
-      "Red mullet ballotine, roasted vegetables, okra and cauliflower",
-      "Pangasius fillet, three-pepper sauce",
+      "Red mullet ballotine with roasted vegetables, okra and cauliflower",
+      "Pangasius fillet with three-pepper sauce",
     ],
   },
   {
-    title: "Sides",
+    title: "Side dishes",
     image: "/plantains-480.webp",
     alt: "Cuillère d’Or plantain side",
     items: [
-      "Turmeric and curry yellow rice",
-      "Potato cake",
+      "Golden turmeric and curry rice",
+      "Potato galette",
       "Attiéké with seasonal vegetables",
-      "Sweet potato millefeuille with Madagascar vanilla",
+      "Sweet potato mille-feuille with Madagascan vanilla",
       "Basmati rice with coconut milk, ginger and lemongrass",
       "Potato gratin",
-      "Green beans sautéed in butter and parsley",
-      "Pan-fried vegetables",
-      "Thieb rice with vegetables",
+      "Green beans sautéed with butter and parsley",
+      "Sautéed seasonal vegetables",
+      "Thiéb rice with vegetables",
     ],
   },
   {
@@ -431,8 +431,8 @@ const platedCategories = [
     image: "/dishes/panna-cotta.webp",
     alt: "Cuillère d’Or panna cotta dessert",
     items: [
-      "Red berry cheesecake with coulis",
-      "Red berry or exotic fruit panna cotta",
+      "Red berry cheesecake with berry coulis",
+      "Red berry or tropical fruit panna cotta",
       "Caramelised French toast brioche, passion fruit, rose whipped cream and pistachios",
     ],
   },
@@ -486,16 +486,16 @@ const MENU_JSON_LD = {
 const barbecueCategories = [
   {
     title: "On the menu",
-    items: ["Braised meat", "Live fritter station", "5 savoury or sweet nibbles of your choice"],
+    items: ["Chargrilled meat", "Live fritter-making station", "Your choice of 5 savoury or sweet bites"],
   },
-  { title: "Salads", items: ["Pickles", "Tomato-mozzarella"] },
+  { title: "Salads", items: ["Pickled vegetables", "Tomato and mozzarella"] },
   {
-    title: "Grills",
+    title: "From the grill",
     items: [
       "Beef skewer",
       "Chicken skewer",
-      "Braised sea bass",
-      "Merguez or chipolata sausage",
+      "Grilled sea bass",
+      "Merguez sausages or chipolatas",
     ],
   },
   { title: "Sides", items: ["Rice", "Plantain", "Bread"] },
@@ -503,12 +503,12 @@ const barbecueCategories = [
 
 const chefCategories = [
   {
-    title: "Everything included",
+    title: "Everything is included",
     items: [
       "Amuse-bouche as your guests arrive",
-      "Starter, main course and dessert plated and served",
-      "Table setting: tableware, cutlery and linen provided, table laid by our team",
-      "Service included: a team in the dining room and in the kitchen",
+      "Individually plated and served starter, main course and dessert",
+      "Elegant table setting: crockery, cutlery and table linen provided, with the table laid by our team",
+      "Dedicated front-of-house and kitchen team",
     ],
   },
 ];
@@ -517,33 +517,33 @@ const faqItems = [
   {
     question: "Which package should I choose for my event?",
     answer:
-      "Compare our 7 packages in the “Packages” section: each one describes its atmosphere and budget. If you are hesitating between two options, message us on WhatsApp and we will advise you based on your number of guests and the style of your reception.",
+      "Compare our seven packages in the “Packages” section: each one describes its atmosphere and price range. If you are unsure which option is best, message us on WhatsApp and we will recommend the most suitable one based on your guest count and preferred reception style.",
   },
   {
     question: "What is the minimum number of guests?",
     answer:
-      "Our services start from 30 guests, including adults, children and vendors (50 guests minimum for a cocktail reception or the Signature Brunch on their own).",
+      "Our services are available for events with at least 30 guests, including adults, children and vendors. A minimum of 50 guests applies to a standalone cocktail reception or Signature Brunch.",
   },
   {
-    question: "How do I book a date?",
+    question: "How do I reserve a date?",
     answer:
-      "Send us your request with the date, venue, number of guests and preferred package. You will then receive a tailored proposal. Your date is confirmed once we receive the signed quote and the deposit.",
+      "Send us your enquiry with the date, venue, guest count and preferred package. We will then send you a personalised proposal. Your booking is confirmed upon receipt of the signed quote and the deposit.",
   },
   {
-    question: "What are the payment terms?",
+    question: "What are your payment terms?",
     answer: "",
     lines: [
       "Deposit: 30% upon signing the quote",
-      "Balance: 70% two months before the event",
-      "Event in less than 60 days: full payment upon signature",
+      "Remaining balance: 70%, due two months before the event",
+      "Events taking place in fewer than 60 days: payment in full upon signing",
       "Security deposit: €250, paid with the balance and refunded after the event, unless equipment is damaged, broken or lost (no security deposit for deliveries or collections)",
       "Bank transfer or cash",
     ],
   },
   {
-    question: "What is the cancellation policy?",
+    question: "What is your cancellation policy?",
     answer:
-      "Any cancellation must be made in writing. More than 90 days before the event, sums paid are retained. Between 90 and 30 days, 50% of the total amount is due. Less than 30 days before, the full amount is due. If Cuillère d’Or cancels (except in cases of force majeure), you are refunded in full.",
+      "All cancellations must be submitted in writing. More than 90 days before the event, amounts already paid are retained. Between 90 and 30 days before the event, 50% of the total amount becomes payable. Less than 30 days before the event, the full amount is payable. If Cuillère d’Or cancels (except in cases of force majeure), you will receive a full refund.",
   },
   {
     question: "What does the cocktail reception include?",
@@ -553,7 +553,7 @@ const faqItems = [
   {
     question: "Can the menu be customised?",
     answer:
-      "Yes. We adapt your selection to allergies, intolerances, specific diets and cultural preferences. Let us know when you request your quote so we can suggest suitable alternatives.",
+      "Yes. We can adapt your menu to allergies, intolerances, special dietary requirements and cultural preferences. Please let us know when you request your quote so that we can suggest suitable alternatives.",
   },
   {
     question: "What is included in the price?",
@@ -563,20 +563,20 @@ const faqItems = [
   {
     question: "When should I send the schedule of the day?",
     answer:
-      "Ideally 4 to 6 weeks before the reception: key times, seating plan if needed, entertainment, speeches and highlights. Adjustments remain possible up to two weeks before the event.",
+      "Ideally four to six weeks before the event: key timings, seating plan if applicable, entertainment, speeches and important moments. Changes can still be made up to two weeks before the event.",
   },
   {
     question: "Do you cater at all types of venues?",
     answer:
-      "Yes: châteaux, estates, function rooms, private spaces, gardens, unusual venues and private homes. We check access, available space and the necessary utilities beforehand.",
+      "Yes. We cater at châteaux, estates, reception halls, private venues, gardens, unusual locations and private homes. We check access, available space and the necessary utilities in advance.",
   },
   {
-    question: "How are travel costs calculated?",
+    question: "How are travel expenses calculated?",
     answer:
       "They are calculated from Vert-Saint-Denis at €1.90 per round-trip kilometre (tolls and parking included) and shown on a separate line of the quote. Beyond 250 km, accommodation costs are added, to be agreed with the chef. Events outside Île-de-France and abroad are considered on request.",
   },
   {
-    question: "Do you offer other packages (Barbecue Party, Private chef)?",
+    question: "Do you offer other packages, such as Barbecue Party or Private chef at home?",
     answer:
       "Yes. Barbecue Party: €60 per guest, grills cooked live, provided the venue allows barbecues. Private chef: from €95 per guest, from 12 covers, with amuse-bouche, starter, main course, dessert, tableware, linen and service included. Travel costs extra. Request a quote for these packages.",
   },
@@ -586,12 +586,12 @@ const faqItems = [
       "A €250 security deposit is paid with the balance and refunded after the event, unless equipment is damaged, broken or lost. No security deposit for deliveries or collections. Beyond 30 minutes of overtime, €80 per hour or part thereof and per server. The number of guests is fixed 60 days before the event: after that it can only go up.",
   },
   {
-    question: "How does a tasting work?",
+    question: "How does a tasting session work?",
     answer:
       "Tastings are by appointment at Chez Lina restaurant in Brunoy. They let you sample a representative selection, refine your menu and talk with the chef. They cost €70 per person, not deductible from the final quote, in shared sessions of 2 to 10 people (1 to 1.5 hours), between 3pm and 6pm or after 9pm. On the menu: the chef’s canapés (5 pieces) followed by the meal of your choice. Free cancellation up to 48 hours before.",
   },
   {
-    question: "Can we hire Chez Lina restaurant privately?",
+    question: "Can Chez Lina restaurant be hired for a private event?",
     answer:
       "Yes. Chez Lina restaurant (29 rue de Montgeron, Brunoy) and its outdoor area can be hired for any private event, with or without Cuillère d’Or or Chez Lina catering. Private hire is quoted on request. The restaurant is open Tuesday to Friday from 11:45am to 2:45pm and 6:45pm to 11:45pm, Saturday from 11:45am to 11:45pm, and closed on Sundays and Mondays.",
   },
@@ -667,16 +667,16 @@ export default function HomeEn() {
           <p className="eyebrow">Catering · Catalogue 2027 · 2028</p>
           <h1>
             <span className="sr-only">
-              Event caterer in Paris and Île-de-France —{" "}
+              Event catering in the Paris region —{" "}
             </span>
             Taste as a
             <br />
             <em>signature.</em>
           </h1>
           <p className="hero-copy">
-            Wedding, birthday or corporate event: we create the menu, the
-            service and the little touches that will make your reception a
-            truly special moment.
+            Wedding, birthday or corporate event: we bring together the menu,
+            the service and the thoughtful details that make your celebration
+            truly exceptional.
           </p>
           <div className="hero-actions">
             <a className="button button-gold" href="#calculateur">
@@ -688,8 +688,8 @@ export default function HomeEn() {
               <Users size={20} aria-hidden="true" /> From 30 guests
             </span>
             <span>
-              <MapPin size={20} aria-hidden="true" /> Île-de-France, across
-              France and abroad
+              <MapPin size={20} aria-hidden="true" /> Paris region, throughout
+              France and internationally
             </span>
             <span>
               <Clock3 size={20} aria-hidden="true" /> Online quote
@@ -715,23 +715,24 @@ export default function HomeEn() {
         <div className="maison-copy">
           <p className="eyebrow">The chef behind Cuillère d’Or</p>
           <h2>
-            Cooking that brings people together.
+            Cuisine that brings people together.
             <br />
-            <em>A team that takes care of everything.</em>
+            <em>A team that takes care of every detail.</em>
           </h2>
           <p>
-            Huguette designs each reception around your guests, your tastes
-            and the rhythm of your day. Her team prepares, plates and serves
-            with the same care, so you can fully enjoy your event.
+            Huguette designs every celebration around your guests, your tastes
+            and the flow of your special day. Her team prepares, plates and
+            serves each dish with the same dedication, so you can enjoy every
+            moment of your event.
           </p>
           <div className="maison-promises">
             <div>
               <strong>Tailor-made</strong>
-              <span>A service designed around your reception</span>
+              <span>A service designed around your celebration</span>
             </div>
             <div>
               <strong>Prepared in Brunoy</strong>
-              <span>Recipes crafted in our own kitchen</span>
+              <span>Carefully crafted recipes from our professional kitchen</span>
             </div>
             <div>
               <strong>With you until the big day</strong>
@@ -757,20 +758,20 @@ export default function HomeEn() {
               />
             </div>
             <p>
-              Mariages.net Wedding Awards winner two years running,
-              in 2025 and 2026.{" "}
+              Winner of the Mariages.net Wedding Awards in both 2025
+              and 2026.{" "}
               <a
                 href="https://www.mariages.net/traiteur-mariage/cuillere-dor--e310106"
                 target="_blank"
                 rel="noopener"
               >
-                Read our couples’ reviews on Mariages.net
+                Read reviews from our couples on Mariages.net
               </a>
             </p>
           </div>
           <div className="maison-bottom">
             <p className="maison-address">
-              <MapPin size={16} /> Kitchen · 29 rue de Montgeron, Brunoy
+              <MapPin size={16} /> Professional kitchen · 29 rue de Montgeron, Brunoy
             </p>
             <a href="#devis">
               Get my quote <ArrowRight size={15} />
@@ -783,16 +784,16 @@ export default function HomeEn() {
         <div>
           <p className="eyebrow dark">Packages & menus</p>
           <h2>
-            How will your guests
+            How would you like
             <br />
-            <em>be served?</em>
+            <em>your guests served?</em>
           </h2>
         </div>
         <div className="intro-copy">
           <p>
-            Choose your style of reception: its menu opens just below. Then
-            estimate your event, and your tailored quote is sent to you by
-            email.
+            Choose your preferred style of reception and its menu opens just
+            below. You can then estimate your event and receive a personalised
+            quote by email.
           </p>
         </div>
       </section>
@@ -852,8 +853,8 @@ export default function HomeEn() {
                   <div className="formula-menu-body">
                     <OfferRecap formula="aperitifs" />
                     <p className="formula-menu-note">
-                      Choose freely from our 30 creations. All are offered at the
-                      same price.
+                      Choose freely from our 30 creations, all offered at the same
+                      price.
                     </p>
                     <a
                       className="formula-choose-cta"
@@ -1042,7 +1043,7 @@ export default function HomeEn() {
                     <span>05</span>
                     <div>
                       <strong>Signature Brunch</strong>
-                      <small>A generous base and 10 pieces of your choice</small>
+                      <small>A generous brunch selection plus 10 bites of your choice</small>
                     </div>
                     <b aria-hidden="true">+</b>
                   </summary>
@@ -1066,14 +1067,14 @@ export default function HomeEn() {
                     </a>
                     <div className="formula-dishes-flat">
                       <div className="formula-menu-categories brunch-menu">
-                        <div className="formula-menu-category-flat"><h4>Included for every guest</h4>
+                        <div className="formula-menu-category-flat"><h4>Brunch essentials, included for every guest</h4>
                             <ul>
-                              <li>Bread, butter and jams</li>
+                              <li>Bread, butter and preserves</li>
                               <li>Mini pastries (croissants, pains au chocolat)</li>
                               <li>Pancakes with toppings of your choice (Nutella, jam, caramel)</li>
                               <li>Scrambled or fried eggs</li>
                               <li>Tea, coffee, hot chocolate, water, orange and apple juice</li>
-                              <li>Plus 10 savoury or sweet pieces of your choice</li>
+                              <li>Plus 10 savoury or sweet bites of your choice</li>
                             </ul>
                           </div>
                       </div>
@@ -1089,7 +1090,7 @@ export default function HomeEn() {
                     <div>
                       <strong>Barbecue Party</strong>
                       <small>
-                        Grills cooked live · €60 per guest
+                        Freshly grilled food, prepared live · €60 per guest
                       </small>
                     </div>
                     <b aria-hidden="true">+</b>
@@ -1097,9 +1098,9 @@ export default function HomeEn() {
                   <div className="formula-menu-body">
                     <OfferRecap formula="barbecue" />
                     <p className="formula-menu-note">
-                      A friendly, festive option for sunny days. The grills cook
-                      live and guests help themselves. The venue must allow
-                      barbecues.
+                      A relaxed and festive way to celebrate outdoors. Food is
+                      grilled live and guests help themselves. The venue must
+                      permit barbecues.
                     </p>
                     <a
                       className="formula-choose-cta"
@@ -1134,16 +1135,17 @@ export default function HomeEn() {
                   <summary>
                     <span>07</span>
                     <div>
-                      <strong>Private chef</strong>
-                      <small>Turnkey, at your home · from €95 per guest</small>
+                      <strong>Private chef at home</strong>
+                      <small>A complete dining experience at home · from €95 per guest</small>
                     </div>
                     <b aria-hidden="true">+</b>
                   </summary>
                   <div className="formula-menu-body">
                     <OfferRecap formula="chef" />
                     <p className="formula-menu-note">
-                      The standards of a fine hotel or high-end restaurant table,
-                      linen included. From 12 covers, travel costs extra.
+                      The sophistication of a fine restaurant or luxury hotel at
+                      your own table, table linen included. From 12 guests,
+                      excluding travel expenses.
                     </p>
                     <a
                       className="formula-choose-cta"
@@ -1202,14 +1204,14 @@ export default function HomeEn() {
         <div className="catalogue-preview-copy">
           <p className="eyebrow dark">Catalogue 2027-2028</p>
           <h2>
-            Browse our
+            Explore our
             <br />
             <em>catalogue.</em>
           </h2>
           <p>
-            Browse all our services online, page by page: dishes, prices,
-            options and terms. Tick your favourite dishes, then download the
-            catalogue or your selection as a PDF.
+            Discover all our services, page by page: dishes, pricing,
+            optional extras and terms. Select your favourite dishes, then
+            download the full catalogue or your selection as a PDF.
           </p>
           <div className="catalogue-preview-actions">
             <a className="button button-gold" href="https://catalogue.cuilleredor.fr/?lang=en" target="_blank" rel="noreferrer">
@@ -1258,16 +1260,16 @@ export default function HomeEn() {
           <div>
             <p className="eyebrow dark">Frequently asked questions</p>
             <h2 id="faq-title">
-              Everything to know
+              Everything you need to know
               <br />
               <em>before your event.</em>
             </h2>
           </div>
           <div>
             <p>
-              Packages, booking, organisation and tastings: here are the
-              essential answers to help you plan your reception with peace of
-              mind.
+              Packages, bookings, planning and tasting sessions: find the
+              essential answers to help you prepare for your celebration with
+              confidence.
             </p>
             <a href={WHATSAPP} target="_blank" rel="noreferrer">
               Still have a question? <span>Message us on WhatsApp</span>{" "}
@@ -1327,13 +1329,14 @@ export default function HomeEn() {
         <div>
           <p className="eyebrow dark">A question before you decide?</p>
           <h2>
-            We are here
+            We’re here
             <br />
-            <em>for you.</em>
+            <em>to help.</em>
           </h2>
           <p>
-            Package, venue, organisation: message us on WhatsApp. Already know
-            what you want? Go straight to the quote.
+            Questions about our packages, your venue or planning? Message us
+            on WhatsApp. Already know what you need? Request your quote
+            directly.
           </p>
           <div className="contact-actions">
             <a className="button button-gold" href="#devis">
@@ -1359,11 +1362,11 @@ export default function HomeEn() {
           <span>
             <MapPin size={19} />
             <span>
-              <small>Postal address</small>8 allée des Bois, 77240
+              <small>Correspondence address</small>8 allée des Bois, 77240
               Vert-Saint-Denis, France
             </span>
           </span>
-          <p className="contact-delay">Reply within 48 hours, quote included.</p>
+          <p className="contact-delay">Response within 48 hours, quotes included.</p>
         </address>
       </section>
 
@@ -1388,20 +1391,20 @@ export default function HomeEn() {
       <footer>
         <div className="footer-brand">
           <strong>Cuillère d’Or</strong>
-          <p>Catering service &amp; kitchen in Brunoy.</p>
+          <p>Catering service &amp; professional kitchen in Brunoy.</p>
           <small>
-            Huguette MVUNDA-KILOLA · EI · SIREN 889 933 800
+            Huguette MVUNDA-KILOLA · Sole proprietor · SIREN 889 933 800
           </small>
         </div>
         <div className="footer-action">
-          <span>Your reception starts here</span>
+          <span>Your celebration starts here</span>
           <a href="#devis">
             Get my quote <ArrowRight size={16} />
           </a>
           <nav className="footer-legal" aria-label="Legal information">
             <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN.pdf?v=20">Catalogue PDF</a>
-            <a href="/mentions-legales" hrefLang="fr">Legal notice (FR)</a>
-            <a href="/politique-confidentialite" hrefLang="fr">Privacy (FR)</a>
+            <a href="/en/legal-notice">Legal notice</a>
+            <a href="/en/privacy-policy">Privacy policy</a>
             <a href="/" hrefLang="fr" lang="fr">Version française</a>
           </nav>
         </div>
