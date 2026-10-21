@@ -621,6 +621,9 @@ export function unavailableEmail(req: RequestRow): { subject: string; html: stri
   return { subject, html, text };
 }
 
+/** Invitation à découvrir le site et le catalogue en ligne (mails de devis). */
+const DISCOVER_TEXT = "Découvrez aussi notre univers et toutes nos formules sur notre site, et feuilletez notre catalogue en ligne pour composer votre menu :";
+
 /** E-mail client au modèle Cuillère d’Or : intro, tableau récapitulatif, informations complémentaires, signature. */
 export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link: string, withContract: boolean, unavailable = false): { subject: string; html: string; text: string } {
   const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -669,6 +672,7 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
     + `<p style="margin:0 0 6px"><strong>Informations complémentaires :</strong></p>`
     + `<ul style="margin:0 0 16px;padding-left:22px">${infos.map((t) => `<li style="margin-bottom:4px">${bold(t)}</li>`).join("")}</ul>`
     + `<p>${esc(reread)}</p>`
+    + `<p>${esc(DISCOVER_TEXT)} <a href="https://cuilleredor.fr" target="_blank" rel="noopener noreferrer">cuilleredor.fr</a> · <a href="https://catalogue.cuilleredor.fr" target="_blank" rel="noopener noreferrer">catalogue en ligne</a></p>`
     + `<p>Je reste à votre entière disposition pour toute question ou ajustement.</p>`
     + `<p style="margin:18px 0 0">Bien cordialement,</p><p style="margin:2px 0 22px"><strong>Cuillère d’Or</strong></p>${EMAIL_SIGNATURE}</div>`;
   const text = [
@@ -678,6 +682,7 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
     `TOTAL PRESTATIONS : ${formatEUR(totals.total)}`, "",
     "Informations complémentaires :", ...infos.map((t) => `- ${t}`), "",
     reread, "",
+    `${DISCOVER_TEXT} https://cuilleredor.fr · catalogue en ligne : https://catalogue.cuilleredor.fr`, "",
     "Je reste à votre entière disposition pour toute question ou ajustement.", "",
     "Bien cordialement,", "Cuillère d’Or", "", "Cheffe Huguette MVUNDA — Cuillère d’Or, traiteur", "07 83 74 89 71 · contact@cuilleredor.fr · cuilleredor.fr",
   ].join("\n");
