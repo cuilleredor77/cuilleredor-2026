@@ -195,7 +195,7 @@ export type OptionPreset = {
   label: string;
   unit: string;
   price: number;
-  basis: "guests" | "adults" | "one" | "servers";
+  basis: "guests" | "adults" | "table" | "one" | "servers";
   detail?: string;
 };
 
@@ -213,11 +213,11 @@ export const OPTION_PRESETS: OptionPreset[] = [
   { id: "installation", label: "Installation complète (mise en place du lieu et du matériel)", unit: "forfait", price: 150, basis: "one" },
   { id: "dressage", label: "Dressage des tables (nappes, assiettes, verres et couverts)", unit: "forfait", price: 250, basis: "one", detail: "Compris si la vaisselle est louée avec la cheffe" },
   { id: "maitre-hotel", label: "Maître d’hôtel (coordonne l’équipe et le lieu jusqu’à la fin de soirée)", unit: "forfait", price: 160, basis: "one" },
-  { id: "kit-essentiel", label: "Kit vaisselle Essentiel (2 assiettes, verre à eau, verre à vin, couverts)", unit: "kit", price: 7, basis: "guests" },
-  { id: "kit-complet", label: "Kit vaisselle Complet (3 assiettes, verres eau, vin et champagne, couverts)", unit: "kit", price: 10, basis: "guests" },
-  { id: "kit-prestige", label: "Kit vaisselle Prestige (Kit Complet + sous-plat perlé)", unit: "kit", price: 13, basis: "guests" },
-  { id: "serviette", label: "Serviette en tissu", unit: "pers.", price: 2, basis: "guests" },
-  { id: "sous-plat", label: "Sous-plat perlé", unit: "unité", price: 3, basis: "one" },
+  { id: "kit-essentiel", label: "Kit vaisselle Essentiel (2 assiettes, verre à eau, verre à vin, couverts)", unit: "kit", price: 7, basis: "table" },
+  { id: "kit-complet", label: "Kit vaisselle Complet (3 assiettes, verres eau, vin et champagne, couverts)", unit: "kit", price: 10, basis: "table" },
+  { id: "kit-prestige", label: "Kit vaisselle Prestige (Kit Complet + sous-plat perlé)", unit: "kit", price: 13, basis: "table" },
+  { id: "serviette", label: "Serviette en tissu", unit: "pers.", price: 2, basis: "table" },
+  { id: "sous-plat", label: "Sous-plat perlé", unit: "unité", price: 3, basis: "table" },
   { id: "mange-debout", label: "Mange-debout (housse et nappe incluses)", unit: "unité", price: 15, basis: "one" },
   { id: "chafing", label: "Réchaud de buffet (chafing dish)", unit: "unité", price: 25, basis: "one" },
   { id: "logement", label: "Frais de logement de l’équipe", unit: "forfait", price: 0, basis: "one", detail: "Hébergement de l’équipe sur place (lieu éloigné)" },
@@ -225,10 +225,13 @@ export const OPTION_PRESETS: OptionPreset[] = [
   { id: "degustation", label: "Dégustation au restaurant Chez Lina (non déductible du devis)", unit: "pers.", price: 70, basis: "one" },
 ];
 
-export function presetToLine(preset: OptionPreset, adults: number, totalGuests: number): QuoteLine {
+/** tableGuests = adultes + enfants : base des kits vaisselle, serviettes et sous-plats (les prestataires n’en ont pas). */
+export function presetToLine(preset: OptionPreset, adults: number, totalGuests: number, tableGuests = totalGuests): QuoteLine {
   const qty =
     preset.basis === "guests"
       ? totalGuests
+      : preset.basis === "table"
+        ? tableGuests
       : preset.basis === "adults"
         ? adults
         : preset.basis === "servers"
@@ -337,7 +340,7 @@ export function buildDefaultQuote(req: RequestRow): Quote {
   }
 
   // Options cochées dans le Google Form (« Options : … ») : chacune devient une ligne chiffrée du catalogue.
-  const form = estimate || isChef ? { lines: [], message: req.message } : formOptions(req.message, adults, totalGuests);
+  const form = estimate || isChef ? { lines: [], message: req.message } : formOptions(req.message, adults, totalGuests, adults + children);
   lines.push(...form.lines);
   const brunch = isChef || key === "brunch" ? null : brunchNextDay(req.message, adults);
   if (brunch) lines.push(brunch);
@@ -755,7 +758,7 @@ const FORM_OPTION_RULES: Array<{ test: RegExp; preset: string; qty?: (text: stri
 ];
 
 /** Lignes du devis pour les options cochées dans le formulaire ; le message rendu ne garde que les options non reconnues. */
-export function formOptions(message: string, adults: number, totalGuests: number): { lines: QuoteLine[]; message: string } {
+export function formOptions(message: string, adults: number, totalGuests: number, tableGuests = totalGuests): { lines: QuoteLine[]; message: string } {
   const lines: QuoteLine[] = [];
   const kept = (message || "").split("\n").map((line) => {
     const m = line.match(/^\s*Options\s*:\s*(.*)$/i);
@@ -770,7 +773,7 @@ export function formOptions(message: string, adults: number, totalGuests: number
       if (lines.some((l) => l.id === `form-${preset.id}`)) continue;
       // Un seul kit vaisselle : le premier cité (le plus précis) l’emporte.
       if (preset.id.startsWith("kit-") && lines.some((l) => l.id.startsWith("form-kit-"))) continue;
-      const line = presetToLine(preset, adults, totalGuests);
+      const line = presetToLine(preset, adults, totalGuests, tableGuests);
       const qty = rule!.qty?.(part);
       lines.push({ ...line, id: `form-${preset.id}`, qty: qty || line.qty });
       // Une précision écrite par le client (« 2 serveurs pour les boissons ») reste visible.

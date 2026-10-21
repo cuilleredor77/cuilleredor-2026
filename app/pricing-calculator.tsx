@@ -82,7 +82,8 @@ type OptionDef = {
   unit: number;
   unitLabel: string;
   kind: "toggle" | "qty";
-  basis?: (guests: number, totalGuests: number) => number;
+  /** tableGuests = adultes + enfants (base de la vaisselle et du linge, sans les prestataires). */
+  basis?: (guests: number, totalGuests: number, tableGuests: number) => number;
   qtyLabel?: string;
   help?: string;
   /** Option proposée seulement pour certaines formules (ex. cocktails avec un vin d’honneur). */
@@ -153,15 +154,15 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
         unit: 2,
         unitLabel: "2 €/pers.",
         kind: "toggle",
-        basis: (_guests, totalGuests) => totalGuests,
+        basis: (_guests, _totalGuests, tableGuests) => tableGuests,
       },
       {
         id: "placemats",
         label: "Sous-plat perlé",
         unit: 3,
         unitLabel: "3 €/unité",
-        kind: "qty",
-        qtyLabel: "unité(s)",
+        kind: "toggle",
+        basis: (_guests, _totalGuests, tableGuests) => tableGuests,
       },
     ],
   },
@@ -244,10 +245,11 @@ function optionAmount(
   value: number,
   guests: number,
   totalGuests: number,
+  tableGuests: number,
 ) {
   if (def.kind === "toggle") {
     if (!value) return 0;
-    const multiplier = def.basis ? def.basis(guests, totalGuests) : 1;
+    const multiplier = def.basis ? def.basis(guests, totalGuests, tableGuests) : 1;
     return def.unit * multiplier;
   }
   return def.unit * value;
@@ -360,6 +362,7 @@ export default function PricingCalculator() {
 
   const isChef = formula === "chef";
   const totalGuests = isChef ? guests : guests + children + providers;
+  const tableGuests = isChef ? guests : guests + children;
   const price = useMemo(
     () => unitPrice(formula, service, totalGuests),
     [formula, service, totalGuests],
@@ -393,7 +396,7 @@ export default function PricingCalculator() {
     for (const def of category.options) {
       if (def.when && !def.when(formula, service)) continue;
       const value = optionValues[def.id] || 0;
-      const amount = optionAmount(def, value, guests, totalGuests);
+      const amount = optionAmount(def, value, guests, totalGuests, tableGuests);
       if (amount <= 0) continue;
       const qtyPart = def.kind === "qty" ? `${value} ${def.qtyLabel} · ` : "";
       // Un forfait affiche déjà son montant à droite : pas de « (50 € le forfait) » en doublon.
@@ -408,8 +411,8 @@ export default function PricingCalculator() {
   if (dishKit !== "none" && !isChef)
     optionLines.push({
       id: "dishKit",
-      label: `Vaisselle ${dishKit} (${totalGuests} kits × ${dishKitPrices[dishKit]} €)`,
-      amount: totalGuests * dishKitPrices[dishKit],
+      label: `Vaisselle ${dishKit} (${tableGuests} kits × ${dishKitPrices[dishKit]} €)`,
+      amount: tableGuests * dishKitPrices[dishKit],
     });
 
   const optionsTotal = optionLines.reduce((sum, line) => sum + line.amount, 0);
@@ -687,7 +690,7 @@ export default function PricingCalculator() {
               <h5>{category.title}</h5>
               {category.title === "Vaisselle et linge" && (
                 <label className="calculator-option-select">
-                  <span>Location de vaisselle ({totalGuests} convives)</span>
+                  <span>Location de vaisselle ({tableGuests} convives, hors prestataires)</span>
                   <select
                     value={dishKit}
                     onChange={(e) => setDishKit(e.target.value as DishKit)}

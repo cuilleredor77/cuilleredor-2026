@@ -423,7 +423,7 @@ export default function Editor() {
             <div className="adm-inline">
               <select value={presetId} onChange={(e) => {
                 const preset = OPTION_PRESETS.find((p) => p.id === e.target.value);
-                if (preset) setQ({ lines: travelLast([...quote.lines, presetToLine(preset, req.adults, totalGuests)]) });
+                if (preset) setQ({ lines: travelLast([...quote.lines, presetToLine(preset, req.adults, totalGuests, req.adults + req.children)]) });
                 setPresetId("");
               }}>
                 <option value="">+ Ajouter une option du catalogue…</option>
