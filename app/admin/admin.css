@@ -219,3 +219,12 @@
 
 /* Devis sur plusieurs jours : jour de chaque ligne */
 .adm-line .adm-day { margin-top: 4px; font-size: 12px; padding: 3px 6px; max-width: 100%; color: #6b5420; background: #faf7f0; border: 1px solid #e0d8c3; border-radius: 6px; }
+
+/* Menu Statut de la fiche : la couleur du statut sur la pastille arrondie elle-même (plus de carré coloré derrière) */
+.adm-status { background: transparent !important; padding: 0 !important; border-radius: 999px; }
+.adm-status select { border: 1px solid transparent; }
+.adm-status.s-nouvelle select { background-color: #fde2dc; color: #8f2a1a; border-color: #f2c4b9; }
+.adm-status.s-en_cours select, .adm-status.s-devis_pret select { background-color: #fff0c2; color: #6b5420; border-color: #ecd88f; }
+.adm-status.s-envoye select { background-color: #dbe8fb; color: #1c4a8a; border-color: #b9cff0; }
+.adm-status.s-signe select, .adm-status.s-acompte select { background-color: #d8f0dd; color: #1d6a33; border-color: #b3dcbd; }
+.adm-status.s-archivee select, .adm-status.s-abandonnee select { background-color: #eeeeee; color: #444; border-color: #d6d6d6; }
