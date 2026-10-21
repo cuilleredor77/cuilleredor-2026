@@ -14,6 +14,7 @@ type Formula =
 type Service = "avec-vin" | "sans-vin";
 type DishKit = "none" | "essentiel" | "complet" | "prestige";
 
+type Lang = "fr" | "en";
 const services: Record<Formula, Array<{ value: Service; label: string }>> = {
   buffet: [
     { value: "avec-vin", label: "Avec vin d’honneur" },
@@ -41,6 +42,19 @@ const MIN_GUESTS: Record<Formula, number> = {
   barbecue: 30,
   chef: 12,
 };
+// Libellés anglais des services (les valeurs/ids restent en français pour le formulaire).
+const SERVICE_EN: Record<string, string> = {
+  "Avec vin d’honneur": "With cocktail reception",
+  "Sans vin d’honneur": "Without cocktail reception",
+  "Vin d’honneur inclus": "Cocktail reception included",
+  "Brunch Signature": "Signature Brunch",
+  "Barbecue Party": "Barbecue Party",
+  "Chef à domicile · tout compris": "Private chef · all-inclusive",
+};
+const BELOW_MIN_WHATSAPP_EN =
+  "https://wa.me/33783748971?text=Hello%20Cuill%C3%A8re%20d%27Or%2C%20my%20event%20has%20fewer%20guests%20than%20the%20catalogue%20minimum.%20Is%20that%20possible%3F";
+const BELOW_MIN_MAILTO_EN =
+  "mailto:contact@cuilleredor.fr?subject=Enquiry%20about%20a%20small%20event&body=Hello%2C%0A%0AMy%20event%20has%20fewer%20guests%20than%20the%20catalogue%20minimum.%20Is%20that%20possible%3F%0A%0ADate%3A%0AVenue%3A%0ANumber%20of%20guests%3A%0APreferred%20formula%3A";
 const BELOW_MIN_WHATSAPP =
   "https://wa.me/33783748971?text=Bonjour%20Cuill%C3%A8re%20d%27Or%2C%20mon%20%C3%A9v%C3%A9nement%20compte%20moins%20d%27invit%C3%A9s%20que%20le%20minimum%20du%20catalogue.%20Est-ce%20possible%20%3F";
 const BELOW_MIN_MAILTO =
@@ -57,6 +71,23 @@ const formulaNames: Record<Formula, string> = {
   barbecue: "Barbecue Party",
   chef: "Chef à domicile",
 };
+
+const formulaNamesEn: Record<Formula, string> = {
+  buffet: "Buffet",
+  plateau: "Platter service",
+  assiette: "Plated service",
+  aperitifs: "Cocktail reception",
+  brunch: "Signature Brunch",
+  barbecue: "Barbecue Party",
+  chef: "Private chef",
+};
+// Montant : « 1 234,50 € » en français, « €1,234.50 » en anglais.
+function fmtMoney(n: number, lang: Lang) {
+  const s = n.toLocaleString(lang === "en" ? "en-GB" : "fr-FR", {
+    minimumFractionDigits: n % 1 ? 2 : 0,
+  });
+  return lang === "en" ? `€${s}` : `${s} €`;
+}
 
 function unitPrice(
   formula: Formula,
@@ -88,6 +119,78 @@ type OptionDef = {
   help?: string;
   /** Option proposée seulement pour certaines formules (ex. cocktails avec un vin d’honneur). */
   when?: (formula: Formula, service: Service) => boolean;
+};
+
+// Traductions anglaises des options (ids inchangés).
+const OPTION_EN: Record<
+  string,
+  { label: string; unitLabel: string; help?: string; qtyLabel?: string }
+> = {
+  cheese: { label: "Platter of 3 assorted cheeses", unitLabel: "€9/guest" },
+  drinks: {
+    label: "Soft drinks package (colas, sodas, water)",
+    unitLabel: "€5/guest",
+  },
+  drinksService: {
+    label: "Drinks service all evening",
+    unitLabel: "€160/server",
+    help: "1 server per 50 guests, calculated automatically.",
+  },
+  honorCocktails: {
+    label: "4 cocktails of your choice per guest (cocktail reception)",
+    unitLabel: "€5/guest",
+  },
+  cocktails: {
+    label: "Additional cocktails, beyond the 4 included (1 litre for about 4 guests)",
+    unitLabel: "€10/litre",
+    qtyLabel: "litre(s)",
+  },
+  cakeService: {
+    label: "Cake presentation, cutting and service",
+    unitLabel: "€150 flat fee",
+  },
+  napkin: { label: "Cloth napkin", unitLabel: "€2/guest" },
+  placemats: { label: "Beaded charger plate", unitLabel: "€3/unit" },
+  standingTables: {
+    label: "Cocktail table (cover and tablecloth included)",
+    unitLabel: "€15/unit",
+    qtyLabel: "unit(s)",
+  },
+  chafingDishes: { label: "Chafing dish", unitLabel: "€25/unit", qtyLabel: "unit(s)" },
+  warmer: { label: "Professional warming cabinet", unitLabel: "€150 flat fee" },
+  maitreHotel: {
+    label: "Maître d’hôtel",
+    unitLabel: "€160",
+    help: "Coordinates the team and the venue until the end of the evening.",
+  },
+  setup: { label: "Set-up and clear-down", unitLabel: "€150 flat fee" },
+  dressing: { label: "Plating and presentation", unitLabel: "€250 flat fee" },
+  waste: {
+    label: "Food waste management (excluding glass)",
+    unitLabel: "€50 flat fee",
+    help: "Included by default. Untick only if your venue handles food waste itself.",
+  },
+};
+const CATEGORY_EN: Record<string, string> = {
+  "Repas et boissons": "Food and drinks",
+  "Vaisselle et linge": "Tableware and linen",
+  "Mobilier, matériel et services": "Furniture, equipment and services",
+};
+const DISH_KIT_EN: Record<DishKit, { name: string; label: string }> = {
+  none: { name: "None", label: "None" },
+  essentiel: {
+    name: "Essential",
+    label: "Essential (2 plates, 1 water glass, 1 wine glass, cutlery)",
+  },
+  complet: {
+    name: "Complete",
+    label:
+      "Complete (3 plates, 1 water glass, 1 wine glass, 1 champagne flute, cutlery)",
+  },
+  prestige: {
+    name: "Prestige",
+    label: "Prestige (3 plates, beaded charger plate, 3 glasses, cutlery)",
+  },
 };
 
 const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
@@ -263,7 +366,13 @@ function countValue(input: HTMLInputElement): number {
   return n;
 }
 
-export default function PricingCalculator() {
+export default function PricingCalculator({
+  lang = "fr",
+}: { lang?: Lang } = {}) {
+  const en = lang === "en";
+  // Version affichée d'une option (les ids et libellés français restent la donnée envoyée au devis).
+  const show = (def: OptionDef): OptionDef =>
+    en ? { ...def, ...OPTION_EN[def.id] } : def;
   const rootRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
@@ -369,8 +478,12 @@ export default function PricingCalculator() {
   );
   const mealTotal = price === null ? null : price * guests;
 
-  const optionLines: Array<{ id: string; label: string; amount: number }> =
-    [];
+  const optionLines: Array<{
+    id: string;
+    label: string;
+    shown: string;
+    amount: number;
+  }> = [];
   if (
     service === "avec-vin" &&
     (formula === "buffet" || formula === "plateau" || formula === "assiette")
@@ -378,18 +491,27 @@ export default function PricingCalculator() {
     optionLines.push({
       id: "honorWine",
       label: "Vin d’honneur, 10 pièces au choix",
+      shown: en
+        ? "Cocktail reception, 10 bites of your choice"
+        : "Vin d’honneur, 10 pièces au choix",
       amount: guests * HONOR_WINE_SUPPLEMENT,
     });
   if (children && !isChef)
     optionLines.push({
       id: "children",
       label: `${children} repas enfant${children > 1 ? "s" : ""} (${CHILD_PRICE} €/pers.)`,
+      shown: en
+        ? `${children} ${children > 1 ? "children’s meals" : "child’s meal"} (€${CHILD_PRICE}/guest)`
+        : `${children} repas enfant${children > 1 ? "s" : ""} (${CHILD_PRICE} €/pers.)`,
       amount: children * CHILD_PRICE,
     });
   if (providers && !isChef)
     optionLines.push({
       id: "providers",
       label: `${providers} repas prestataire${providers > 1 ? "s" : ""} (${PROVIDER_PRICE} €/pers.)`,
+      shown: en
+        ? `${providers} vendor meal${providers > 1 ? "s" : ""} (€${PROVIDER_PRICE}/guest)`
+        : `${providers} repas prestataire${providers > 1 ? "s" : ""} (${PROVIDER_PRICE} €/pers.)`,
       amount: providers * PROVIDER_PRICE,
     });
   for (const category of isChef ? [] : OPTION_CATEGORIES) {
@@ -401,9 +523,12 @@ export default function PricingCalculator() {
       const qtyPart = def.kind === "qty" ? `${value} ${def.qtyLabel} · ` : "";
       // Un forfait affiche déjà son montant à droite : pas de « (50 € le forfait) » en doublon.
       const isFlat = !qtyPart && def.unitLabel.endsWith("le forfait");
+      const d = show(def);
+      const qtyShown = qtyPart ? `${value} ${d.qtyLabel} · ` : "";
       optionLines.push({
         id: def.id,
         label: isFlat ? def.label : `${def.label} (${qtyPart}${def.unitLabel})`,
+        shown: isFlat ? d.label : `${d.label} (${qtyShown}${d.unitLabel})`,
         amount,
       });
     }
@@ -412,6 +537,9 @@ export default function PricingCalculator() {
     optionLines.push({
       id: "dishKit",
       label: `Vaisselle ${dishKit} (${tableGuests} kits × ${dishKitPrices[dishKit]} €)`,
+      shown: en
+        ? `${DISH_KIT_EN[dishKit].name} tableware (${tableGuests} kits × €${dishKitPrices[dishKit]})`
+        : `Vaisselle ${dishKit} (${tableGuests} kits × ${dishKitPrices[dishKit]} €)`,
       amount: tableGuests * dishKitPrices[dishKit],
     });
 
@@ -425,6 +553,8 @@ export default function PricingCalculator() {
     mealTotal === null ? null : mealTotal + optionsTotal;
   const selectedService =
     services[formula].find((item) => item.value === service)?.label || "";
+  const serviceShown = (label: string) =>
+    en ? SERVICE_EN[label] || label : label;
   const minGuests = MIN_GUESTS[formula];
 
   function changeFormula(next: Formula) {
@@ -456,7 +586,9 @@ export default function PricingCalculator() {
       setGuests(1000);
       setGuestsText("1000");
       setGuestError(
-        "Le maximum du simulateur est de 1 000 adultes. Au-delà, contactez-nous.",
+        en
+          ? "The calculator’s maximum is 1,000 adults. Beyond that, please contact us."
+          : "Le maximum du simulateur est de 1 000 adultes. Au-delà, contactez-nous.",
       );
       return;
     }
@@ -472,9 +604,13 @@ export default function PricingCalculator() {
   // prestataires compris), comme indiqué dans la FAQ et le catalogue.
   const belowMin = guests > 0 && totalGuests < minGuests;
   const showBelowMin = belowMin && (!guestsFocused || guests >= 10);
-  const minGuestsLabel = isChef
-    ? `${minGuests} convives`
-    : `${minGuests} convives au total`;
+  const minGuestsLabel = en
+    ? isChef
+      ? `${minGuests} guests`
+      : `${minGuests} guests in total`
+    : isChef
+      ? `${minGuests} convives`
+      : `${minGuests} convives au total`;
   const estimate = {
     formulaId: formula,
     formula: formulaNames[formula],
@@ -484,7 +620,7 @@ export default function PricingCalculator() {
     totalGuests,
     serviceId: service,
     service: selectedService,
-    options: optionLines,
+    options: optionLines.map(({ id, label, amount }) => ({ id, label, amount })),
     optionsTotal,
     total: estimatedTotal,
   };
@@ -530,20 +666,23 @@ export default function PricingCalculator() {
     >
       <div className="calculator-heading">
         <div>
-          <span>Estimation personnalisée</span>
-          <h3 id="calculator-title">Calculez votre réception</h3>
+          <span>{en ? "Personalised estimate" : "Estimation personnalisée"}</span>
+          <h3 id="calculator-title">
+            {en ? "Calculate the cost of your reception" : "Calculez votre réception"}
+          </h3>
         </div>
         <div className="calculator-heading-side">
           <p>
-            Choisissez la formule et indiquez vos convives pour obtenir
-            immédiatement un ordre de budget.
+            {en
+              ? "Choose your formula and enter your guest numbers for an instant budget estimate."
+              : "Choisissez la formule et indiquez vos convives pour obtenir immédiatement un ordre de budget."}
           </p>
           <button
             type="button"
             className="calculator-reset"
             onClick={resetCalculator}
           >
-            Réinitialiser la calculette
+            {en ? "Reset the calculator" : "Réinitialiser la calculette"}
           </button>
         </div>
       </div>
@@ -552,31 +691,45 @@ export default function PricingCalculator() {
       <div className="calculator-controls">
         <div className="calculator-controls-row">
           <label>
-            <span>Votre formule</span>
+            <span>{en ? "Your formula" : "Votre formule"}</span>
             <select
               value={formula}
               onChange={(e) => changeFormula(e.target.value as Formula)}
             >
-              <option value="buffet">Buffet</option>
-              <option value="plateau">Plateau</option>
-              <option value="assiette">Service à l’assiette</option>
-              <option value="aperitifs">Apéritifs & vin d’honneur</option>
-              <option value="brunch">Brunch Signature</option>
-              <option value="barbecue">Barbecue Party</option>
-              <option value="chef">Chef à domicile</option>
+              {en ? (
+                <>
+                  <option value="buffet">Buffet</option>
+                  <option value="plateau">Platter service</option>
+                  <option value="assiette">Plated service</option>
+                  <option value="aperitifs">Cocktail reception</option>
+                  <option value="brunch">Signature Brunch</option>
+                  <option value="barbecue">Barbecue Party</option>
+                  <option value="chef">Private chef</option>
+                </>
+              ) : (
+                <>
+                  <option value="buffet">Buffet</option>
+                  <option value="plateau">Plateau</option>
+                  <option value="assiette">Service à l’assiette</option>
+                  <option value="aperitifs">Apéritifs & vin d’honneur</option>
+                  <option value="brunch">Brunch Signature</option>
+                  <option value="barbecue">Barbecue Party</option>
+                  <option value="chef">Chef à domicile</option>
+                </>
+              )}
             </select>
           </label>
           {/* Choix utile seulement pour buffet, plateau et assiette (avec ou sans vin d'honneur) */}
           {services[formula].length > 1 ? (
             <label>
-              <span>Vin d’honneur</span>
+              <span>{en ? "Cocktail reception" : "Vin d’honneur"}</span>
               <select
                 value={service}
                 onChange={(e) => setService(e.target.value as Service)}
               >
                 {services[formula].map((item) => (
                   <option key={item.value} value={item.value}>
-                    {item.label}
+                    {serviceShown(item.label)}
                   </option>
                 ))}
               </select>
@@ -585,7 +738,7 @@ export default function PricingCalculator() {
         </div>
         <div className="calculator-controls-row calculator-controls-row--people">
           <label>
-            <span>Adultes</span>
+            <span>{en ? "Adults" : "Adultes"}</span>
             <input
               type="number"
               min="1"
@@ -610,16 +763,32 @@ export default function PricingCalculator() {
             >
               {guestError ||
                 (showBelowMin ? (
-                  <>
-                    Moins de {minGuestsLabel} : contactez-nous directement
-                    sur{" "}
-                    <a href={BELOW_MIN_WHATSAPP} target="_blank" rel="noreferrer">
-                      WhatsApp
-                    </a>{" "}
-                    ou par{" "}
-                    <a href={BELOW_MIN_MAILTO}>e-mail</a> pour étudier la
-                    possibilité.
-                  </>
+                  en ? (
+                    <>
+                      Fewer than {minGuestsLabel}: please contact us directly
+                      on{" "}
+                      <a href={BELOW_MIN_WHATSAPP_EN} target="_blank" rel="noreferrer">
+                        WhatsApp
+                      </a>{" "}
+                      or by <a href={BELOW_MIN_MAILTO_EN}>email</a> and we
+                      will look into what is possible.
+                    </>
+                  ) : (
+                    <>
+                      Moins de {minGuestsLabel} : contactez-nous directement
+                      sur{" "}
+                      <a href={BELOW_MIN_WHATSAPP} target="_blank" rel="noreferrer">
+                        WhatsApp
+                      </a>{" "}
+                      ou par{" "}
+                      <a href={BELOW_MIN_MAILTO}>e-mail</a> pour étudier la
+                      possibilité.
+                    </>
+                  )
+                ) : en ? (
+                  isChef
+                    ? `Between ${minGuests} and 1,000 guests.`
+                    : `From ${minGuestsLabel}, children and vendors included.`
                 ) : (
                   isChef
                     ? `Entre ${minGuests} et 1 000 convives.`
@@ -629,7 +798,7 @@ export default function PricingCalculator() {
           </label>
           {!isChef && (
           <label>
-            <span>Enfants</span>
+            <span>{en ? "Children" : "Enfants"}</span>
             <input
               type="number"
               min="0"
@@ -640,13 +809,15 @@ export default function PricingCalculator() {
               onChange={(e) => setChildren(countValue(e.target))}
             />
             <small className="calculator-field-help">
-              Repas adapté aux 5-12 ans · 25 €/personne.
+              {en
+                ? "Meal adapted for ages 5-12 · €25/guest."
+                : "Repas adapté aux 5-12 ans · 25 €/personne."}
             </small>
           </label>
           )}
           {!isChef && (
           <label>
-            <span>Prestataires</span>
+            <span>{en ? "Vendors" : "Prestataires"}</span>
             <input
               type="number"
               min="0"
@@ -657,7 +828,9 @@ export default function PricingCalculator() {
               onChange={(e) => setProviders(countValue(e.target))}
             />
             <small className="calculator-field-help">
-              Photographe, DJ, vidéaste… · 30 €/personne.
+              {en
+                ? "Photographer, DJ, videographer… · €30/guest."
+                : "Photographe, DJ, vidéaste… · 30 €/personne."}
             </small>
           </label>
           )}
@@ -667,13 +840,15 @@ export default function PricingCalculator() {
       {!isChef && (
       <details className="calculator-options-toggle">
         <summary>
-          <span>Ajouter des options</span>
+          <span>{en ? "Add options" : "Ajouter des options"}</span>
           <small>
             {extraLines.length === 0
-              ? "Fromages, boissons, vaisselle, mobilier…"
+              ? en
+                ? "Cheese, drinks, tableware, furniture…"
+                : "Fromages, boissons, vaisselle, mobilier…"
               : extraLines.length === 1
-                ? `${extraLines[0].label.replace(/ \([^)]*\)\s*$/, "")}${extraLines[0].id === "waste" ? " — sélectionné par défaut" : ""} · ${extraLines[0].amount.toLocaleString("fr-FR", { minimumFractionDigits: extraLines[0].amount % 1 ? 2 : 0 })} €`
-                : `${extraLines.length} options sélectionnées · ${extrasTotal.toLocaleString("fr-FR", { minimumFractionDigits: extrasTotal % 1 ? 2 : 0 })} €`}
+                ? `${extraLines[0].shown.replace(/ \([^)]*\)\s*$/, "")}${extraLines[0].id === "waste" ? (en ? " — selected by default" : " — sélectionné par défaut") : ""} · ${fmtMoney(extraLines[0].amount, lang)}`
+                : `${extraLines.length} ${en ? "options selected" : "options sélectionnées"} · ${fmtMoney(extrasTotal, lang)}`}
           </small>
           <b aria-hidden="true">+</b>
         </summary>
@@ -681,27 +856,43 @@ export default function PricingCalculator() {
           <div className="calculator-options-intro">
             <ListChecks size={18} />
             <p>
-              Seule la gestion des déchets est incluse par défaut ; ajoutez
-              uniquement les options utiles à votre réception.
+              {en
+                ? "Only waste management is included by default; add just the options you need for your reception."
+                : "Seule la gestion des déchets est incluse par défaut ; ajoutez uniquement les options utiles à votre réception."}
             </p>
           </div>
           {OPTION_CATEGORIES.map((category) => (
             <div className="calculator-option-group" key={category.title}>
-              <h5>{category.title}</h5>
+              <h5>{en ? CATEGORY_EN[category.title] : category.title}</h5>
               {category.title === "Vaisselle et linge" && (
                 <label className="calculator-option-select">
-                  <span>Location de vaisselle ({tableGuests} convives, hors prestataires)</span>
+                  <span>
+                    {en
+                      ? `Tableware hire (${tableGuests} guests, excluding vendors)`
+                      : `Location de vaisselle (${tableGuests} convives, hors prestataires)`}
+                  </span>
                   <select
                     value={dishKit}
                     onChange={(e) => setDishKit(e.target.value as DishKit)}
                   >
-                    <option value="none">Aucune</option>
-                    <option value="essentiel">Essentiel — 7 €/kit</option>
-                    <option value="complet">Complet — 10 €/kit</option>
-                    <option value="prestige">Prestige — 13 €/kit</option>
+                    {en ? (
+                      <>
+                        <option value="none">None</option>
+                        <option value="essentiel">Essential — €7/kit</option>
+                        <option value="complet">Complete — €10/kit</option>
+                        <option value="prestige">Prestige — €13/kit</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="none">Aucune</option>
+                        <option value="essentiel">Essentiel — 7 €/kit</option>
+                        <option value="complet">Complet — 10 €/kit</option>
+                        <option value="prestige">Prestige — 13 €/kit</option>
+                      </>
+                    )}
                   </select>
                   <small className="calculator-field-help">
-                    {dishKitLabels[dishKit]}
+                    {en ? DISH_KIT_EN[dishKit].label : dishKitLabels[dishKit]}
                   </small>
                 </label>
               )}
@@ -716,14 +907,19 @@ export default function PricingCalculator() {
                       }
                     />
                     <span>
-                      {def.label}{" "}
+                      {show(def).label}{" "}
                       <small>
-                        ({def.unitLabel}
-                        {def.id === "waste" ? " · sélectionné par défaut" : ""})
+                        ({show(def).unitLabel}
+                        {def.id === "waste"
+                          ? en
+                            ? " · selected by default"
+                            : " · sélectionné par défaut"
+                          : ""}
+                        )
                       </small>
                       {def.help && (
                         <small className="calculator-field-help">
-                          {def.help}
+                          {show(def).help}
                         </small>
                       )}
                     </span>
@@ -731,7 +927,7 @@ export default function PricingCalculator() {
                 ) : (
                   <label className="calculator-option-qty" key={def.id}>
                     <span>
-                      {def.label} <small>({def.unitLabel})</small>
+                      {show(def).label} <small>({show(def).unitLabel})</small>
                     </span>
                     <input
                       type="number"
@@ -748,7 +944,7 @@ export default function PricingCalculator() {
                     />
                     {def.help && (
                       <small className="calculator-field-help">
-                        {def.help}
+                        {show(def).help}
                       </small>
                     )}
                   </label>
@@ -757,16 +953,18 @@ export default function PricingCalculator() {
             </div>
           ))}
           <p className="calculator-option-note">
-            Camion frigorifique, photographe, vidéaste, DJ, décorateur et
-            wedding planner : sur devis, à discuter directement avec nous.
+            {en
+              ? "Refrigerated van, photographer, videographer, DJ, decorator and wedding planner: available on quotation, to be discussed directly with us."
+              : "Camion frigorifique, photographe, vidéaste, DJ, décorateur et wedding planner : sur devis, à discuter directement avec nous."}
           </p>
         </div>
       </details>
       )}
       {isChef && (
         <p className="calculator-option-note">
-          Vaisselle, nappage et service inclus. Seuls les frais de déplacement
-          s’ajoutent.
+          {en
+            ? "Tableware, linen and service included. Only travel costs are added."
+            : "Vaisselle, nappage et service inclus. Seuls les frais de déplacement s’ajoutent."}
         </p>
       )}
 
@@ -776,51 +974,58 @@ export default function PricingCalculator() {
         <ul className="calculator-breakdown">
           <li>
             <span>
-              {guests} adulte{guests > 1 ? "s" : ""} × {isChef ? "dès " : ""}
-              {price} €/pers.
+              {en ? (
+                <>
+                  {guests} adult{guests > 1 ? "s" : ""} × {isChef ? "from " : ""}
+                  €{price}/guest
+                </>
+              ) : (
+                <>
+                  {guests} adulte{guests > 1 ? "s" : ""} × {isChef ? "dès " : ""}
+                  {price} €/pers.
+                </>
+              )}
             </span>
-            <span>
-              {mealTotal!.toLocaleString("fr-FR", { minimumFractionDigits: mealTotal! % 1 ? 2 : 0 })}{" "}
-              €
-            </span>
+            <span>{fmtMoney(mealTotal!, lang)}</span>
           </li>
           {optionLines.map((line) => (
             <li key={line.id}>
-              <span>{line.label}</span>
-              <span>
-                {line.amount.toLocaleString("fr-FR", { minimumFractionDigits: line.amount % 1 ? 2 : 0 })}{" "}
-                €
-              </span>
+              <span>{line.shown}</span>
+              <span>{fmtMoney(line.amount, lang)}</span>
             </li>
           ))}
           <li className="calculator-breakdown-total">
-            <span>Estimation</span>
-            <span>
-              {estimatedTotal.toLocaleString("fr-FR", { minimumFractionDigits: estimatedTotal % 1 ? 2 : 0 })}{" "}
-              €
-            </span>
+            <span>{en ? "Estimate" : "Estimation"}</span>
+            <span>{fmtMoney(estimatedTotal, lang)}</span>
           </li>
         </ul>
       )}
       <div className="calculator-initial-result" aria-live="polite">
         <div>
-          <span>Votre réception</span>
-          <strong>{formulaNames[formula]}</strong>
+          <span>{en ? "Your reception" : "Votre réception"}</span>
+          <strong>{en ? formulaNamesEn[formula] : formulaNames[formula]}</strong>
           <small>
-            {totalGuests} convives · {selectedService}
+            {totalGuests} {en ? "guests" : "convives"} ·{" "}
+            {serviceShown(selectedService)}
           </small>
         </div>
         <div>
-          <span>Votre estimation</span>
+          <span>{en ? "Your estimate" : "Votre estimation"}</span>
           <strong>
             {estimatedTotal === null
-              ? "Sur devis"
-              : `${estimatedTotal.toLocaleString("fr-FR", { minimumFractionDigits: estimatedTotal % 1 ? 2 : 0 })} €`}
+              ? en
+                ? "On quotation"
+                : "Sur devis"
+              : fmtMoney(estimatedTotal, lang)}
           </strong>
           <small>
             {optionLines.length > 0
-              ? "Repas et options sélectionnées inclus · hors déplacement"
-              : "Repas spécifiques inclus · hors options et déplacement"}
+              ? en
+                ? "Meals and selected options included · excluding travel"
+                : "Repas et options sélectionnées inclus · hors déplacement"
+              : en
+                ? "Specific meals included · excluding options and travel"
+                : "Repas spécifiques inclus · hors options et déplacement"}
           </small>
         </div>
         <div className="calculator-initial-actions">
@@ -833,16 +1038,18 @@ export default function PricingCalculator() {
             }
             onClick={requestQuote}
           >
-            Enregistrer et recevoir mon devis <ArrowRight size={17} />
+            {en ? "Save and receive my quote" : "Enregistrer et recevoir mon devis"}{" "}
+            <ArrowRight size={17} />
           </a>
           <a className="calculator-secondary-link" href="#carte">
-            Voir les plats <ArrowRight size={17} />
+            {en ? "View the dishes" : "Voir les plats"} <ArrowRight size={17} />
           </a>
         </div>
       </div>
       <p className="calculator-disclaimer">
-        Estimation non contractuelle. Le déplacement et le détail du devis
-        sont calculés avec vous à partir de votre demande.
+        {en
+          ? "Non-binding estimate. Travel and the detailed quote are worked out with you based on your enquiry."
+          : "Estimation non contractuelle. Le déplacement et le détail du devis sont calculés avec vous à partir de votre demande."}
       </p>
       </div>
       </div>
@@ -851,11 +1058,13 @@ export default function PricingCalculator() {
         aria-hidden={!mobileBarVisible}
       >
         <span>
-          Estimation :{" "}
+          {en ? "Estimate:" : "Estimation :"}{" "}
           <strong>
             {estimatedTotal === null
-              ? "Sur devis"
-              : `${estimatedTotal.toLocaleString("fr-FR", { minimumFractionDigits: estimatedTotal % 1 ? 2 : 0 })} €`}
+              ? en
+                ? "On quotation"
+                : "Sur devis"
+              : fmtMoney(estimatedTotal, lang)}
           </strong>
         </span>
         <a
@@ -867,7 +1076,7 @@ export default function PricingCalculator() {
           onClick={requestQuote}
           tabIndex={mobileBarVisible ? 0 : -1}
         >
-          Continuer <ArrowRight size={16} />
+          {en ? "Continue" : "Continuer"} <ArrowRight size={16} />
         </a>
       </div>
     </div>

@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: {
     canonical: "/",
+    languages: { fr: "/", en: "/en" },
   },
   icons: {
     icon: [

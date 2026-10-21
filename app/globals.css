@@ -7266,3 +7266,14 @@ details.formula-menu-category-flat > summary::-webkit-details-marker { display: 
 .contact { background: #f4f2ed !important; background-image: none !important; }
 .contact::before, .contact::after { display: none !important; }
 .contact address .contact-delay { margin: 6px 0 0; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.14); color: #d4af37 !important; font-size: 0.92rem; font-weight: 600; opacity: 1; }
+
+/* Bouton de langue FR | EN dans le menu */
+.desktop-nav a.lang-switch { border: 1px solid currentColor; border-radius: 999px; padding: 2px 9px; font-size: 12px; letter-spacing: .06em; }
+.desktop-nav a.lang-switch:after { display: none; }
+
+/* Version anglaise : « Your » au lieu de « Votre » devant la formule ouverte */
+html[lang="en"][data-commercial-formula="buffet"] .formula-menu-list>[data-menu-formula="buffet"] summary strong:before,
+html[lang="en"][data-commercial-formula="plateau"] .formula-menu-list>[data-menu-formula="plateau"] summary strong:before,
+html[lang="en"][data-commercial-formula="assiette"] .formula-menu-list>[data-menu-formula="assiette"] summary strong:before,
+html[lang="en"][data-commercial-formula="aperitifs"] .formula-menu-list>[data-menu-formula="aperitifs"] summary strong:before,
+html[lang="en"][data-commercial-formula="brunch"] .formula-menu-list>[data-menu-formula="brunch"] summary strong:before { content: "Your " !important; color: #fff; }

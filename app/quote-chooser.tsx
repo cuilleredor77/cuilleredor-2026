@@ -49,14 +49,146 @@ const FORMULA_FORM_VALUE: Record<FormulaId, string> = {
 // Formules pour lesquelles le vin d'honneur est une option (cf. lib/quote.ts).
 const WITH_HONOR_WINE: FormulaId[] = ["buffet", "plateau", "assiette"];
 
-const EVENT_TYPES = [
-  "Mariage",
-  "Anniversaire",
-  "Baptême",
-  "Événement d’entreprise",
-  "Fête de famille",
-  "Autre",
+type Lang = "fr" | "en";
+
+// Valeurs envoyées au back-office (français) + libellés affichés en anglais.
+const EVENT_TYPES: Array<[string, string]> = [
+  ["Mariage", "Wedding"],
+  ["Anniversaire", "Birthday"],
+  ["Baptême", "Christening"],
+  ["Événement d’entreprise", "Corporate event"],
+  ["Fête de famille", "Family celebration"],
+  ["Autre", "Other"],
 ];
+
+const FORMULA_LABEL_EN: Record<FormulaId, string> = {
+  buffet: "Buffet",
+  plateau: "Platter service",
+  assiette: "Plated service",
+  aperitifs: "Cocktail reception",
+  brunch: "Signature Brunch",
+  barbecue: "Barbecue Party",
+  chef: "Private chef",
+};
+
+const T = {
+  fr: {
+    adult: ["adulte", "adultes"],
+    child: ["enfant", "enfants"],
+    provider: ["prestataire", "prestataires"],
+    noOption: "Aucune option sélectionnée",
+    onQuote: "Sur devis",
+    locale: "fr-FR",
+    serviceModes: {
+      service: "Avec service sur place",
+      livraison: "Livraison sans service",
+      emporter: "À emporter (retrait sur place)",
+    },
+    sendFailed: "L’envoi n’a pas abouti.",
+    sendFailedConn: "L’envoi n’a pas abouti (connexion interrompue).",
+    thanks: "Merci, votre demande est bien arrivée.",
+    thanksBefore: "Votre devis personnalisé vous sera envoyé par e-mail à l’adresse",
+    thanksAfter: ", puis nous vous contacterons.",
+    you: "Vous",
+    name: "Nom et prénom *",
+    email: "E-mail *",
+    phone: "Téléphone *",
+    yourEvent: "Votre événement",
+    eventType: "Type d’événement",
+    date: "Date *",
+    place: "Adresse complète du lieu de réception",
+    placePh: "ex. 12 rue des Lilas, 77240 Vert-Saint-Denis",
+    placeHint:
+      "Avec l’adresse complète, le déplacement est chiffré au plus juste. Avec la ville seule, il est estimé ; avec le département seul, il sera chiffré ensuite.",
+    formula: "Formule envisagée *",
+    honorWine: "Avec vin d’honneur",
+    adults: "Adultes *",
+    children: "Enfants (− 12 ans)",
+    providers: "Prestataires (DJ, photographe…)",
+    serviceType: "Type de prestation",
+    notes: "Précisions (facultatif)",
+    notesPh: "Allergies, contraintes du lieu, horaires…",
+    trap: "Site web",
+    fallback: "Utiliser le formulaire de secours",
+    sending: "Envoi en cours…",
+    submit: "Enregistrer et recevoir mon devis par e-mail",
+    badge: "Devis par e-mail",
+    title: "Enregistrer mon estimation",
+    resumes: "Il reprend votre estimation",
+    askInfo: "Indiquez la date, le lieu, les convives et la formule envisagée.",
+    required:
+      "Il ne manque que ce qui sert à chiffrer votre devis. Vous le recevez par e-mail, puis nous vous contactons.",
+    preparing: "Préparation de votre formulaire…",
+    fewSeconds: "Quelques secondes suffisent.",
+    iframeTitle: "Demande de devis Cuillère d’Or",
+    loading: "Chargement du formulaire…",
+    privacy:
+      "En envoyant ce formulaire, vous acceptez l’utilisation de vos informations pour préparer votre proposition et votre prestation.",
+    privacyLink: "Politique de confidentialité",
+    backToSite: "Revenir au formulaire du site",
+    useFallback: "Le formulaire ne s’affiche pas bien ? Utiliser le formulaire de secours",
+    reassurance:
+      "Devis en ligne · Sans engagement · Vos informations servent uniquement à traiter votre demande.",
+  },
+  en: {
+    adult: ["adult", "adults"],
+    child: ["child", "children"],
+    provider: ["vendor", "vendors"],
+    noOption: "No options selected",
+    onQuote: "On quote",
+    locale: "en-GB",
+    serviceModes: {
+      service: "With on-site service",
+      livraison: "Delivery without service",
+      emporter: "Collection (pick-up on site)",
+    },
+    sendFailed: "Your request could not be sent.",
+    sendFailedConn: "Your request could not be sent (connection lost).",
+    thanks: "Thank you, your request has been received.",
+    thanksBefore: "Your personalised quote will be sent by email to",
+    thanksAfter: ", and we will then be in touch.",
+    you: "About you",
+    name: "Full name *",
+    email: "Email *",
+    phone: "Telephone *",
+    yourEvent: "Your event",
+    eventType: "Type of event",
+    date: "Date *",
+    place: "Full address of the venue",
+    placePh: "e.g. 12 rue des Lilas, 77240 Vert-Saint-Denis",
+    placeHint:
+      "With the full address, travel is costed as precisely as possible. With the town alone, it is estimated; with the département alone, it will be costed afterwards.",
+    formula: "Preferred formula *",
+    honorWine: "With cocktail reception",
+    adults: "Adults *",
+    children: "Children (under 12)",
+    providers: "Vendors (DJ, photographer…)",
+    serviceType: "Type of service",
+    notes: "Additional details (optional)",
+    notesPh: "Allergies, venue constraints, timings…",
+    trap: "Website",
+    fallback: "Use the backup form",
+    sending: "Sending…",
+    submit: "Save and receive my quote by email",
+    badge: "Quote by email",
+    title: "Save my estimate",
+    resumes: "It carries over your estimate for",
+    askInfo: "Please tell us the date, the venue, the number of guests and your preferred formula.",
+    required:
+      "We only ask for what we need to price your quote. You will receive it by email, and we will then get in touch.",
+    preparing: "Preparing your form…",
+    fewSeconds: "This will only take a few seconds.",
+    iframeTitle: "Quote request – Cuillère d’Or",
+    loading: "Loading the form…",
+    privacy:
+      "By submitting this form, you agree to your information being used to prepare your proposal and your event.",
+    privacyLink: "Privacy policy",
+    backToSite: "Back to the website form",
+    useFallback: "Form not displaying properly? Use the backup form",
+    reassurance:
+      "Online quote · No obligation · Your information is used solely to process your request.",
+  },
+} as const;
 
 // Dernière estimation du simulateur (gardée même si le formulaire n'est pas encore affiché).
 let liveEstimate: Estimate | null = null;
@@ -66,8 +198,11 @@ if (typeof window !== "undefined") {
   });
 }
 
-function guestsLine(estimate: Estimate) {
-  return `${estimate.adults} adulte${estimate.adults > 1 ? "s" : ""} · ${estimate.children} enfant${estimate.children > 1 ? "s" : ""} · ${estimate.providers} prestataire${estimate.providers > 1 ? "s" : ""}`;
+// Affichage visiteur : lang ; préremplissage du formulaire Google (back-office) : toujours en français.
+function guestsLine(estimate: Estimate, lang: Lang = "fr") {
+  const t = T[lang];
+  const plural = (n: number, forms: readonly [string, string]) => forms[n > 1 ? 1 : 0];
+  return `${estimate.adults} ${plural(estimate.adults, t.adult)} · ${estimate.children} ${plural(estimate.children, t.child)} · ${estimate.providers} ${plural(estimate.providers, t.provider)}`;
 }
 
 function optionsLine(estimate: Estimate) {
@@ -76,10 +211,10 @@ function optionsLine(estimate: Estimate) {
     : "Aucune option sélectionnée";
 }
 
-function totalValue(estimate: Estimate) {
+function totalValue(estimate: Estimate, lang: Lang = "fr") {
   return estimate.total === null
-    ? "Sur devis"
-    : `${estimate.total.toLocaleString("fr-FR", { minimumFractionDigits: estimate.total % 1 ? 2 : 0 })} €`;
+    ? T[lang].onQuote
+    : `${estimate.total.toLocaleString(T[lang].locale, { minimumFractionDigits: estimate.total % 1 ? 2 : 0 })} €`;
 }
 
 function buildFormUrl(baseUrl: string, choice: Choice, estimate: Estimate | null) {
@@ -106,11 +241,7 @@ function buildFormUrl(baseUrl: string, choice: Choice, estimate: Estimate | null
 }
 
 type ServiceMode = "service" | "livraison" | "emporter";
-const SERVICE_MODES: Array<[ServiceMode, string]> = [
-  ["service", "Avec service sur place"],
-  ["livraison", "Livraison sans service"],
-  ["emporter", "À emporter (retrait sur place)"],
-];
+const SERVICE_MODES: ServiceMode[] = ["service", "livraison", "emporter"];
 
 type Fields = {
   name: string;
@@ -164,11 +295,14 @@ function NativeForm({
   choice,
   estimate,
   onFallback,
+  lang,
 }: {
   choice: Choice;
   estimate: Estimate | null;
   onFallback: () => void;
+  lang: Lang;
 }) {
+  const t = T[lang];
   const [fields, setFields] = useState<Fields>(() => fieldsFrom(choice, estimate));
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState("");
@@ -198,6 +332,8 @@ function NativeForm({
           children: Number(fields.children),
           providers: Number(fields.providers),
           honorWine: WITH_HONOR_WINE.includes(fields.formula) ? fields.honorWine : false,
+          // Marqueur de langue pour le back-office (champ message libre déjà existant).
+          message: lang === "en" ? `Langue : anglais${fields.message ? `\n${fields.message}` : ""}` : fields.message,
           // L'estimation n'est jointe que si elle correspond encore à la formule envoyée.
           estimate: estimate && estimate.formulaId === fields.formula ? estimate : undefined,
         }),
@@ -205,23 +341,23 @@ function NativeForm({
       const data = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) {
         setStatus("error");
-        setError(data.error || "L’envoi n’a pas abouti.");
+        setError(data.error || t.sendFailed);
         return;
       }
       setStatus("sent");
     } catch {
       setStatus("error");
-      setError("L’envoi n’a pas abouti (connexion interrompue).");
+      setError(t.sendFailedConn);
     }
   }
 
   if (status === "sent") {
     return (
       <div className="native-form-done" role="status">
-        <strong>Merci, votre demande est bien arrivée.</strong>
+        <strong>{t.thanks}</strong>
         <p>
-          Votre devis personnalisé vous sera envoyé par e-mail à l’adresse{" "}
-          {fields.email}, puis nous vous contacterons.
+          {t.thanksBefore}{" "}
+          {fields.email}{t.thanksAfter}
         </p>
       </div>
     );
@@ -232,52 +368,53 @@ function NativeForm({
   return (
     <form className="native-form" onSubmit={submit}>
       <fieldset>
-        <legend>Vous</legend>
+        <legend>{t.you}</legend>
         <label>
-          Nom et prénom *
+          {t.name}
           <input required autoComplete="name" value={fields.name} onChange={(e) => set("name", e.target.value)} />
         </label>
         <label>
-          E-mail *
+          {t.email}
           <input required type="email" autoComplete="email" value={fields.email} onChange={(e) => set("email", e.target.value)} />
         </label>
         <label>
-          Téléphone *
+          {t.phone}
           <input required type="tel" autoComplete="tel" value={fields.phone} onChange={(e) => set("phone", e.target.value)} />
         </label>
       </fieldset>
 
       <fieldset>
-        <legend>Votre événement</legend>
+        <legend>{t.yourEvent}</legend>
         <label>
-          Type d’événement
+          {t.eventType}
           <select value={fields.eventType} onChange={(e) => set("eventType", e.target.value)}>
-            {EVENT_TYPES.map((type) => (
-              <option key={type}>{type}</option>
+            {EVENT_TYPES.map(([type, labelEn]) => (
+              <option key={type} value={type}>
+                {lang === "en" ? labelEn : type}
+              </option>
             ))}
           </select>
         </label>
         <label>
-          Date *
+          {t.date}
           <input required type="date" min={today} value={fields.eventDate} onChange={(e) => set("eventDate", e.target.value)} />
         </label>
         <label className="native-form-wide">
-          Adresse complète du lieu de réception
-          <input autoComplete="street-address" placeholder="ex. 12 rue des Lilas, 77240 Vert-Saint-Denis" value={fields.place} onChange={(e) => set("place", e.target.value)} />
+          {t.place}
+          <input autoComplete="street-address" placeholder={t.placePh} value={fields.place} onChange={(e) => set("place", e.target.value)} />
           <small className="native-form-hint">
-            Avec l’adresse complète, le déplacement est chiffré au plus juste. Avec la ville seule, il est
-            estimé ; avec le département seul, il sera chiffré ensuite.
+            {t.placeHint}
           </small>
         </label>
         {/* Déjà choisis dans la calculette : rappelés dans le bandeau doré au-dessus du formulaire */}
         {!estimate && (
           <>
         <label className="native-form-wide">
-          Formule envisagée *
+          {t.formula}
           <select required value={fields.formula} onChange={(e) => set("formula", e.target.value as FormulaId)}>
             {(Object.keys(FORMULA_FORM_VALUE) as FormulaId[]).map((id) => (
               <option key={id} value={id}>
-                {FORMULA_FORM_VALUE[id]}
+                {lang === "en" ? FORMULA_LABEL_EN[id] : FORMULA_FORM_VALUE[id]}
               </option>
             ))}
           </select>
@@ -285,36 +422,36 @@ function NativeForm({
         {showHonorWine && (
           <label className="native-form-check native-form-wide">
             <input type="checkbox" checked={fields.honorWine} onChange={(e) => set("honorWine", e.target.checked)} />
-            Avec vin d’honneur
+            {t.honorWine}
           </label>
         )}
         <label>
-          Adultes *
+          {t.adults}
           <input required type="number" min={1} max={5000} inputMode="numeric" value={fields.adults} onChange={(e) => set("adults", e.target.value)} />
         </label>
         <label>
-          Enfants (− 12 ans)
+          {t.children}
           <input type="number" min={0} max={5000} inputMode="numeric" value={fields.children} onChange={(e) => set("children", e.target.value)} />
         </label>
         <label>
-          Prestataires (DJ, photographe…)
+          {t.providers}
           <input type="number" min={0} max={5000} inputMode="numeric" value={fields.providers} onChange={(e) => set("providers", e.target.value)} />
         </label>
           </>
         )}
-        <div className="native-form-wide native-form-radios" role="radiogroup" aria-label="Type de prestation">
-          {SERVICE_MODES.map(([value, label]) => (
+        <div className="native-form-wide native-form-radios" role="radiogroup" aria-label={t.serviceType}>
+          {SERVICE_MODES.map((value) => (
             <label key={value} className="native-form-check">
               <input type="radio" name="serviceMode" value={value} checked={fields.serviceMode === value} onChange={() => set("serviceMode", value)} />
-              {label}
+              {t.serviceModes[value]}
             </label>
           ))}
         </div>
         <label className="native-form-wide">
-          Précisions (facultatif)
+          {t.notes}
           <textarea
             rows={3}
-            placeholder="Allergies, contraintes du lieu, horaires…"
+            placeholder={t.notesPh}
             value={fields.message}
             onChange={(e) => set("message", e.target.value)}
           />
@@ -323,7 +460,7 @@ function NativeForm({
 
       {/* Champ piège : invisible pour les personnes, rempli par les robots. */}
       <label className="native-form-trap" aria-hidden="true">
-        Site web
+        {t.trap}
         <input tabIndex={-1} autoComplete="off" value={fields.website} onChange={(e) => set("website", e.target.value)} />
       </label>
 
@@ -331,20 +468,21 @@ function NativeForm({
         <div className="native-form-error" role="alert">
           <p>{error}</p>
           <button type="button" onClick={onFallback}>
-            Utiliser le formulaire de secours
+            {t.fallback}
           </button>
         </div>
       )}
 
       <button className="native-form-submit" type="submit" disabled={status === "sending"}>
-        {status === "sending" ? "Envoi en cours…" : "Enregistrer et recevoir mon devis par e-mail"}
+        {status === "sending" ? t.sending : t.submit}
         <ArrowRight size={16} />
       </button>
     </form>
   );
 }
 
-export default function QuoteChooser({ formUrl }: { formUrl: string }) {
+export default function QuoteChooser({ formUrl, lang = "fr" }: { formUrl: string; lang?: Lang }) {
+  const t = T[lang];
   const initialChoice = (): Choice =>
     typeof window !== "undefined" &&
     window.location.hash === "#formulaire-brunch"
@@ -413,17 +551,16 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
         id={isEvent ? "formulaire-evenement" : "formulaire-brunch"}
       >
         <div className="selected-form-heading">
-          <span>Devis par e-mail</span>
+          <span>{t.badge}</span>
           <div>
-            <h3>Enregistrer mon estimation</h3>
+            <h3>{t.title}</h3>
             <p>
               {estimate
-                ? `Il reprend votre estimation ${estimate.formula} (${guestsLine(estimate)}).`
-                : "Indiquez la date, le lieu, les convives et la formule envisagée."}
+                ? `${t.resumes} ${lang === "en" ? FORMULA_LABEL_EN[estimate.formulaId] : estimate.formula} (${guestsLine(estimate, lang)}).`
+                : t.askInfo}
             </p>
             <p className="quote-required">
-              Il ne manque que ce qui sert à chiffrer votre devis. Vous le
-              recevez par e-mail, puis nous vous contactons.
+              {t.required}
             </p>
           </div>
         </div>
@@ -432,18 +569,18 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
             {!formLoaded && (
               <div className="form-loading" role="status">
                 <span aria-hidden="true" />
-                <strong>Préparation de votre formulaire…</strong>
-                <small>Quelques secondes suffisent.</small>
+                <strong>{t.preparing}</strong>
+                <small>{t.fewSeconds}</small>
               </div>
             )}
             <iframe
               key={iframeSrc}
               className={formLoaded ? "is-loaded" : ""}
               src={iframeSrc}
-              title="Demande de devis Cuillère d’Or"
+              title={t.iframeTitle}
               onLoad={() => setFormLoaded(true)}
             >
-              Chargement du formulaire…
+              {t.loading}
             </iframe>
           </div>
         ) : (
@@ -451,13 +588,13 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
             choice={choice}
             estimate={estimate}
             onFallback={() => setUseGoogleForm(true)}
+            lang={lang}
           />
         )}
         <p className="quote-privacy-note">
-          En envoyant ce formulaire, vous acceptez l’utilisation de vos
-          informations pour préparer votre proposition et votre prestation.{" "}
+          {t.privacy}{" "}
           <a href="/politique-confidentialite" target="_blank" rel="noreferrer">
-            Politique de confidentialité
+            {t.privacyLink}
           </a>
           .{" "}
           <button
@@ -465,17 +602,14 @@ export default function QuoteChooser({ formUrl }: { formUrl: string }) {
             className="quote-form-switch"
             onClick={() => setUseGoogleForm((current) => !current)}
           >
-            {useGoogleForm
-              ? "Revenir au formulaire du site"
-              : "Le formulaire ne s’affiche pas bien ? Utiliser le formulaire de secours"}
+            {useGoogleForm ? t.backToSite : t.useFallback}
           </button>
         </p>
       </div>
       )}
       {open && (
         <p className="quote-reassurance">
-          Devis en ligne · Sans engagement · Vos informations servent
-          uniquement à traiter votre demande.
+          {t.reassurance}
         </p>
       )}
     </div>

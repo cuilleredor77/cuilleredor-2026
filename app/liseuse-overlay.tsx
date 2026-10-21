@@ -5,7 +5,8 @@ import { X } from "lucide-react";
 
 // Liseuse du catalogue en plein écran par-dessus le site : tout lien [data-liseuse="N"] l'ouvre à la page N.
 // Sans JavaScript, ces liens mènent à /liseuse/ (page autonome).
-export default function LiseuseOverlay() {
+export default function LiseuseOverlay({ lang = "fr" }: { lang?: "fr" | "en" }) {
+  const en = lang === "en";
   const [page, setPage] = useState<number | null>(null);
 
   useEffect(() => {
@@ -35,14 +36,14 @@ export default function LiseuseOverlay() {
 
   if (page === null) return null;
   return (
-    <div className="liseuse-overlay" role="dialog" aria-modal="true" aria-label="Catalogue Cuillère d’Or à feuilleter">
-      <button type="button" className="liseuse-overlay-close" onClick={() => setPage(null)} aria-label="Fermer le catalogue">
-        <X size={22} /> <span>Fermer</span>
+    <div className="liseuse-overlay" role="dialog" aria-modal="true" aria-label={en ? "Cuillère d’Or catalogue to browse" : "Catalogue Cuillère d’Or à feuilleter"}>
+      <button type="button" className="liseuse-overlay-close" onClick={() => setPage(null)} aria-label={en ? "Close the catalogue" : "Fermer le catalogue"}>
+        <X size={22} /> <span>{en ? "Close" : "Fermer"}</span>
       </button>
       <iframe
         key={page}
         src={`/liseuse/?embed${page > 1 ? `#p=${page}` : ""}`}
-        title="Catalogue Cuillère d’Or 2027-2028 à feuilleter"
+        title={en ? "Cuillère d’Or 2027-2028 catalogue to browse" : "Catalogue Cuillère d’Or 2027-2028 à feuilleter"}
         allow="fullscreen"
         allowFullScreen
       />

@@ -618,6 +618,7 @@ export default function Home() {
           <a href="#calculateur">Tarifs</a>
           <a href="#feuilleter">Catalogue</a>
           <a href="#contact">Contact</a>
+          <a href="/en" hrefLang="en" lang="en" className="lang-switch">EN</a>
         </nav>
         <a className="header-cta" href="#calculateur">
           <span className="header-cta-long">Estimer mon événement</span>
@@ -634,6 +635,7 @@ export default function Home() {
             <a href="#calculateur">Tarifs & estimation</a>
             <a href="#feuilleter">Catalogue</a>
             <a href="#contact">Contact</a>
+            <a href="/en" hrefLang="en" lang="en">English version</a>
           </nav>
         </details>
       </header>
@@ -1393,6 +1395,7 @@ export default function Home() {
             <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf?v=20">Catalogue PDF</a>
             <a href="/mentions-legales">Mentions légales</a>
             <a href="/politique-confidentialite">Confidentialité</a>
+            <a href="/en" hrefLang="en" lang="en">English</a>
           </nav>
         </div>
         <nav className="footer-socials" aria-label="Réseaux sociaux et contact">
