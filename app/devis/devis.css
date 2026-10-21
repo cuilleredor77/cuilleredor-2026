@@ -174,3 +174,6 @@
 /* Avenant : tableau des modifications */
 .dv-amend td { font-size: 12.5px; }
 .dv-amend .dv-kind { white-space: nowrap; font-weight: 700; color: #6b5420; }
+
+/* Paiements reçus */
+.dv-pay td { font-size: 12.5px; padding-top: 6px; padding-bottom: 6px; }

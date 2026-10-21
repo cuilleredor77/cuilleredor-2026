@@ -4,7 +4,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { useParams } from "next/navigation";
 import {
   FORMULAS, FORMULA_KEYS, OPTION_PRESETS, mariagesNetReply, honorWineLines, isHonorWineLine, travelLast, isIncluded, withGroup, groupOrder, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
-  formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, amendmentChanges, parseSnapshot, snapshotOf, type Amendment, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
+  formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, amendmentChanges, paidTotal, type Payment, parseSnapshot, snapshotOf, type Amendment, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
 const STATUS: Array<[string, string]> = [
@@ -513,6 +513,42 @@ export default function Editor() {
             <div><dt>Caution</dt><dd>{formatEUR(totals.caution)}</dd></div>
             <div><dt>Valable jusqu’au</dt><dd>{formatDateFR(totals.validUntil)}</dd></div>
           </dl>
+          <div className="adm-pay">
+            <h3>Paiements reçus</h3>
+            {(quote.payments || []).map((p, i) => {
+              const setPay = (patch: Partial<Payment>) => setQ({ payments: (quote.payments || []).map((x, k) => (k === i ? { ...x, ...patch } : x)) });
+              return (
+                <div key={p.id} className="adm-pay-row">
+                  <div className="adm-pay-top">
+                    <input value={p.label} aria-label="Paiement" onChange={(e) => setPay({ label: e.target.value })} />
+                    <input type="number" step="0.01" min={0} value={p.amount} aria-label="Montant" onChange={(e) => setPay({ amount: Number(e.target.value) })} />
+                    <button type="button" className="x" aria-label="Supprimer le paiement" onClick={() => setQ({ payments: (quote.payments || []).filter((_, k) => k !== i) })}>✕</button>
+                  </div>
+                  <label>Reçu le<input type="date" value={p.receivedOn} onChange={(e) => setPay({ receivedOn: e.target.value })} /></label>
+                  <label>Confirmé le<input type="date" value={p.confirmedOn} onChange={(e) => setPay({ confirmedOn: e.target.value })} /></label>
+                </div>
+              );
+            })}
+            <div className="adm-pay-add">
+              {([
+                ["Acompte", totals.fullAtSignature ? totals.total : totals.deposit],
+                ["Solde", Math.max(0, totals.total - paidTotal(quote))],
+                ["Caution", totals.caution],
+                ["Autre", 0],
+              ] as Array<[string, number]>).map(([label, amount]) => (
+                <button key={label} type="button" className="adm-btn" onClick={() => {
+                  const today = new Date().toISOString().slice(0, 10);
+                  setQ({ payments: [...(quote.payments || []), { id: `pay-${Math.random().toString(36).slice(2, 7)}`, label: label === "Autre" ? "" : label, amount, receivedOn: today, confirmedOn: "" }] });
+                }}>+ {label}</button>
+              ))}
+            </div>
+            {quote.payments?.length ? (
+              <dl className="adm-totals">
+                <div><dt>Reçu (hors caution)</dt><dd>{formatEUR(paidTotal(quote))}</dd></div>
+                <div><dt>Reste à régler</dt><dd>{formatEUR(Math.max(0, totals.total - paidTotal(quote)))}</dd></div>
+              </dl>
+            ) : null}
+          </div>
           <p className="adm-muted">Fichier : CDO_{(req.event_date || "").replaceAll("-", "")}_…_Devis_Contrat</p>
         </aside>
       </div>

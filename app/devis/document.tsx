@@ -12,6 +12,8 @@ import {
   parseQuote,
   type RequestRow,
   clientRemarks,
+  paidTotal,
+  type Quote,
 } from "../../lib/quote";
 
 const COMPLEMENTARY: Array<{ title: string; rows: Array<[string, string]> }> = [
@@ -43,6 +45,27 @@ function groupDetail(parts: string[]) {
   return groups.filter((g) => g.title || g.items.length);
 }
 
+
+/** Règlements reçus : date de réception et date de confirmation de chacun, puis reste à régler. */
+export function PaymentsTable({ quote, total }: { quote: Quote; total: number }) {
+  const payments = quote.payments || [];
+  if (!payments.length) return null;
+  const paid = paidTotal(quote);
+  return (
+    <>
+      <p className="dv-conditions"><b>Paiements reçus</b></p>
+      <ul className="dv-terms">
+        {payments.map((p) => (
+          <li key={p.id}>
+            <b>{p.label || "Paiement"}</b>
+            <span>{formatEUR(p.amount)} — reçu le {p.receivedOn ? formatDateFR(p.receivedOn) : "—"}{p.confirmedOn ? `, réception confirmée le ${formatDateFR(p.confirmedOn)}` : ""}</span>
+          </li>
+        ))}
+        <li><b>Reste à régler</b><span>{formatEUR(Math.max(0, total - paid))} (total reçu : {formatEUR(paid)}{payments.some((p) => /caution/i.test(p.label)) ? ", hors caution" : ""})</span></li>
+      </ul>
+    </>
+  );
+}
 
 export default function QuoteDocument({ row, quoteOnly = false }: { row: RequestRow; quoteOnly?: boolean }) {
   const quote = parseQuote(row);
@@ -138,6 +161,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
           <li><b>Catalogue</b><span>Formules, menus et services complémentaires : <a href="https://catalogue.cuilleredor.fr/" target="_blank" rel="noopener noreferrer">catalogue.cuilleredor.fr</a></span></li>
           {quote.note ? <li><b>Remarque</b><span>{quote.note}</span></li> : null}
         </ul>
+        <PaymentsTable quote={quote} total={totals.total} />
 
         <div className="dv-sign">
           <div>
@@ -223,6 +247,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
           )}
           <li>Caution : {formatEUR(totals.caution)}, versée {totals.fullAtSignature ? "à la signature" : "avec le solde"} — restituée si aucun retard constaté</li>
         </ul>
+        <PaymentsTable quote={quote} total={totals.total} />
         <p>Le Prestataire se réserve le droit de suspendre la prestation en cas de non-paiement du solde, sans obligation de remboursement des sommes déjà versées.</p>
         <p>Aucun service ne sera exécuté sans règlement complet du montant dû.</p>
         <p>Après règlement du solde, aucun ajustement à la baisse ne sera accepté. Toute hausse reste possible sous réserve de faisabilité.</p>

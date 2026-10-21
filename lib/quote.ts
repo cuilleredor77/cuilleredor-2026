@@ -126,7 +126,15 @@ export type Quote = {
   note: string; // mention libre ajoutée sous les conditions
   includeComplementary: boolean; // page « Services complémentaires »
   balanceDue?: string; // AAAA-MM-JJ : échéance du solde fixée à la main (sinon 2 mois avant l’événement)
+  payments?: Payment[]; // règlements reçus (acompte, solde, caution…)
 };
+
+/** Règlement reçu : date de réception et date à laquelle la réception a été confirmée au client. */
+export type Payment = { id: string; label: string; amount: number; receivedOn: string; confirmedOn: string };
+
+/** Total reçu hors caution (la caution est restituée, elle ne paie pas la prestation). */
+export const paidTotal = (q: Quote) =>
+  round2((q.payments || []).filter((p) => !/caution/i.test(p.label)).reduce((sum, p) => sum + (p.amount || 0), 0));
 
 export type RequestRow = {
   id: number;

@@ -195,3 +195,14 @@
 .adm-amend-changes li { margin: 2px 0; }
 .adm-amend label { display: grid; gap: 4px; margin: 8px 0; font-size: 13px; }
 .adm-linkbtn { margin-left: 8px; background: none; border: 0; color: #a33; text-decoration: underline; cursor: pointer; font-size: 12px; }
+
+/* Paiements reçus (fiche) */
+.adm-pay { border-top: 1px solid #e0d8c3; margin-top: 10px; padding-top: 10px; }
+.adm-pay h3 { margin: 0 0 8px; font-size: 15px; }
+.adm-pay-row { display: grid; gap: 4px; padding: 8px 0; border-bottom: 1px dashed #e0d8c3; }
+.adm-pay-top { display: grid; grid-template-columns: minmax(0, 1fr) 96px 24px; gap: 6px; align-items: center; }
+.adm-pay-row label { display: grid; grid-template-columns: 82px minmax(0, 1fr); align-items: center; font-size: 12.5px; color: #555; }
+.adm-pay-row input { min-width: 0; }
+.adm-pay-row .x { background: none; border: 0; color: #a33; cursor: pointer; }
+.adm-pay-add { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.adm-pay-add .adm-btn { padding: 4px 10px; font-size: 12px; }
