@@ -43,6 +43,20 @@ export default function Editor() {
   // Google Agenda : alerte quand 3 événements ou plus sont déjà prévus à la date demandée.
   const [agenda, setAgenda] = useState<{ count: number; titles: string[]; off: string[] } | null>(null);
   const [negative, setNegative] = useState(false);
+  // Enregistrement automatique : compteur de modifications et heure du dernier enregistrement.
+  const edits = useRef(0);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
+  // Navigation fiche à fiche dans la liste d’où l’on vient (rangée par la liste dans sessionStorage).
+  const [nav, setNav] = useState<{ label: string; ids: number[] } | null>(null);
+  useEffect(() => {
+    try { const v = sessionStorage.getItem("adm-nav"); if (v) setNav(JSON.parse(v)); } catch { /* navigation privée */ }
+  }, []);
+  const saveRef = useRef<() => Promise<boolean>>(async () => true);
+  useEffect(() => {
+    if (!dirty || busy || mail) return;
+    const t = setTimeout(() => { saveRef.current(); }, 1200);
+    return () => clearTimeout(t);
+  }, [dirty, busy, mail, req, quote]);
   const [secondFormula, setSecondFormula] = useState("assiette");
   const [dragFrom, setDragFrom] = useState<number | null>(null);
   const [dragOver, setDragOver] = useState<number | null>(null);
@@ -76,8 +90,8 @@ export default function Editor() {
 
   if (!req || !quote || !totals) return <p className="adm-muted">Chargement…</p>;
 
-  const setField = (k: keyof RequestRow, v: string | number | null) => { setReq({ ...req, [k]: v } as RequestRow); setDirty(true); };
-  const setQ = (patch: Partial<Quote>) => { setQuote({ ...quote, ...patch }); setDirty(true); };
+  const setField = (k: keyof RequestRow, v: string | number | null) => { edits.current += 1; setReq({ ...req, [k]: v } as RequestRow); setDirty(true); };
+  const setQ = (patch: Partial<Quote>) => { edits.current += 1; setQuote({ ...quote, ...patch }); setDirty(true); };
   const setLine = (i: number, patch: Partial<QuoteLine>) => setQ({ lines: quote.lines.map((l, idx) => (idx === i ? { ...l, ...patch } : l)) });
   const totalGuests = req.adults + req.children + req.providers;
   // Lignes + barre « OPTIONS » : au-dessus = prestations incluses, en dessous = options.
@@ -123,6 +137,15 @@ export default function Editor() {
     window.location.href = `/admin/${data.id}`;
   }
 
+  // Fiche suivante / précédente : on enregistre d’abord les modifications en cours.
+  const navIdx = nav ? nav.ids.indexOf(Number(id)) : -1;
+  const navInfo = nav && navIdx >= 0 ? { pos: navIdx + 1, total: nav.ids.length, prev: nav.ids[navIdx - 1], next: nav.ids[navIdx + 1] } : null;
+  async function goTo(e: { preventDefault: () => void }, target: number) {
+    e.preventDefault();
+    if (dirty && !(await save())) return;
+    window.location.href = `/admin/${target}`;
+  }
+
   async function removeRequest() {
     if (!confirm(`Supprimer définitivement la demande de ${req!.client_name || "ce client"} ? Cette action est irréversible.`)) return;
     setBusy(true);
@@ -141,13 +164,18 @@ export default function Editor() {
 
   async function save(extra: Record<string, unknown> = {}): Promise<boolean> {
     setBusy(true); setMsg("");
+    const seq = edits.current;
     const res = await fetch(`/api/admin/requests/${id}`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ request: req, quote, ...extra }) });
     const data = await res.json();
     setBusy(false);
     if (!res.ok) { setMsg(data.error || "Enregistrement impossible."); return false; }
-    setReq(data.request); setQuote(data.quote); setDirty(false); setMsg("Enregistré ✓");
+    setSavedAt(new Date());
+    // Si l’on a continué à écrire pendant l’enregistrement, on garde la saisie en cours (elle sera enregistrée ensuite).
+    if (edits.current === seq) { setReq(data.request); setQuote(data.quote); setDirty(false); }
     return true;
   }
+
+  saveRef.current = () => save();
 
   async function regenerate() {
     if (!confirm("Régénérer toutes les lignes à partir de la demande ? Vos modifications de lignes seront remplacées.")) return;
@@ -212,7 +240,16 @@ export default function Editor() {
     <div className="adm-wrap">
       <header className="adm-top">
         <div>
-          <a href="/admin" className="adm-back">← Toutes les demandes</a>
+          <div className="adm-navline">
+            <a href="/admin" className="adm-back">← Toutes les demandes</a>
+            {navInfo ? (
+              <span className="adm-pager">
+                {navInfo.prev ? <a href={`/admin/${navInfo.prev}`} onClick={(e) => goTo(e, navInfo.prev!)}>‹ Précédente</a> : <span className="off">‹ Précédente</span>}
+                <span>{navInfo.pos} / {navInfo.total} · {nav!.label}</span>
+                {navInfo.next ? <a href={`/admin/${navInfo.next}`} onClick={(e) => goTo(e, navInfo.next!)}>Suivante ›</a> : <span className="off">Suivante ›</span>}
+              </span>
+            ) : null}
+          </div>
           <h1>{req.client_name || "Demande sans nom"}</h1>
           <p className="adm-origin">
             Origine : <b>{SOURCE_LABEL[req.source] || req.source}</b> · reçue le <b>{receivedAt(req.created_at)}</b>{req.sent_at ? ` · envoyé le ${receivedAt(req.sent_at)}` : ""}
@@ -224,21 +261,31 @@ export default function Editor() {
             ) : null}
           </p>
         </div>
-        <div className="adm-actions">
-          <select value={req.status} onChange={(e) => { setReq({ ...req, status: e.target.value }); setDirty(true); }}>
-            {STATUS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
-          </select>
+        <div className="adm-toolbar">
+          <span className={`adm-status s-${req.status}`}>
+            <select aria-label="Statut" value={req.status} onChange={(e) => setField("status", e.target.value)}>
+              {STATUS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+            </select>
+          </span>
           <a className="adm-btn" href={quoteLink} target="_blank" rel="noopener noreferrer" onClick={(e) => openSaved(e, quoteLink)}>Devis seul ↗</a>
           <a className="adm-btn" href={fullLink} target="_blank" rel="noopener noreferrer" onClick={(e) => openSaved(e, fullLink)}>Devis + contrat ↗</a>
-          <button className="adm-btn" onClick={() => save({ status: req.status })} disabled={busy || !dirty}>{dirty ? "Enregistrer" : "Enregistré"}</button>
-          <button className="adm-btn adm-gold" onClick={async () => { if (!dirty || (await save())) setMail(true); }} disabled={busy}>Préparer l’e-mail →</button>
-          <span className="adm-second">
-            <select aria-label="Formule du second devis" value={secondFormula} onChange={(e) => setSecondFormula(e.target.value)}>
-              {FORMULA_KEYS.map((k) => <option key={k} value={k}>{FORMULAS[k].label}</option>)}
-            </select>
-            <button className="adm-btn" onClick={createSecondQuote} disabled={busy}>➕ Second devis</button>
+          <span className={`adm-savestate ${dirty ? "pending" : ""}`} aria-live="polite">
+            {busy ? "Enregistrement…" : dirty ? "Modifications en cours…" : savedAt ? `Enregistré ✓ ${savedAt.getHours().toString().padStart(2, "0")}h${savedAt.getMinutes().toString().padStart(2, "0")}` : "Enregistré ✓"}
           </span>
-          <button className="adm-btn adm-danger" onClick={removeRequest} disabled={busy}>🗑 Supprimer</button>
+          <button className="adm-btn adm-gold" onClick={async () => { if (!dirty || (await save())) setMail(true); }} disabled={busy}>Préparer l’e-mail →</button>
+          <details className="adm-more">
+            <summary className="adm-btn" aria-label="Autres actions">⋯</summary>
+            <div className="adm-more-menu">
+              <label>Second devis avec la formule
+                <select aria-label="Formule du second devis" value={secondFormula} onChange={(e) => setSecondFormula(e.target.value)}>
+                  {FORMULA_KEYS.map((k) => <option key={k} value={k}>{FORMULAS[k].label}</option>)}
+                </select>
+              </label>
+              <button className="adm-btn" onClick={createSecondQuote} disabled={busy}>➕ Créer le second devis</button>
+              <hr />
+              <button className="adm-btn adm-danger" onClick={removeRequest} disabled={busy}>🗑 Supprimer la demande</button>
+            </div>
+          </details>
         </div>
       </header>
       {msg ? <p className="adm-note">{msg}</p> : null}
@@ -255,6 +302,7 @@ export default function Editor() {
               <label>Adresse de facturation (si société)<input value={req.billing_address} onChange={(e) => setField("billing_address", e.target.value)} /></label>
               <label>Type d’événement<input value={req.event_type} onChange={(e) => setField("event_type", e.target.value)} /></label>
               <label>Date<input type="date" value={req.event_date} onChange={(e) => setField("event_date", e.target.value)} />
+                <span className="adm-date-extra">
                 {/^\d{4}-\d{2}-\d{2}$/.test(req.event_date) ? (
                   <a className="adm-agenda-link" href={agendaDayLink(req.event_date)} target="_blank" rel="noopener noreferrer">📅 Voir l’agenda ce jour-là ↗</a>
                 ) : null}
@@ -268,6 +316,7 @@ export default function Editor() {
                       : `Agenda : ${agenda!.count} événement${agenda!.count > 1 ? "s" : ""} ce jour-là (${agenda!.titles.join(", ")})`}
                   </small>
                 ) : null}
+                </span>
               </label>
               <label className="wide">Lieu (adresse complète)
                 <span className="adm-inline adm-place">

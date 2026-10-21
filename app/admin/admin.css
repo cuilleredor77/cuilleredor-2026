@@ -150,3 +150,34 @@
 .adm-send { justify-self: start; }
 .adm-mailfoot { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; border-top: 1px solid #ece6d4; padding-top: 10px; }
 @media (max-width: 760px) { .adm-sendblocks { grid-template-columns: 1fr; } }
+
+/* ---------- Ergonomie /admin (21/10/2026) ---------- */
+.adm-dash { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 4px 0 14px; }
+.adm-dash button { display: grid; gap: 2px; text-align: left; padding: 12px 14px; border: 1px solid #e0d8c3; border-radius: 12px; background: #fff; cursor: pointer; font: inherit; }
+.adm-dash button:hover { border-color: #b8932a; }
+.adm-dash b { font-size: 1.35rem; font-family: Georgia, serif; color: #1a1a1a; }
+.adm-dash span { font-size: 12px; color: #6b5420; }
+@media (max-width: 760px) { .adm-dash { grid-template-columns: 1fr 1fr; } }
+.adm-filters { margin: 0 0 8px; }
+.adm-filters > summary { cursor: pointer; font-size: 13px; font-weight: 700; color: #8b6914; padding: 4px 0; }
+.adm-filters[open] > summary { margin-bottom: 6px; }
+
+/* Fiche : barre d’actions fixe en haut */
+.adm-top:has(.adm-toolbar) { position: sticky; top: 0; z-index: 30; background: #f6f3ec; padding: 10px 0; margin-top: -10px; box-shadow: 0 8px 14px -12px rgba(0,0,0,.25); }
+.adm-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.adm-status select { min-height: 40px; width: auto; padding: 0 30px 0 12px; border-radius: 999px; font-weight: 700; font-size: 13px; }
+.adm-savestate { font-size: 12px; color: #2e6b2e; min-width: 120px; }
+.adm-savestate.pending { color: #8a7a55; }
+.adm-more { position: relative; }
+.adm-more > summary { list-style: none; min-width: 40px; }
+.adm-more > summary::-webkit-details-marker { display: none; }
+.adm-more-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 40; display: grid; gap: 8px; width: 260px; padding: 12px; background: #fff; border: 1px solid #e0d8c3; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,.14); }
+.adm-more-menu label { display: grid; gap: 4px; font-size: 12px; font-weight: 700; color: #555; }
+.adm-more-menu hr { border: 0; border-top: 1px solid #ece6d4; margin: 2px 0; }
+.adm-navline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; }
+.adm-pager { display: inline-flex; align-items: center; gap: 10px; font-size: 12.5px; color: #6b5420; }
+.adm-pager a { font-weight: 700; color: #8b6914; text-decoration: none; }
+.adm-pager .off { opacity: .35; }
+/* Formulaire : champs alignés, agenda sur une ligne */
+.adm-grid { align-items: start; }
+.adm-date-extra { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 4px; font-weight: 500; }

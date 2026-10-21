@@ -93,6 +93,26 @@ export default function AdminHome() {
       : list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }, [items, filter, query, buckets, sortBy, from, to, offOnly, dateFilter]);
 
+  // Tableau de bord : ce qui demande une action, et l’argent en jeu.
+  const stats = useMemo(() => {
+    const month = new Date().toISOString().slice(0, 7);
+    let pending = 0, events = 0;
+    for (const it of items || []) {
+      const b = buckets.get(it.id);
+      if (b === "attente" || b === "relancer") pending += it.total;
+      if (it.eventDate?.startsWith(month) && b !== "archives") events += 1;
+    }
+    return { relire: counts.relire || 0, relancer: counts.relancer || 0, pending, events };
+  }, [items, buckets, counts]);
+
+  // Ordre de la liste affichée, repris par la fiche pour « Précédente / Suivante ».
+  useEffect(() => {
+    try {
+      const label = query.trim() ? "Recherche" : TABS.find(([k]) => k === filter)?.[1] || "";
+      sessionStorage.setItem("adm-nav", JSON.stringify({ label, ids: shown.map((it) => it.id) }));
+    } catch { /* navigation privée */ }
+  }, [shown, filter, query]);
+
   async function markRelaunched(id: number) {
     const res = await fetch(`/api/admin/requests/${id}`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ relaunched: true }) });
     if (!res.ok) { setError("Impossible d’enregistrer la relance."); return; }
@@ -122,6 +142,12 @@ export default function AdminHome() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
+      <div className="adm-dash">
+        <button type="button" onClick={() => setFilter("relire")}><b>{stats.relire}</b><span>devis à relire</span></button>
+        <button type="button" onClick={() => setFilter("relancer")}><b>{stats.relancer}</b><span>clients à relancer</span></button>
+        <button type="button" onClick={() => setFilter("attente")}><b>{formatEUR(stats.pending)}</b><span>de devis envoyés en attente</span></button>
+        <button type="button" onClick={() => { setFilter("all"); setSortBy("evt-proche"); const m = new Date().toISOString().slice(0, 7); setFrom(`${m}-01`); setTo(`${m}-31`); }}><b>{stats.events}</b><span>événements ce mois-ci</span></button>
+      </div>
       {query.trim() ? <p className="adm-muted">{shown.length} résultat{shown.length > 1 ? "s" : ""} dans toutes les demandes</p> : null}
       <nav className="adm-chips">
         {TABS.map(([key, label, hint]) => (
@@ -130,6 +156,8 @@ export default function AdminHome() {
           </button>
         ))}
       </nav>
+      <details className="adm-filters" open={dateFilter || sortBy !== "recues" || undefined}>
+        <summary>Trier et filtrer{dateFilter || sortBy !== "recues" ? " · actif" : ""}</summary>
       <div className="adm-sortbar">
         <label>Trier par
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value as typeof sortBy)}>
@@ -145,6 +173,7 @@ export default function AdminHome() {
         <button type="button" className={`adm-chip ${offOnly ? "on" : ""}`} onClick={() => setOffOnly(!offOnly)}>⛔ Pendant un OFF</button>
         {dateFilter ? <button type="button" className="adm-linkbtn" onClick={() => { setFrom(""); setTo(""); setOffOnly(false); }}>Effacer les dates</button> : null}
       </div>
+      </details>
       {dateFilter && !query.trim() ? <p className="adm-hint">{shown.length} demande{shown.length > 1 ? "s" : ""} à ces dates dans l’onglet « {TABS.find(([k]) => k === filter)?.[1]} »</p>
         : !query.trim() ? <p className="adm-hint">{TABS.find(([k]) => k === filter)?.[2]}</p> : null}
       {shown.length === 0 ? <p className="adm-muted">{query.trim() ? "Aucun client ne correspond à cette recherche." : "Aucune demande dans cette liste."}</p> : null}
