@@ -919,7 +919,7 @@ export type Snapshot = {
   providers: number;
 };
 
-export type Amendment = { id: number; request_id: number; number: number; created_at: string; reason: string; before_json: string; after_json: string };
+export type Amendment = { id: number; request_id: number; number: number; created_at: string; reason: string; before_json: string; after_json: string; sent_on: string; signed_on: string };
 export type AmendmentChange = { kind: "info" | "ajout" | "retrait" | "modif"; label: string; before: string; after: string; delta: number };
 
 export function snapshotOf(row: RequestRow, at = new Date().toISOString()): Snapshot {

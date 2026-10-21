@@ -37,6 +37,19 @@ export async function POST(request: Request, ctx: { params: Promise<{ id: string
   return json({ ok: true, number, amendments: await list(row.id) });
 }
 
+// Suivi d’un avenant : date d’envoi au client, date de signature (AAAA-MM-JJ, vide pour effacer).
+export async function PUT(request: Request, ctx: { params: Promise<{ id: string }> }) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
+  const { id } = await ctx.params;
+  const body = (await request.json().catch(() => ({}))) as { number?: number; sent_on?: string; signed_on?: string };
+  const day = (v: unknown) => (typeof v === "string" && /^(\d{4}-\d{2}-\d{2})?$/.test(v) ? v : null);
+  const sent = day(body.sent_on), signed = day(body.signed_on);
+  if (sent !== null) await db().prepare("UPDATE amendments SET sent_on = ? WHERE request_id = ? AND number = ?").bind(sent, Number(id), Number(body.number)).run();
+  if (signed !== null) await db().prepare("UPDATE amendments SET signed_on = ? WHERE request_id = ? AND number = ?").bind(signed, Number(id), Number(body.number)).run();
+  return json({ ok: true, amendments: await list(Number(id)) });
+}
+
 // Retirer le dernier avenant (créé par erreur) : la fiche redevient comparée à la version précédente.
 export async function DELETE(request: Request, ctx: { params: Promise<{ id: string }> }) {
   const denied = await requireAdmin(request);

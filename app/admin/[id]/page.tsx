@@ -146,6 +146,11 @@ export default function Editor() {
     setMsg(`Avenant n°${data.number} généré.`);
     window.open(`/devis/${req!.token}/avenant/${data.number}`, "_blank", "noopener");
   }
+  async function trackAmendment(number: number, patch: { sent_on?: string; signed_on?: string }) {
+    const res = await fetch(`/api/admin/requests/${id}/amendments`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ number, ...patch }) });
+    const data = await res.json();
+    if (res.ok) setAmendments(data.amendments); else setMsg(data.error || "Enregistrement impossible.");
+  }
   async function removeLastAmendment() {
     if (!lastAmendment || !confirm(`Supprimer l’avenant n°${lastAmendment.number} ? Les modifications resteront dans la fiche et pourront être reprises dans un nouvel avenant.`)) return;
     const res = await fetch(`/api/admin/requests/${id}/amendments`, { method: "DELETE" });
@@ -330,9 +335,17 @@ export default function Editor() {
                 <ul className="adm-amend-list">
                   {amendments.map((a) => (
                     <li key={a.id}>
-                      <a href={`/devis/${req.token}/avenant/${a.number}`} target="_blank" rel="noopener noreferrer">Avenant n°{a.number} ↗</a>
-                      <span> · {formatDateFR(a.created_at.slice(0, 10))}{a.reason ? ` · ${a.reason}` : ""}</span>
-                      {a.id === lastAmendment?.id ? <button type="button" className="adm-linkbtn" onClick={removeLastAmendment}>supprimer</button> : null}
+                      <div>
+                        <a href={`/devis/${req.token}/avenant/${a.number}`} target="_blank" rel="noopener noreferrer">Avenant n°{a.number} ↗</a>
+                        <span> · créé le {formatDateFR(a.created_at.slice(0, 10))}{a.reason ? ` · ${a.reason}` : ""}</span>
+                        {a.id === lastAmendment?.id && !a.sent_on && !a.signed_on ? <button type="button" className="adm-linkbtn" onClick={removeLastAmendment}>supprimer</button> : null}
+                      </div>
+                      <div className="adm-amend-track">
+                        <span className={`adm-pill ${a.signed_on ? "ok" : a.sent_on ? "sent" : ""}`}>{a.signed_on ? "✓ Signé" : a.sent_on ? "Envoyé, en attente de signature" : "Pas encore envoyé"}</span>
+                        <label>Envoyé le<input type="date" value={a.sent_on || ""} onChange={(e) => trackAmendment(a.number, { sent_on: e.target.value })} /></label>
+                        {!a.sent_on ? <button type="button" className="adm-btn" onClick={() => trackAmendment(a.number, { sent_on: new Date().toISOString().slice(0, 10) })}>Envoyé aujourd’hui</button> : null}
+                        <label>Signé le<input type="date" value={a.signed_on || ""} onChange={(e) => trackAmendment(a.number, { signed_on: e.target.value })} /></label>
+                      </div>
                     </li>
                   ))}
                 </ul>
