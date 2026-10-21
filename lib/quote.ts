@@ -125,6 +125,7 @@ export type Quote = {
   remarks: string; // « Options / remarques »
   note: string; // mention libre ajoutée sous les conditions
   includeComplementary: boolean; // page « Services complémentaires »
+  balanceDue?: string; // AAAA-MM-JJ : échéance du solde fixée à la main (sinon 2 mois avant l’événement)
 };
 
 export type RequestRow = {
@@ -501,7 +502,7 @@ export function computeTotals(quote: Quote, eventDate: string): Totals {
     total,
     deposit,
     balance,
-    balanceDue: fullAtSignature || !eventDate ? "" : nextWorkingDay(addMonths(eventDate, -2)),
+    balanceDue: fullAtSignature || !eventDate ? "" : quote.balanceDue || nextWorkingDay(addMonths(eventDate, -2)),
     fullAtSignature,
     validUntil: addDays(quote.issuedOn, PRICES.validDays),
     caution: PRICES.caution,
@@ -937,6 +938,9 @@ export function amendmentChanges(before: Snapshot, after: Snapshot): AmendmentCh
   info("Type d’événement", before.event_type, after.event_type);
   info("Formule", FORMULAS[before.formula as FormulaKey]?.label || before.formula, FORMULAS[after.formula as FormulaKey]?.label || after.formula);
   info("Invités", guestsText(before), guestsText(after));
+  // Le report de date déplace aussi l’échéance du solde (2 mois avant l’événement).
+  const due = (x: Snapshot) => computeTotals({ ...x.quote, issuedOn: before.quote.issuedOn }, x.event_date).balanceDue;
+  info("Date limite du solde et de la caution", due(before) ? formatDateFR(due(before)) : "", due(after) ? formatDateFR(due(after)) : "");
   const old = new Map(before.quote.lines.map((l) => [l.id, l]));
   for (const l of after.quote.lines) {
     const o = old.get(l.id);

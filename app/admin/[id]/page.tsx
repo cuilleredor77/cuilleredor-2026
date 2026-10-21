@@ -494,6 +494,7 @@ export default function Editor() {
             <h2>Texte du devis</h2>
             <div className="adm-grid">
               <label>Date d’émission<input type="date" value={quote.issuedOn} onChange={(e) => setQ({ issuedOn: e.target.value })} /></label>
+              <label>Solde dû le (vide = 2 mois avant)<input type="date" value={quote.balanceDue || ""} onChange={(e) => setQ({ balanceDue: e.target.value || undefined })} /></label>
               <label className="chk"><input type="checkbox" checked={quote.includeComplementary} onChange={(e) => setQ({ includeComplementary: e.target.checked })} /> Joindre la page « Services complémentaires »</label>
               <label className="wide">Prestation souhaitée<input value={quote.summary} onChange={(e) => setQ({ summary: e.target.value })} /></label>
               <label className="wide">Options / remarques<textarea rows={2} value={quote.remarks} onChange={(e) => setQ({ remarks: e.target.value })} /></label>
