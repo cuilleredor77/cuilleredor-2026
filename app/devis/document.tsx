@@ -13,6 +13,7 @@ import {
   type RequestRow,
   clientRemarks,
   paidTotal,
+  type Payment,
   type Quote,
 } from "../../lib/quote";
 
@@ -46,25 +47,28 @@ function groupDetail(parts: string[]) {
 }
 
 
-/** Règlements reçus : date de réception et date de confirmation de chacun, puis reste à régler. */
+/** Règlements reçus : date de réception et de confirmation de chacun, reste à régler, puis la caution à part. */
 export function PaymentsTable({ quote, total }: { quote: Quote; total: number }) {
-  const payments = quote.payments || [];
-  if (!payments.length) return null;
+  const payments = (quote.payments || []).filter((p) => !/caution/i.test(p.label));
+  const cautions = (quote.payments || []).filter((p) => /caution/i.test(p.label));
+  if (!payments.length && !cautions.length) return null;
   const paid = paidTotal(quote);
+  const when = (p: Payment) => `${formatEUR(p.amount)} — reçu${/caution/i.test(p.label) ? "e" : ""} le ${p.receivedOn ? formatDateFR(p.receivedOn) : "—"}${p.confirmedOn ? `, réception confirmée le ${formatDateFR(p.confirmedOn)}` : ""}`;
   return (
     <>
       <p className="dv-conditions"><b>Paiements reçus</b></p>
       <ul className="dv-terms">
-        {payments.map((p) => (
-          <li key={p.id}>
-            <b>{p.label || "Paiement"}</b>
-            <span>{formatEUR(p.amount)} — reçu le {p.receivedOn ? formatDateFR(p.receivedOn) : "—"}{p.confirmedOn ? `, réception confirmée le ${formatDateFR(p.confirmedOn)}` : ""}</span>
-          </li>
-        ))}
-        <li><b>Reste à régler</b><span>{formatEUR(Math.max(0, total - paid))} (total reçu : {formatEUR(paid)}{payments.some((p) => /caution/i.test(p.label)) ? ", hors caution" : ""})</span></li>
+        {payments.map((p) => <li key={p.id}><b>{p.label || "Paiement"}</b><span>{when(p)}</span></li>)}
+        <li><b>Reste à régler</b><span>{formatEUR(Math.max(0, total - paid))} (total reçu : {formatEUR(paid)})</span></li>
+        {cautions.map((p) => <li key={p.id}><b>{p.label}</b><span>{when(p)} — restituée si aucun retard constaté</span></li>)}
       </ul>
     </>
   );
+}
+
+/** Caution, toujours présentée à part du prix des prestations. */
+export function cautionText(caution: number, fullAtSignature: boolean, balanceDue: string) {
+  return `${formatEUR(caution)}, à verser ${fullAtSignature ? "à la signature" : `avec le solde${balanceDue ? `, au plus tard le ${formatDateFR(balanceDue)}` : ""}`}. Elle ne fait pas partie du prix des prestations et vous est restituée si aucun retard n’est constaté.`;
 }
 
 export default function QuoteDocument({ row, quoteOnly = false }: { row: RequestRow; quoteOnly?: boolean }) {
@@ -152,11 +156,12 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         <ul className="dv-terms">
           <li><b>Total des prestations</b><span>{formatEUR(totals.total)}</span></li>
           {totals.fullAtSignature
-            ? <li><b>Règlement</b><span>L’événement ayant lieu dans moins de 2 mois, la totalité ({formatEUR(totals.total)}) est à régler à la signature, accompagnée de la caution de {formatEUR(totals.caution)} (restituée si aucun retard constaté).</span></li>
+            ? <li><b>Règlement</b><span>L’événement ayant lieu dans moins de 2 mois, la totalité ({formatEUR(totals.total)}) est à régler à la signature.</span></li>
             : <>
                 <li><b>Acompte (30 %)</b><span>{formatEUR(totals.deposit)} à la signature</span></li>
-                <li><b>Solde</b><span>{formatEUR(totals.balance)} au plus tard le {formatDateFR(totals.balanceDue)}, accompagné de la caution de {formatEUR(totals.caution)} (restituée si aucun retard constaté)</span></li>
+                <li><b>Solde</b><span>{formatEUR(totals.balance)} au plus tard le {formatDateFR(totals.balanceDue)}</span></li>
               </>}
+          <li><b>Caution</b><span>{cautionText(totals.caution, totals.fullAtSignature, totals.balanceDue)}</span></li>
           <li><b>Validité</b><span>30 jours à compter du {issued}. Tarifs et disponibilités garantis après signature et versement {totals.fullAtSignature ? "du règlement" : "de l’acompte"}.</span></li>
           <li><b>Catalogue</b><span>Formules, menus et services complémentaires : <a href="https://catalogue.cuilleredor.fr/" target="_blank" rel="noopener noreferrer">catalogue.cuilleredor.fr</a></span></li>
           {quote.note ? <li><b>Remarque</b><span>{quote.note}</span></li> : null}
@@ -238,14 +243,14 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         <ul>
           <li>Montant total : {formatEUR(totals.total)} TTC</li>
           {totals.fullAtSignature ? (
-            <li>Règlement : {formatEUR(totals.total)} — intégralité à verser à la signature (événement dans moins de 2 mois), accompagnée de la caution de {formatEUR(totals.caution)}</li>
+            <li>Règlement : {formatEUR(totals.total)} — intégralité à verser à la signature (événement dans moins de 2 mois)</li>
           ) : (
             <>
               <li>Acompte (30 %) : {formatEUR(totals.deposit)} — à verser à la signature</li>
-              <li>Solde (70 %) : {formatEUR(totals.balance)} — à régler au plus tard le {formatDateFR(totals.balanceDue)}, accompagné de la caution de {formatEUR(totals.caution)}</li>
+              <li>Solde (70 %) : {formatEUR(totals.balance)} — à régler au plus tard le {formatDateFR(totals.balanceDue)}</li>
             </>
           )}
-          <li>Caution : {formatEUR(totals.caution)}, versée {totals.fullAtSignature ? "à la signature" : "avec le solde"} — restituée si aucun retard constaté</li>
+          <li>Caution (à part du prix) : {cautionText(totals.caution, totals.fullAtSignature, totals.balanceDue)}</li>
         </ul>
         <PaymentsTable quote={quote} total={totals.total} />
         <p>Le Prestataire se réserve le droit de suspendre la prestation en cas de non-paiement du solde, sans obligation de remboursement des sommes déjà versées.</p>

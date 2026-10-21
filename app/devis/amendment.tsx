@@ -10,7 +10,7 @@ import {
   type Amendment,
   type RequestRow,
 } from "../../lib/quote";
-import { PaymentsTable } from "./document";
+import { PaymentsTable, cautionText } from "./document";
 
 const KIND: Record<string, string> = { info: "Information", ajout: "Ajout", retrait: "Retrait", modif: "Modification" };
 
@@ -90,8 +90,9 @@ export default function AmendmentDocument({ row, amendment }: { row: RequestRow;
                 : `${formatEUR(-diff)} vous seront remboursés ou déduits d’une prochaine facture.`}</span></li>
             : <>
                 <li><b>Acompte</b><span>{formatEUR(contract.deposit)}, inchangé{deposit?.receivedOn ? ` (reçu le ${formatDateFR(deposit.receivedOn)}${deposit.confirmedOn ? `, réception confirmée le ${formatDateFR(deposit.confirmedOn)}` : ""})` : " (versé à la signature du contrat)"}</span></li>
-                <li><b>Nouveau solde</b><span>{formatEUR(Math.max(0, next.total - contract.deposit))}{next.balanceDue ? ` au plus tard le ${formatDateFR(next.balanceDue)}` : ""}, accompagné de la caution de {formatEUR(contract.caution)} (restituée si aucun retard constaté)</span></li>
+                <li><b>Nouveau solde</b><span>{formatEUR(Math.max(0, next.total - contract.deposit))}{next.balanceDue ? ` au plus tard le ${formatDateFR(next.balanceDue)}` : ""}</span></li>
               </>}
+          <li><b>Caution</b><span>{cautionText(contract.caution, contract.fullAtSignature, next.balanceDue)}</span></li>
           <li><b>Autres clauses</b><span>Toutes les autres clauses du contrat initial restent inchangées et continuent de s’appliquer.</span></li>
         </ul>
 
