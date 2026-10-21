@@ -302,6 +302,8 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
             </Fragment>
           ))}
         </ul>
+        {/* Remarque du devis (vaisselle, boissons, déchets à la charge du client…) reprise dans le contrat. */}
+        {quote.note ? <p><b>Précisions :</b> {quote.note}</p> : null}
         <p>Toute modification importante (date, lieu, nombre de convives, menus, horaires) doit faire l’objet d’un avenant écrit et signé. À défaut, les conditions du présent contrat s’appliquent dans leur version originale.</p>
 
         <h3>ARTICLE 2 — CONDITIONS FINANCIÈRES</h3>
