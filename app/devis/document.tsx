@@ -172,7 +172,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
                   return (
                     <Fragment key={line.id}>
                       <tr className={parts.length ? "dv-has-detail" : undefined}>
-                        <td className="c">{isTravelPending(line) ? "—" : fmtQty(line.qty)} {line.unit}</td>
+                        <td className="c">{isTravelPending(line) || (isLodgingPending(line) && !(line.qty > 0)) ? "—" : `${fmtQty(line.qty)} ${line.unit}`}</td>
                         <td className="c dv-check">☑</td>
                         <td>{line.label}</td>
                         <td className="r dv-pu">{isLodgingPending(line) ? "—" : `${formatEUR(line.price)}${isTravelPending(line) ? "/km" : ""}`}</td>
