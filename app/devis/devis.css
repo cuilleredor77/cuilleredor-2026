@@ -290,3 +290,9 @@
 .dv-signbox-code label { display: grid; gap: 6px; font-weight: 600; }
 .dv-signbox-code input { font: 600 22px/1 monospace; letter-spacing: 6px; width: 9ch; padding: 8px 10px; border: 1px solid #cfc6ad; border-radius: 8px; }
 .dv-linkbtn { background: none; border: 0; padding: 0; color: #6b5420; text-decoration: underline; cursor: pointer; font-size: 13px; }
+
+/* Choix de la langue du devis (Français / English) */
+.dv-lang { display: inline-flex; border: 1px solid #5a5a5a; border-radius: 999px; overflow: hidden; }
+.dv-lang a { padding: 6px 12px; color: #f7f4ec; text-decoration: none; font-size: 13px; font-weight: 600; }
+.dv-lang a.on { background: #c9a227; color: #1a1a1a; }
+.dv-langnote { font-size: 11px; color: #666; font-style: italic; margin-top: 10px; }

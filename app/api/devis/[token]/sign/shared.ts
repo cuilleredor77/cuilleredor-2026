@@ -6,12 +6,13 @@ export const CODE_MINUTES = 15;
 export const MAX_ATTEMPTS = 5;
 
 /** Raison pour laquelle le devis ne peut pas être signé en ligne, ou "" s’il peut l’être. */
-export function cannotSign(row: RequestRow | null): string {
-  if (!row || !row.quote_json) return "Devis introuvable.";
-  if (parseSignature(row)) return "Ce devis est déjà signé.";
+export function cannotSign(row: RequestRow | null, lang: "fr" | "en" = "fr"): string {
+  const en = lang === "en";
+  if (!row || !row.quote_json) return en ? "Quote not found." : "Devis introuvable.";
+  if (parseSignature(row)) return en ? "This quote has already been signed." : "Ce devis est déjà signé.";
   // Date OFF ou complète : le devis a été envoyé « indisponible », il ne se signe pas.
-  if (!SIGNABLE.includes(row.status) || offPeriod(row.event_date)) return "Ce devis ne peut plus être signé en ligne. Contactez-nous au 07 83 74 89 71.";
-  if (!row.client_email) return "Aucune adresse e-mail n’est associée à ce devis : contactez-nous au 07 83 74 89 71 pour le signer.";
+  if (!SIGNABLE.includes(row.status) || offPeriod(row.event_date)) return en ? "This quote can no longer be signed online. Please contact us on +33 7 83 74 89 71." : "Ce devis ne peut plus être signé en ligne. Contactez-nous au 07 83 74 89 71.";
+  if (!row.client_email) return en ? "No email address is linked to this quote: please contact us on +33 7 83 74 89 71 to sign it." : "Aucune adresse e-mail n’est associée à ce devis : contactez-nous au 07 83 74 89 71 pour le signer.";
   return "";
 }
 

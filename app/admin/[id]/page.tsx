@@ -6,6 +6,7 @@ import {
   FORMULAS, FORMULA_KEYS, OPTION_PRESETS, mariagesNetReply, honorWineLines, isHonorWineLine, travelLast, isIncluded, withGroup, groupOrder, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
   formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, amendmentChanges, parseSignature, twoDayQuote, paidTotal, type Payment, parseSnapshot, snapshotOf, type Amendment, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
+import { autoEn } from "../../../lib/devis-en";
 
 const STATUS: Array<[string, string]> = [
   ["nouvelle", "Nouvelle"], ["en_cours", "En cours"], ["devis_pret", "Devis prêt"], ["envoye", "Envoyé"],
@@ -27,6 +28,8 @@ export default function Editor() {
   const [presetId, setPresetId] = useState("");
   const [amendments, setAmendments] = useState<Amendment[]>([]);
   const [amendReason, setAmendReason] = useState("");
+  // Textes anglais du devis (version English) : affichés sur demande.
+  const [showEn, setShowEn] = useState(false);
 
   const load = useCallback(async () => {
     const res = await fetch(`/api/admin/requests/${id}`, { cache: "no-store" });
@@ -311,6 +314,7 @@ export default function Editor() {
           </span>
           <a className="adm-btn" href={quoteLink} target="_blank" rel="noopener noreferrer" onClick={(e) => openSaved(e, quoteLink)}>Devis seul ↗</a>
           <a className="adm-btn" href={fullLink} target="_blank" rel="noopener noreferrer" onClick={(e) => openSaved(e, fullLink)}>Devis + contrat ↗</a>
+          <a className="adm-btn" title="Version anglaise du devis et du contrat" href={`${fullLink}?lang=en`} target="_blank" rel="noopener noreferrer" onClick={(e) => openSaved(e, `${fullLink}?lang=en`)}>🇬🇧 English ↗</a>
           <span className={`adm-savestate ${dirty ? "pending" : ""}`} aria-live="polite">
             {busy ? "Enregistrement…" : dirty ? "Modifications en cours…" : savedAt ? `Enregistré ✓ ${savedAt.getHours().toString().padStart(2, "0")}h${savedAt.getMinutes().toString().padStart(2, "0")}` : "Enregistré ✓"}
           </span>
@@ -451,6 +455,7 @@ export default function Editor() {
                 {quote.days?.some((d) => d.trim()) ? null : (
                   <button className="adm-btn" title="Jour 1 = l’événement, jour 2 = brunch du lendemain (brunch, déchets et déplacement chiffrés)" onClick={() => setQ(twoDayQuote(req, quote))}>📅 Modèle 2 jours (+ brunch du lendemain)</button>
                 )}
+                <button type="button" className={`adm-btn ${showEn ? "adm-gold" : ""}`} onClick={() => setShowEn(!showEn)}>🇬🇧 {showEn ? "Masquer l’anglais" : "Anglais"}</button>
                 <button className="adm-btn" onClick={regenerate} disabled={busy}>↻ Régénérer depuis la demande</button>
               </span>
             </div>
@@ -477,6 +482,12 @@ export default function Editor() {
                   <div className="t">
                     <input value={line.label} onChange={(e) => setLine(i, { label: e.target.value })} />
                     <input className="d" placeholder="Détail (facultatif)" value={line.detail || ""} onChange={(e) => setLine(i, { detail: e.target.value })} />
+                    {showEn ? (
+                      <div className="adm-en">
+                        <input aria-label="Libellé en anglais" placeholder={`🇬🇧 ${autoEn(line.label)}`} value={line.labelEn || ""} onChange={(e) => setLine(i, { labelEn: e.target.value || undefined })} />
+                        {line.detail ? <input className="d" aria-label="Détail en anglais" placeholder={`🇬🇧 ${autoEn(line.detail)}`} value={line.detailEn || ""} onChange={(e) => setLine(i, { detailEn: e.target.value || undefined })} /> : null}
+                      </div>
+                    ) : null}
                     {quote.days?.some((d) => d.trim()) ? (
                       <select className="adm-day" aria-label="Jour de la prestation" value={line.day && quote.days.includes(line.day) ? line.day : quote.days.find((d) => d.trim()) || ""} onChange={(e) => setLine(i, { day: e.target.value })}>
                         {quote.days.filter((d) => d.trim()).map((d) => <option key={d} value={d}>{d}</option>)}
@@ -523,7 +534,9 @@ export default function Editor() {
           </section>
 
           <section className="adm-card">
-            <h2>Texte du devis</h2>
+            <div className="adm-split"><h2>Texte du devis</h2>
+              <button type="button" className={`adm-btn ${showEn ? "adm-gold" : ""}`} title="Textes de la version anglaise (vides = traduction automatique des libellés du catalogue, affichée en gris)" onClick={() => setShowEn(!showEn)}>🇬🇧 {showEn ? "Masquer les textes en anglais" : "Textes en anglais"}</button>
+            </div>
             <div className="adm-grid">
               <label>Date d’émission<input type="date" value={quote.issuedOn} onChange={(e) => setQ({ issuedOn: e.target.value })} /></label>
               <label>Solde dû le (vide = 2 mois avant)<input type="date" value={quote.balanceDue || ""} onChange={(e) => setQ({ balanceDue: e.target.value || undefined })} /></label>
@@ -536,6 +549,12 @@ export default function Editor() {
               <label className="wide">Prestation souhaitée<input value={quote.summary} onChange={(e) => setQ({ summary: e.target.value })} /></label>
               <label className="wide">Options / remarques<textarea rows={2} value={quote.remarks} onChange={(e) => setQ({ remarks: e.target.value })} /></label>
               <label className="wide">Mention libre sous les conditions (facultatif)<textarea rows={2} value={quote.note} onChange={(e) => setQ({ note: e.target.value })} /></label>
+              {showEn ? <>
+                <label className="wide adm-en-label">🇬🇧 Prestation souhaitée (anglais)<input placeholder={autoEn(quote.summary)} value={quote.summaryEn || ""} onChange={(e) => setQ({ summaryEn: e.target.value || undefined })} /></label>
+                <label className="wide adm-en-label">🇬🇧 Options / remarques (anglais)<textarea rows={2} placeholder={autoEn(quote.remarks)} value={quote.remarksEn || ""} onChange={(e) => setQ({ remarksEn: e.target.value || undefined })} /></label>
+                <label className="wide adm-en-label">🇬🇧 Mention libre (anglais)<textarea rows={2} placeholder={autoEn(quote.note)} value={quote.noteEn || ""} onChange={(e) => setQ({ noteEn: e.target.value || undefined })} /></label>
+                <p className="adm-muted wide">Les champs anglais vides utilisent la traduction automatique (en gris). Les lignes du devis ont aussi leurs champs anglais, sous chaque ligne.</p>
+              </> : null}
             </div>
           </section>
         </div>

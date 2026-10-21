@@ -1,10 +1,11 @@
 "use client";
 
 // Deux PDF possibles : le devis seul, ou le devis suivi du contrat.
-export default function PrintButton({ fileName, quoteOnly = false }: { fileName: string; quoteOnly?: boolean }) {
+export default function PrintButton({ fileName, quoteOnly = false, lang = "fr" }: { fileName: string; quoteOnly?: boolean; lang?: "fr" | "en" }) {
+  const en = lang === "en";
   const print = (quoteOnly: boolean) => {
     const previous = document.title;
-    document.title = quoteOnly ? fileName.replace(/_Devis_Contrat$/, "_Devis") : fileName;
+    document.title = quoteOnly ? fileName.replace(/_Devis_Contrat(_EN)?$/, "_Devis$1") : fileName;
     document.body.classList.toggle("dv-quote-only", quoteOnly);
     window.print();
     setTimeout(() => {
@@ -14,13 +15,13 @@ export default function PrintButton({ fileName, quoteOnly = false }: { fileName:
   };
   return (
     <div className="dv-print-group">
-      <span className="dv-print-label">Télécharger en PDF :</span>
+      <span className="dv-print-label">{en ? "Download PDF:" : "Télécharger en PDF :"}</span>
       <button type="button" className="dv-print dv-print-alt" onClick={() => print(true)}>
-        Devis seul
+        {en ? "Quote only" : "Devis seul"}
       </button>
       {quoteOnly ? null : (
         <button type="button" className="dv-print" onClick={() => print(false)}>
-          Devis + contrat
+          {en ? "Quote + agreement" : "Devis + contrat"}
         </button>
       )}
     </div>

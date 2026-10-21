@@ -117,6 +117,8 @@ export type QuoteLine = {
   detail?: string;
   price: number; // prix unitaire
   day?: string; // jour de la prestation (devis sur plusieurs jours), parmi Quote.days
+  labelEn?: string; // version anglaise (sinon traduction automatique des libellés du catalogue)
+  detailEn?: string;
 };
 
 export type Quote = {
@@ -130,6 +132,9 @@ export type Quote = {
   payments?: Payment[]; // règlements reçus (acompte, solde, caution…)
   noCaution?: boolean; // caution retirée à la main pour ce devis
   days?: string[]; // prestation sur plusieurs jours : une section par jour (ex. « MARIAGE (14/05/2027) »)
+  summaryEn?: string; // textes du devis en anglais (version English du devis et du contrat)
+  remarksEn?: string;
+  noteEn?: string;
 };
 
 /** Règlement reçu : date de réception et date à laquelle la réception a été confirmée au client. */
@@ -187,6 +192,7 @@ export type Signature = {
   hash: string; // SHA-256 du devis signé (quote_json)
   email?: string; // adresse vérifiée par le code envoyé avant la signature
   method?: "code-email";
+  lang?: "fr" | "en"; // langue de la version signée en ligne
 };
 
 export function parseSignature(row: Pick<RequestRow, "signature_json">): Signature | null {
