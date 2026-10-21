@@ -32,7 +32,7 @@ export function dateTimeText(iso: string, lang: Lang, frText: (iso: string) => s
 }
 
 const UNITS: Record<string, string> = {
-  "pers.": "guests", "pers": "guests", "enf.": "children", "kit": "kit", "kits": "kits", "forfait": "flat rate",
+  "pers.": "people", "pers": "people", "enf.": "children", "kit": "kit", "kits": "kits", "forfait": "flat fee",
   "serveur": "server", "serveurs": "servers", "km AR": "km round trip", "unité": "unit", "unités": "units",
   "litre": "litre", "litres": "litres", "nappes": "tablecloths", "couverts": "covers",
 };
@@ -44,7 +44,7 @@ const PHRASES: Array<[RegExp, string]> = [
   [/Suppl\. vin d’honneur — 4 cocktails au choix/gi, "Cocktail reception supplement — 4 cocktails of your choice"],
   [/10 pièces par personne, au choix parmi nos mignardises salées et sucrées/gi, "10 pieces per guest, chosen from our sweet and savoury canapés"],
   [/4 cocktails par personne, au choix parmi nos cocktails/gi, "4 cocktails per guest, chosen from our cocktail menu"],
-  [/Formule Brunch signature avec service compris/gi, "Signature brunch with service included"],
+  [/Formule Brunch signature avec service compris/gi, "Signature brunch, service included"],
   [/Location kit vaisselle Essentiel/gi, "Essential tableware kit rental"],
   [/Location kit vaisselle Complet/gi, "Complete tableware kit rental"],
   [/Location kit vaisselle Prestige/gi, "Prestige tableware kit rental"],
@@ -71,7 +71,7 @@ const PHRASES: Array<[RegExp, string]> = [
   [/Présentation et découpe du wedding cake/gi, "Presentation and cutting of the wedding cake"],
   [/Assiette de fromages avant le dessert/gi, "Cheese plate before dessert"],
   [/\(adultes uniquement\)/gi, "(adults only)"],
-  [/Menu enfants? \((3|5)[–-](12|à 12) ans\)/gi, "Children’s menu (ages 3–12)"],
+  [/Menu enfants? \((3|5)[–-]12 ans\)/gi, "Children’s menu (ages $1–12)"],
   [/Menu enfant \(5 à 12 ans\)/gi, "Children’s menu (ages 5–12)"],
   [/Menu prestataires/gi, "Vendor meals"],
   [/wedding planner, photographe, DJ…/gi, "wedding planner, photographer, DJ…"],
@@ -87,18 +87,22 @@ const PHRASES: Array<[RegExp, string]> = [
   [/Maître d’hôtel/gi, "Maître d’hôtel"],
   [/Forfait soft et eau/gi, "Soft drinks and water package"],
   [/Cocktails supplémentaires/gi, "Additional cocktails"],
-  [/Vin d’honneur \+ (R|r)epas/g, "Cocktail reception + meal"],
-  [/Vin d’honneur \+ service à l’assiette/gi, "Cocktail reception + plated service"],
+  [/Vin d’honneur \+ (R|r)epas buffet/g, "Cocktail reception + buffet dinner"],
+  [/Vin d’honneur \+ (R|r)epas \(service plateau\)/g, "Cocktail reception + dinner served on platters"],
+  [/Vin d’honneur \+ (R|r)epas/g, "Cocktail reception + dinner"],
+  [/Vin d’honneur \+ service à l’assiette/gi, "Cocktail reception + plated dinner"],
   [/Vin d’honneur/g, "Cocktail reception"],
   [/vin d’honneur/g, "cocktail reception"],
-  [/Repas — service à l’assiette/gi, "Meal — plated service"],
-  [/Repas — service buffet/gi, "Meal — buffet service"],
-  [/Repas — service plateau/gi, "Meal — platter service"],
-  [/Repas/g, "Meal"],
+  [/Repas — service à l’assiette/gi, "Plated dinner"],
+  [/Repas — service buffet/gi, "Buffet dinner"],
+  [/Repas — service plateau/gi, "Dinner served on platters"],
+  [/Repas buffet/g, "buffet dinner"],
+  [/Repas/g, "Dinner"],
   [/service à l’assiette/gi, "plated service"],
   [/service buffet/gi, "buffet service"],
   [/service plateau/gi, "platter service"],
-  [/avec service compris/gi, "with service included"],
+  [/ avec service compris/gi, ", service included"],
+  [/avec service compris/gi, "service included"],
   [/entrée et plat, sans dessert/gi, "starter and main course, no dessert"],
   [/1 entrée, 1 plat, 1 dessert/gi, "1 starter, 1 main course, 1 dessert"],
   [/10 amuse-bouches \+ 4 cocktails offerts( au choix)?/gi, "10 canapés + 4 complimentary cocktails of your choice"],
@@ -175,11 +179,11 @@ export function charterEmailEn(req: RequestRow, quote: Quote, totals: Totals, li
     totals.fullAtSignature && knownDate
       ? `Confirmation: as the event takes place in less than two months, the booking will be confirmed upon signature${withContract ? " of the agreement" : ""} and payment in full, i.e. ${m(totals.total)}.`
       : `Confirmation: the booking will be confirmed upon signature${withContract ? " of the agreement" : " of the quote"} and payment of a 30% deposit, i.e. ${m(deposit)}. The remaining balance of ${m(balance)} is payable ${totals.balanceDue && knownDate ? `no later than ${dateText(totals.balanceDue, lang)}` : "no later than two months before the event"}.`,
-    !totals.caution ? "" : `Security deposit: ${m(totals.caution)}, payable ${totals.fullAtSignature && knownDate ? "upon signature" : `with the balance${totals.balanceDue && knownDate ? `, no later than ${dateText(totals.balanceDue, lang)}` : ""}`}, to cover any delay. It is not part of the price and is refunded if no delay occurs.`,
+    !totals.caution ? "" : `Security deposit: ${m(totals.caution)}, payable ${totals.fullAtSignature && knownDate ? "upon signature" : `with the balance${totals.balanceDue && knownDate ? `, no later than ${dateText(totals.balanceDue, lang)}` : ""}`}, as a guarantee against delays. It is not part of the price and is refunded if no delay occurs.`,
     withContract ? "Payment by bank transfer: the bank details are included in the agreement." : "",
   ].filter(Boolean);
   const reread = withContract ? "Please read and check the quote and the agreement carefully before signing them." : "Please read and check the quote carefully before signing it.";
-  const discover = "Discover our world and all our packages on our website, and browse our online catalogue to compose your menu:";
+  const discover = "Find out more about us and all our packages on our website, and browse our online catalogue to plan your menu:";
   const td = "padding:11px 14px;border-bottom:1px solid #e6dccb;font-size:14px";
   const table = `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:8px 0 18px;font-family:Arial,Helvetica,sans-serif">`
     + `<tr style="background:#0f1a14"><th style="padding:12px 14px;text-align:left;color:#c9a227;font-size:14px">Service</th><th style="padding:12px 14px;text-align:center;color:#c9a227;font-size:14px">Qty</th><th style="padding:12px 14px;text-align:right;color:#c9a227;font-size:14px">Total</th></tr>`
@@ -194,7 +198,7 @@ export function charterEmailEn(req: RequestRow, quote: Quote, totals: Totals, li
     + `<ul style="margin:0 0 16px;padding-left:22px">${infos.map((t) => `<li style="margin-bottom:4px">${bold(t)}</li>`).join("")}</ul>`
     + `<p>${esc(reread)}</p>`
     + `<p>${esc(discover)} <a href="https://cuilleredor.fr" target="_blank" rel="noopener noreferrer">cuilleredor.fr</a> · <a href="https://catalogue.cuilleredor.fr" target="_blank" rel="noopener noreferrer">online catalogue</a></p>`
-    + `<p>I remain at your entire disposal for any question or adjustment.</p>`
+    + `<p>Please do not hesitate to contact me with any questions or changes.</p>`
     + `<p style="margin:18px 0 0">Kind regards,</p><p style="margin:2px 0 22px"><strong>Cuillère d’Or</strong></p>${EMAIL_SIGNATURE_EN}</div>`;
   const text = [
     `Hello ${first},`, "", intro1, "", link ? `${intro2} ${link}` : intro2, "",
@@ -204,7 +208,7 @@ export function charterEmailEn(req: RequestRow, quote: Quote, totals: Totals, li
     "Additional information:", ...infos.map((t) => `- ${t}`), "",
     reread, "",
     `${discover} https://cuilleredor.fr · online catalogue: https://catalogue.cuilleredor.fr`, "",
-    "I remain at your entire disposal for any question or adjustment.", "",
+    "Please do not hesitate to contact me with any questions or changes.", "",
     ...SIGN_TEXT_EN,
   ].join("\n");
   return { subject, html, text };

@@ -34,10 +34,10 @@ const COMPLEMENTARY: Record<Lang, Array<{ title: string; rows: Array<[string, st
   en: [
     { title: "Catering", rows: [["Children’s menu (ages 5–12)", "€25/guest"], ["Vendor meals", "€30/guest"], ["Additional meat or fish", "€5/guest"], ["Additional starter or dessert (plated service)", "€5/guest"]] },
     { title: "Drinks", rows: [["Soft drinks and water package (Coca-Cola, Fanta, Oasis, still and sparkling water)", "€5/guest"], ["Signature cocktails (1 litre for about 4 guests)", "€10/litre"], ["Beverage service throughout the evening", "€160/server"]] },
-    { title: "Event services", rows: [["Presentation, cutting and serving of the cake", "€150 flat rate"], ["Wedding cake (partner Love Lo Cake)", "from €6.50/slice"], ["Cheese plate before dessert", "€9/guest"]] },
+    { title: "Event services", rows: [["Presentation, cutting and serving of the cake", "€150 flat fee"], ["Wedding cake (partner Love Lo Cake)", "from €6.50/slice"], ["Cheese plate before dessert", "€9/guest"]] },
     { title: "Tableware & linen", rows: [["Essential tableware kit — 2 plates, water glass, wine glass, cutlery", "€7/kit"], ["Complete tableware kit — 3 plates, water, wine and champagne glasses, cutlery", "€10/kit"], ["Prestige tableware kit — Complete kit + beaded charger plate", "€13/kit"], ["Cloth napkins", "€2/guest"], ["Beaded charger plate", "€3/unit"]] },
-    { title: "Furniture & equipment", rows: [["Cocktail table (with cover and cloth)", "€15/unit"], ["Chafing dish", "€25/unit"], ["Professional food warmer", "€150 flat rate"], ["Refrigerated truck", "rental + km"]] },
-    { title: "Services", rows: [["Full set-up (venue and equipment)", "€150 flat rate"], ["Table setting (included when tableware is rented from the chef)", "€250 flat rate"], ["Maître d’hôtel", "€160 flat rate"], ["Food waste management", "€50 flat rate"]] },
+    { title: "Furniture & equipment", rows: [["Cocktail table (with cover and cloth)", "€15/unit"], ["Chafing dish", "€25/unit"], ["Professional food warmer", "€150 flat fee"], ["Refrigerated truck", "rental + km"]] },
+    { title: "Services", rows: [["Full set-up (venue and equipment)", "€150 flat fee"], ["Table setting (included when tableware is rented from the chef)", "€250 flat fee"], ["Maître d’hôtel", "€160 flat fee"], ["Food waste management", "€50 flat fee"]] },
     { title: "Partner vendors", rows: [["Photographer · Videographer · DJ · Decorator · Wedding planner", "on request"]] },
     { title: "Before the event", rows: [["Tasting at Chez Lina restaurant (by appointment, not deductible from the quote)", "€70/guest"]] },
   ],
@@ -110,7 +110,7 @@ export function ScheduleCards({ rows, caution, cautionDue, lang = "fr" }: { rows
         </div>
       ))}
       {caution ? <div className="dv-paycard dv-paycard-caution">
-        <small>{en ? "Security deposit · not in price" : "Caution · hors prix"}</small>
+        <small>{en ? "Security deposit · separate" : "Caution · hors prix"}</small>
         <b>{money(caution, lang)}</b>
         <span>{cautionDue} · {en ? "refundable" : "restituée si aucun retard"}</span>
       </div> : null}
@@ -182,7 +182,7 @@ export default function QuoteDocument({ row, quoteOnly = false, lang = "fr" }: {
         <header className="dv-head">
           <div className="dv-brand">
             <img src="/logo-cuillere-dor-800.png" alt="Cuillère d’Or" width={220} />
-            <p>8 Allée des Bois, 77240 Vert-Saint-Denis{en ? ", France" : ""}<br />{en ? "Tel: +33 7 83 74 89 71" : "Tél : 07 83 74 89 71"}<br />contact@cuilleredor.fr<br />SIRET : 889 933 800 00019</p>
+            <p>8 Allée des Bois, 77240 Vert-Saint-Denis{en ? ", France" : ""}<br />{en ? "Tel: +33 7 83 74 89 71" : "Tél : 07 83 74 89 71"}<br />contact@cuilleredor.fr<br />SIRET{en ? ": " : " : "}889 933 800 00019</p>
           </div>
           <table className="dv-client">
             <thead><tr><th colSpan={2}>{en ? "QUOTE FOR" : "DEVIS POUR"}</th></tr></thead>
@@ -591,7 +591,7 @@ function ContractEN({ row, quote, totals, signed, guests, eventLong, eventType, 
       <h4>3.11 – Food hygiene</h4>
       <p>All dishes are prepared in compliance with food safety regulations. Once served, Cuillère d’Or cannot guarantee the safety of the food in the event of a break in the cold chain.</p>
       <h4>3.12 – Food waste management</h4>
-      <p>Food waste management is included in a €50 flat rate (all taxes included), excluding glass and general event waste.</p>
+      <p>Food waste management is included in a €50 flat fee (all taxes included), excluding glass and general event waste.</p>
       <h4>3.13 – Working conditions of the teams</h4>
       <p>The Client undertakes to ensure respectful working conditions. Any abusive or violent behaviour may lead to the immediate interruption of the service, without refund.</p>
       <h4>3.14 – Weather conditions</h4>
@@ -648,7 +648,7 @@ function ContractEN({ row, quote, totals, signed, guests, eventLong, eventType, 
       <p>Photographs and videos of Cuillère d’Or’s culinary creations and of moments of the event may be used for communication purposes, without time limit.</p>
       <p className="dv-choices">The Client grants or refuses this right: <span className="dv-tick" aria-hidden="true">{signed?.image === "accepte" ? "✓" : ""}</span> <b>I accept</b> <span className="dv-tick" aria-hidden="true">{signed?.image === "refuse" ? "✓" : ""}</span> <b>I refuse</b></p>
 
-      <p className="dv-fait">Made in Vert-Saint-Denis, on {issued}</p>
+      <p className="dv-fait">Done at Vert-Saint-Denis on {issued}</p>
       <div className="dv-sign">
         <div>
           <p>Cuillère d’Or signature:</p>
