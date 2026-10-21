@@ -109,7 +109,15 @@ const worker = {
       return applyHeaders(response);
     }
 
-    return applyHeaders(await handler.fetch(request, env, ctx));
+    const response = applyHeaders(await handler.fetch(request, env, ctx));
+    // Espace privé, devis clients et API : jamais indexés par les moteurs de recherche ni mis en cache partagé.
+    if (/^\/(admin|devis|envoyer|api)(\/|$)/.test(url.pathname)) {
+      const headers = new Headers(response.headers);
+      headers.set("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
+      headers.set("Cache-Control", "private, no-store");
+      return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+    }
+    return response;
   },
 };
 
