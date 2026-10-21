@@ -116,6 +116,7 @@ export type QuoteLine = {
   label: string;
   detail?: string;
   price: number; // prix unitaire
+  day?: string; // jour de la prestation (devis sur plusieurs jours), parmi Quote.days
 };
 
 export type Quote = {
@@ -128,6 +129,7 @@ export type Quote = {
   balanceDue?: string; // AAAA-MM-JJ : échéance du solde fixée à la main (sinon 2 mois avant l’événement)
   payments?: Payment[]; // règlements reçus (acompte, solde, caution…)
   noCaution?: boolean; // caution retirée à la main pour ce devis
+  days?: string[]; // prestation sur plusieurs jours : une section par jour (ex. « MARIAGE (14/05/2027) »)
 };
 
 /** Règlement reçu : date de réception et date à laquelle la réception a été confirmée au client. */

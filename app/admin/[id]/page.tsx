@@ -463,6 +463,11 @@ export default function Editor() {
                   <div className="t">
                     <input value={line.label} onChange={(e) => setLine(i, { label: e.target.value })} />
                     <input className="d" placeholder="Détail (facultatif)" value={line.detail || ""} onChange={(e) => setLine(i, { detail: e.target.value })} />
+                    {quote.days?.some((d) => d.trim()) ? (
+                      <select className="adm-day" aria-label="Jour de la prestation" value={line.day && quote.days.includes(line.day) ? line.day : quote.days.find((d) => d.trim()) || ""} onChange={(e) => setLine(i, { day: e.target.value })}>
+                        {quote.days.filter((d) => d.trim()).map((d) => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                    ) : null}
                   </div>
                   <input className="p" type="number" step="any" value={line.price} onChange={(e) => setLine(i, { price: Number(e.target.value) })} />
                   <b className="s">{isTravelPending(line) || isLodgingPending(line) ? "à chiffrer" : formatEUR(lineTotal(line))}</b>
@@ -510,6 +515,10 @@ export default function Editor() {
               <label>Solde dû le (vide = 2 mois avant)<input type="date" value={quote.balanceDue || ""} onChange={(e) => setQ({ balanceDue: e.target.value || undefined })} /></label>
               <label className="chk"><input type="checkbox" checked={!quote.noCaution && req.service_mode !== "livraison" && req.service_mode !== "emporter"} disabled={req.service_mode === "livraison" || req.service_mode === "emporter"} onChange={(e) => setQ({ noCaution: !e.target.checked || undefined })} /> Caution de 250 € {req.service_mode === "livraison" || req.service_mode === "emporter" ? "(jamais pour une livraison ou une vente à emporter)" : "(décocher pour la retirer de ce devis)"}</label>
               <label className="chk"><input type="checkbox" checked={quote.includeComplementary} onChange={(e) => setQ({ includeComplementary: e.target.checked })} /> Joindre la page « Services complémentaires »</label>
+              <label className="wide">Prestation sur plusieurs jours (facultatif) : un intitulé de section par ligne
+                <textarea rows={2} placeholder={"MARIAGE (14/05/2027)\nBRUNCH DU LENDEMAIN (15/05/2027)"} value={(quote.days || []).join("\n")}
+                  onChange={(e) => { const days = e.target.value.split("\n").map((d) => d.replace(/^\s+/, "")); setQ({ days: days.some((d) => d.trim()) ? days : undefined }); }} />
+              </label>
               <label className="wide">Prestation souhaitée<input value={quote.summary} onChange={(e) => setQ({ summary: e.target.value })} /></label>
               <label className="wide">Options / remarques<textarea rows={2} value={quote.remarks} onChange={(e) => setQ({ remarks: e.target.value })} /></label>
               <label className="wide">Mention libre sous les conditions (facultatif)<textarea rows={2} value={quote.note} onChange={(e) => setQ({ note: e.target.value })} /></label>

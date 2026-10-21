@@ -216,3 +216,6 @@
 .adm-pill { padding: 2px 10px; border-radius: 999px; background: #eee; font-weight: 700; font-size: 12px; }
 .adm-pill.sent { background: #fbefd2; color: #7a5a10; }
 .adm-pill.ok { background: #e3efe5; color: #2f6b3a; }
+
+/* Devis sur plusieurs jours : jour de chaque ligne */
+.adm-line .adm-day { margin-top: 4px; font-size: 12px; padding: 3px 6px; max-width: 100%; color: #6b5420; background: #faf7f0; border: 1px solid #e0d8c3; border-radius: 6px; }

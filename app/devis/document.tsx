@@ -122,6 +122,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
   // Les anciens devis gardent la formule et le contact dans les remarques : on les filtre aussi à l’affichage.
   const remarks = quote.remarks.trim() === "—" ? "" : clientRemarks(quote.remarks);
   const totals = computeTotals(quote, row.event_date, row.service_mode);
+  const days = (quote.days || []).map((d) => d.trim()).filter(Boolean);
   const eventLong = row.event_date ? formatDateFR(row.event_date, true) : "";
   const issued = formatDateFR(quote.issuedOn);
   const guests =
@@ -161,10 +162,20 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
             <tr><th>Quantité</th><th className="c dv-check" /><th>Description</th><th className="r dv-pu">Prix unitaire</th><th className="r">Total</th></tr>
           </thead>
           <tbody>
-            {[
-              { title: "PRESTATIONS INCLUSES", lines: quote.lines.filter(isIncluded) },
-              { title: "OPTIONS", lines: quote.lines.filter((l) => !isIncluded(l)) },
-            ].filter((sec) => sec.lines.length).map((sec) => (
+            {(days.length
+              // Plusieurs jours : une section « incluses » (puis « options ») par jour, dans l’ordre des jours.
+              ? days.flatMap((day) => {
+                  const ofDay = quote.lines.filter((l) => (l.day && days.includes(l.day.trim()) ? l.day.trim() : days[0]) === day);
+                  return [
+                    { title: `PRESTATIONS INCLUSES — ${day}`, lines: ofDay.filter(isIncluded) },
+                    { title: `OPTIONS — ${day}`, lines: ofDay.filter((l) => !isIncluded(l)) },
+                  ];
+                })
+              : [
+                  { title: "PRESTATIONS INCLUSES", lines: quote.lines.filter(isIncluded) },
+                  { title: "OPTIONS", lines: quote.lines.filter((l) => !isIncluded(l)) },
+                ]
+            ).filter((sec) => sec.lines.length).map((sec) => (
               <Fragment key={sec.title}>
                 <tr className="dv-band"><td colSpan={5}>{sec.title}</td></tr>
                 {sec.lines.map((line) => {
