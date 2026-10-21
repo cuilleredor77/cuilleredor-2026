@@ -282,9 +282,13 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         <p>Prestations incluses :</p>
         <ul>
           {quote.lines.map((line) => (
-            <li key={line.id}>
-              {line.label} — {isLodgingPending(line) ? "à chiffrer" : isTravelPending(line) ? `${formatEUR(line.price)} par km aller-retour, à chiffrer selon l’adresse du lieu` : `${fmtQty(line.qty)} ${line.unit} × ${formatEUR(line.price)} = ${formatEUR(lineTotal(line))}`}
-            </li>
+            <Fragment key={line.id}>
+              <li>
+                {line.label} — {isLodgingPending(line) ? "à chiffrer" : isTravelPending(line) ? `${formatEUR(line.price)} par km aller-retour, à chiffrer selon l’adresse du lieu` : `${fmtQty(line.qty)} ${line.unit} × ${formatEUR(line.price)} = ${formatEUR(lineTotal(line))}`}
+              </li>
+              {/* Détail de la formule (repas, vin d’honneur…) repris ligne à ligne, comme au devis. */}
+              {line.id === "main" && line.detail ? line.detail.split(" · ").filter(Boolean).map((part, k) => <li key={k}>{part}</li>) : null}
+            </Fragment>
           ))}
         </ul>
         <p>Toute modification importante (date, lieu, nombre de convives, menus, horaires) doit faire l’objet d’un avenant écrit et signé. À défaut, les conditions du présent contrat s’appliquent dans leur version originale.</p>
@@ -302,7 +306,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
           )}
           {totals.caution ? <li>Caution (hors prix des prestations) : {formatEUR(totals.caution)}, {cautionDue(totals).toLowerCase()} — restituée si aucun retard constaté</li> : null}
         </ul>
-        <PaymentSchedule rows={scheduleRows(totals)} payments={quote.payments} caution={totals.caution} cautionDue={cautionDue(totals)} />
+        {quote.payments?.length ? <PaymentSchedule rows={scheduleRows(totals)} payments={quote.payments} caution={totals.caution} cautionDue={cautionDue(totals)} /> : null}
         <p>Le Prestataire se réserve le droit de suspendre la prestation en cas de non-paiement du solde, sans obligation de remboursement des sommes déjà versées.</p>
         <p>Aucun service ne sera exécuté sans règlement complet du montant dû.</p>
         <p>Après règlement du solde, aucun ajustement à la baisse ne sera accepté. Toute hausse reste possible sous réserve de faisabilité.</p>
@@ -347,7 +351,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         <h4>3.11 – Hygiène alimentaire</h4>
         <p>Les préparations sont réalisées dans le respect de la réglementation sanitaire. Une fois servis, Cuillère d’Or ne peut garantir la qualité sanitaire des mets en cas de rupture de chaîne du froid.</p>
         <h4>3.12 – Gestion des déchets alimentaires</h4>
-        <p>La gestion des déchets alimentaires est incluse dans un forfait de 50 € TTC, à l’exclusion du verre et des déchets généraux de l’événement, sauf si non retenue au devis.</p>
+        <p>La gestion des déchets alimentaires est incluse dans un forfait de 50 € TTC, à l’exclusion du verre et des déchets généraux de l’événement.</p>
         <h4>3.13 – Conditions de travail des équipes</h4>
         <p>Le Client s’engage à garantir des conditions de travail respectueuses. Tout comportement injurieux ou violent pourra conduire à une interruption immédiate de la prestation, sans remboursement.</p>
         <h4>3.14 – Conditions météorologiques</h4>
@@ -373,7 +377,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
         <h4>4.5 – Wedding cake fourni par le Client</h4>
         <p>Le Client et son fournisseur demeurent responsables de la fabrication, du transport et de la conservation du wedding cake jusqu’à sa remise aux équipes CDO.</p>
         <h4>4.6 – Matériel et vaisselle</h4>
-        <p>La vaisselle et le linge de table ne sont pas inclus dans la prestation de base et doivent être prévus en location auprès du Prestataire ou d’un tiers. Le Client est responsable de toute perte, casse ou détérioration du matériel mis à disposition. Les frais de remplacement seront {totals.caution ? "retenus sur la caution ou refacturés" : "refacturés"}.</p>
+        <p>Le Client est responsable de toute perte, casse ou détérioration du matériel mis à disposition. Les frais de remplacement seront {totals.caution ? "retenus sur la caution ou refacturés" : "refacturés"}.</p>
         <h4>4.7 – Comportement des invités</h4>
         <p>Le Client demeure seul responsable du comportement de ses invités. Cuillère d’Or ne pourra être tenue responsable des incidents liés à une consommation excessive d’alcool.</p>
 
