@@ -226,7 +226,13 @@ export default function Editor() {
     const data = await res.json();
     if (!res.ok) { setMsg(data.error || "Calcul impossible."); return; }
     setField("km", data.km);
-    setMsg(`${data.km} km aller-retour (${data.oneWay} km l’aller) — pensez à régénérer les lignes pour intégrer le déplacement.`);
+    // Toutes les lignes de déplacement (les 2 jours d’un devis sur 2 jours) prennent la nouvelle distance.
+    if (quote!.lines.some((l) => /d[ée]placement/i.test(l.label))) {
+      setQ({ lines: quote!.lines.map((l) => (/d[ée]placement/i.test(l.label) ? { ...l, qty: data.km } : l)) });
+      setMsg(`${data.km} km aller-retour (${data.oneWay} km l’aller) : frais de déplacement mis à jour.`);
+    } else {
+      setMsg(`${data.km} km aller-retour (${data.oneWay} km l’aller) — pensez à régénérer les lignes pour intégrer le déplacement.`);
+    }
   }
 
   async function sendNow() {

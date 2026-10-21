@@ -252,14 +252,16 @@ function Login({ onDone }: { onDone: () => void }) {
 }
 
 function NewRequest({ onClose }: { onClose: () => void }) {
-  const [f, setF] = useState({ name: "", email: "", phone: "", eventType: "Mariage", eventDate: "", place: "", formula: "buffet", adults: 80, children: 0, providers: 0, honorWine: true, message: "" });
+  const [f, setF] = useState({ name: "", email: "", phone: "", eventType: "Mariage", eventDate: "", place: "", formula: "buffet", adults: 80, children: 0, providers: 0, honorWine: true, message: "", twoDays: false, brunchGuests: 0 });
   const [busy, setBusy] = useState(false);
   const set = (k: string, v: string | number | boolean) => setF((s) => ({ ...s, [k]: v }));
   return (
     <div className="adm-modal" onClick={onClose}>
       <form className="adm-card" onClick={(e) => e.stopPropagation()} onSubmit={async (e) => {
         e.preventDefault(); setBusy(true);
-        const res = await fetch("/api/admin/requests", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(f) });
+        // Événement sur 2 jours : la mention « brunch le lendemain » fait préparer le devis en 2 sections (jour J + brunch).
+        const message = f.twoDays ? [f.message, `Brunch le lendemain pour ${f.brunchGuests || f.adults} personnes`].filter(Boolean).join("\n") : f.message;
+        const res = await fetch("/api/admin/requests", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...f, message }) });
         const data = await res.json();
         if (res.ok) window.location.href = `/admin/${data.id}`; else setBusy(false);
       }}>
@@ -278,6 +280,8 @@ function NewRequest({ onClose }: { onClose: () => void }) {
             </select>
           </label>
           <label>Adultes<input type="number" min={1} value={f.adults} onChange={(e) => set("adults", Number(e.target.value))} /></label>
+          <label className="chk wide"><input type="checkbox" checked={f.twoDays} onChange={(e) => set("twoDays", e.target.checked)} /> 📅 Événement sur 2 jours : + brunch du lendemain (devis en 2 sections, brunch, déchets et déplacement chiffrés)</label>
+          {f.twoDays ? <label>Personnes au brunch<input type="number" min={1} placeholder={String(f.adults)} value={f.brunchGuests || ""} onChange={(e) => set("brunchGuests", Number(e.target.value))} /></label> : null}
         </div>
         <div className="adm-actions">
           <button type="button" className="adm-btn" onClick={onClose}>Annuler</button>
