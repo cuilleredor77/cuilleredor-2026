@@ -523,7 +523,7 @@ export default function Editor() {
             <div><dt>{totals.fullAtSignature ? "À la signature (100 %)" : "Acompte (30 %)"}</dt><dd>{formatEUR(totals.deposit)}</dd></div>
             {!totals.fullAtSignature ? <div><dt>Solde (70 %)</dt><dd>{formatEUR(totals.balance)}</dd></div> : null}
             {!totals.fullAtSignature && totals.balanceDue ? <div><dt>Solde dû le</dt><dd>{formatDateFR(totals.balanceDue)}</dd></div> : null}
-            <div><dt>Caution</dt><dd>{totals.caution ? formatEUR(totals.caution) : "aucune (livraison)"}</dd></div>
+            <div><dt>Caution</dt><dd>{totals.caution ? formatEUR(totals.caution) : "aucune (sans service)"}</dd></div>
             <div><dt>Valable jusqu’au</dt><dd>{formatDateFR(totals.validUntil)}</dd></div>
           </dl>
           <div className="adm-pay">

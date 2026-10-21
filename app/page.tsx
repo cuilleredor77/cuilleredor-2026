@@ -528,7 +528,7 @@ const faqItems = [
       "Acompte : 30 % à la signature du devis",
       "Solde : 70 % deux mois avant l’événement",
       "Événement dans moins de 60 jours : règlement intégral à la signature",
-      "Caution : 250 €, versée avec le solde et restituée après l’événement, sauf dommage, casse ou perte de matériel (pas de caution pour une livraison)",
+      "Caution : 250 €, versée avec le solde et restituée après l’événement, sauf dommage, casse ou perte de matériel (pas de caution pour une livraison ou une vente à emporter)",
       "Virement bancaire ou espèces",
     ],
   },
@@ -575,7 +575,7 @@ const faqItems = [
   {
     question: "Y a-t-il une caution et des frais de dépassement ?",
     answer:
-      "Une caution de 250 € est versée avec le solde, puis restituée après l’événement, sauf dommage, casse ou perte de matériel. Pas de caution pour une livraison. Au-delà de 30 minutes de dépassement, 80 € par heure entamée et par serveur. Le nombre de convives est figé 60 jours avant l’événement : il ne peut ensuite qu’augmenter.",
+      "Une caution de 250 € est versée avec le solde, puis restituée après l’événement, sauf dommage, casse ou perte de matériel. Pas de caution pour une livraison ou une vente à emporter. Au-delà de 30 minutes de dépassement, 80 € par heure entamée et par serveur. Le nombre de convives est figé 60 jours avant l’événement : il ne peut ensuite qu’augmenter.",
   },
   {
     question: "Comment se déroule une dégustation ?",

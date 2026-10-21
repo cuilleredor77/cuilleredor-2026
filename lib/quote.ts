@@ -500,7 +500,7 @@ export type Totals = {
   caution: number;
 };
 
-/** serviceMode « livraison » : pas de caution (pas d’équipe sur place). */
+/** Livraison ou vente à emporter : pas de caution (pas d’équipe sur place). */
 export function computeTotals(quote: Quote, eventDate: string, serviceMode = "service"): Totals {
   const total = round2(quote.lines.reduce((sum, l) => sum + lineTotal(l), 0));
   const days = eventDate ? daysBetween(quote.issuedOn, eventDate) : 999;
@@ -514,7 +514,7 @@ export function computeTotals(quote: Quote, eventDate: string, serviceMode = "se
     balanceDue: fullAtSignature || !eventDate ? "" : quote.balanceDue || nextWorkingDay(addMonths(eventDate, -2)),
     fullAtSignature,
     validUntil: addDays(quote.issuedOn, PRICES.validDays),
-    caution: serviceMode === "livraison" ? 0 : PRICES.caution,
+    caution: serviceMode === "livraison" || serviceMode === "emporter" ? 0 : PRICES.caution,
   };
 }
 
