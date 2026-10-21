@@ -838,3 +838,46 @@ export function withGroup(line: QuoteLine, included: boolean): QuoteLine {
 export function groupOrder(lines: QuoteLine[]): QuoteLine[] {
   return travelLast([...lines.filter(isIncluded), ...lines.filter((l) => !isIncluded(l))]);
 }
+
+// ---------- Réponse type Mariages.net (à coller dans leur messagerie) ----------
+
+/** Nombre d’invités écrit par le couple (« pour 180 personnes », « 150 invités »…), sinon 0. */
+export function guestsFromText(text: string): number {
+  const m = (text || "").match(/(\d{2,4})\s*(personnes|pers\b|invités|invites|convives|adultes)/i);
+  return m ? Number(m[1]) : 0;
+}
+
+/** Message court et personnalisé pour répondre à une demande Mariages.net, avec une fourchette quand c’est possible. */
+export function mariagesNetReply(req: RequestRow): { subject: string; html: string; text: string } {
+  const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const first = firstName(req.client_name);
+  const when = req.event_date && req.event_date >= todayISO() ? ` du ${formatDateFR(req.event_date)}` : "";
+  const guests = req.adults || guestsFromText(req.message);
+  const venue = (req.message.match(/choisi\s+(?:comme lieu de réception\s+)?((?:le|la|les|l’|l')\s*[^.,!?\n]{3,60})/i)?.[1] || "").trim();
+  const round = (n: number) => Math.round(n / 100) * 100;
+  // Fourchette : du buffet au service à l’assiette, vin d’honneur et service compris (paliers selon le nombre d’invités).
+  const low = guests ? round(guests * (tierPrice("buffet", guests) + PRICES.honorWine)) : 0;
+  const high = guests ? round(guests * (tierPrice("assiette", guests) + PRICES.honorWine)) : 0;
+  const nb = (n: number) => n.toLocaleString("fr-FR").replace(/\u202f/g, " ");
+  const paras = [
+    `Merci pour votre message et toutes nos félicitations pour votre mariage${when}${venue ? ` (${venue})` : ""} !`,
+    guests
+      ? `Pour ${guests} invités, comptez environ ${nb(low)} € à ${nb(high)} € pour le vin d’honneur et le repas, service compris, selon la formule choisie : buffet, plateau ou service à l’assiette.`
+      : "Nos formules vont de 40 € à 75 € par personne pour le vin d’honneur et le repas, service compris : buffet, plateau ou service à l’assiette, avec des tarifs dégressifs pour les grandes réceptions.",
+    "Vous pouvez découvrir nos menus dans le catalogue en ligne : https://catalogue.cuilleredor.fr",
+    "Et estimer votre réception en 2 minutes sur notre site : https://cuilleredor.fr/#calculateur",
+    `Pour un devis détaillé, il nous suffit ${missingInfo(guests, venue)}. Nous restons disponibles au 07 83 74 89 71.`,
+  ];
+  const sign = ["Au plaisir d’échanger avec vous,", "Cheffe Huguette — Cuillère d’Or"];
+  const link = (t: string) => esc(t).replace(/(https:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#1a1a1a;max-width:640px">`
+    + `<p>Bonjour ${esc(first)},</p>${paras.map((t) => `<p>${link(t)}</p>`).join("")}<p>${sign.map(esc).join("<br>")}</p></div>`;
+  const text = [`Bonjour ${first},`, "", ...paras.flatMap((t) => [t, ""]), ...sign].join("\n");
+  return { subject: "Votre mariage — Cuillère d’Or", html, text };
+}
+
+/** « du nombre d’invités, du lieu et de la formule qui vous plaît » sans redemander ce que le couple a déjà donné. */
+function missingInfo(guests: number, venue: string): string {
+  const parts = [guests ? "" : "du nombre d’invités", venue ? "" : "du lieu", "de la formule qui vous plaît"].filter(Boolean);
+  return parts.length > 1 ? `${parts.slice(0, -1).join(", ")} et ${parts[parts.length - 1]}` : parts[0];
+}

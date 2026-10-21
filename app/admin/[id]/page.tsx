@@ -3,7 +3,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, travelLast, isIncluded, withGroup, groupOrder, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
+  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, mariagesNetReply, travelLast, isIncluded, withGroup, groupOrder, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
   formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
@@ -31,6 +31,8 @@ export default function Editor() {
     if (res.status === 401) { window.location.href = "/admin"; return; }
     const data = await res.json();
     setReq(data.request); setQuote(data.quote); setDirty(!data.request.quote_json); setSheetFinder(data.sheetFinderUrl || "");
+    // Demande Mariages.net : la réponse type est proposée par défaut (pas d’e-mail du client).
+    if (data.request.source === "mariages_net") setMnet(true);
     // Ouverture directe de la fenêtre e-mail depuis la page du devis (?mail=1&doc=devis)
     const params = new URLSearchParams(window.location.search);
     if (params.get("mail") === "1") { setWithContract(params.get("doc") !== "devis"); setMail(true); }
@@ -61,6 +63,7 @@ export default function Editor() {
   const [dragFrom, setDragFrom] = useState<number | null>(null);
   const [dragOver, setDragOver] = useState<number | null>(null);
   const [unavailableQuote, setUnavailableQuote] = useState(false);
+  const [mnet, setMnet] = useState(false);
   // Version du mail modifiée à la main dans l’aperçu (null = modèle proposé).
   const [edited, setEdited] = useState<{ subject: string; html: string; text: string } | null>(null);
   const [agendaStatus, setAgendaStatus] = useState<"" | "loading" | "off" | "error" | "ok">("");
@@ -223,7 +226,8 @@ export default function Editor() {
   const fullLink = `${origin}/devis/${req.token}`;
   const quoteLink = `${fullLink}?doc=devis`;
   const link = withContract ? fullLink : quoteLink;
-  const model = negative ? unavailableEmail(req) : charterEmail(req, quote, totals, "", withContract, unavailableQuote);
+  const model = mnet ? mariagesNetReply(req) : negative ? unavailableEmail(req) : charterEmail(req, quote, totals, "", withContract, unavailableQuote);
+  const mnetUrl = req.internal_notes.match(/Répondre : (https:\/\/\S+)/)?.[1] || "";
   const { subject, html, text } = edited ?? model;
   // Gmail ne reçoit que l’objet par l’adresse : le corps mis en forme se colle (Cmd+V) après « Copier l’e-mail mis en forme ».
   const gmail = `https://mail.google.com/mail/?view=cm&fs=1&authuser=cuilleredor4%40gmail.com&to=${encodeURIComponent(req.client_email)}&su=${encodeURIComponent(subject)}`;
@@ -453,15 +457,28 @@ export default function Editor() {
           <div className="adm-card adm-mail" onClick={(e) => e.stopPropagation()}>
             <h2>E-mail au client</h2>
             <div className="adm-seg">
-              <button className={!negative && !unavailableQuote && !withContract ? "on" : ""} onClick={() => { setNegative(false); setUnavailableQuote(false); setWithContract(false); setCopied(""); }}>Devis seul</button>
-              <button className={!negative && !unavailableQuote && withContract ? "on" : ""} onClick={() => { setNegative(false); setUnavailableQuote(false); setWithContract(true); setCopied(""); }}>Devis + contrat</button>
-              <button className={unavailableQuote ? "on" : ""} onClick={() => { setNegative(false); setUnavailableQuote(true); setWithContract(false); setCopied(""); }}>Indispo + devis</button>
-              <button className={negative ? "on" : ""} onClick={() => { setNegative(true); setUnavailableQuote(false); setCopied(""); }}>Indisponible</button>
+              {req.source === "mariages_net" ? <button className={mnet ? "on" : ""} onClick={() => { setMnet(true); setCopied(""); }}>💍 Réponse Mariages.net</button> : null}
+              <button className={!mnet && !negative && !unavailableQuote && !withContract ? "on" : ""} onClick={() => { setMnet(false); setNegative(false); setUnavailableQuote(false); setWithContract(false); setCopied(""); }}>Devis seul</button>
+              <button className={!mnet && !negative && !unavailableQuote && withContract ? "on" : ""} onClick={() => { setMnet(false); setNegative(false); setUnavailableQuote(false); setWithContract(true); setCopied(""); }}>Devis + contrat</button>
+              <button className={!mnet && unavailableQuote ? "on" : ""} onClick={() => { setMnet(false); setNegative(false); setUnavailableQuote(true); setWithContract(false); setCopied(""); }}>Indispo + devis</button>
+              <button className={!mnet && negative ? "on" : ""} onClick={() => { setMnet(false); setNegative(true); setUnavailableQuote(false); setCopied(""); }}>Indisponible</button>
             </div>
             <p><b>À :</b> {req.client_email || <em>(adresse manquante)</em>}</p>
             <MailEditor model={model} edited={edited} onChange={setEdited} />
             {copied ? <p className="adm-note">{copied}</p> : null}
-            <div className="adm-sendblocks">
+            {mnet ? (
+              <div className="adm-sendblocks">
+                <section className="adm-sendblock">
+                  <h3>Répondre sur Mariages.net</h3>
+                  <div className="adm-steps">
+                    <button className="adm-btn adm-gold" onClick={copyFormatted}>1. Copier le message</button>
+                    {mnetUrl ? <a className="adm-btn adm-gold" href={mnetUrl} target="_blank" rel="noopener noreferrer">2. Ouvrir la demande ↗</a> : null}
+                  </div>
+                  <p className="adm-muted">Sur Mariages.net : colle le message (Cmd + V) dans la réponse, puis envoie.</p>
+                </section>
+              </div>
+            ) : null}
+            {!mnet ? <div className="adm-sendblocks">
               <section className="adm-sendblock">
                 <h3>Envoyer avec Gmail</h3>
                 <div className="adm-steps">
@@ -483,7 +500,7 @@ export default function Editor() {
                   <button className="adm-btn adm-gold adm-send" disabled={busy || !!req.sent_at} onClick={sendNow}>{req.sent_at ? "Déjà envoyé ✓" : "✉ Envoyer au client"}</button>
                 </section>
               ) : null}
-            </div>
+            </div> : null}
             <div className="adm-mailfoot">
               {negative ? (
                 <button className="adm-btn" onClick={async () => { if (await save({ status: "abandonnee" })) { setReq({ ...req, status: "abandonnee" }); setMail(false); } }}>✔ Envoyé depuis Gmail : classer en Abandonnée</button>
