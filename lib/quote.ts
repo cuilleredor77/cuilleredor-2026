@@ -171,7 +171,35 @@ export type RequestRow = {
   wedding_planner: string; // oui | non | recherche | ""
   vendors_found: string;
   signed_snapshot?: string; // JSON Snapshot : devis tel que signé (référence du premier avenant)
+  signature_json?: string; // JSON Signature : signature en ligne du client
 };
+
+/** Signature électronique simple : nom tapé et case cochée par le client, avec les preuves de l’accord. */
+export type Signature = {
+  name: string;
+  at: string; // ISO
+  doc: "devis" | "contrat";
+  image?: "accepte" | "refuse"; // droit à l’image (contrat)
+  ip: string;
+  userAgent: string;
+  version: number; // quote_version signée
+  total: number;
+  hash: string; // SHA-256 du devis signé (quote_json)
+};
+
+export function parseSignature(row: Pick<RequestRow, "signature_json">): Signature | null {
+  if (!row.signature_json) return null;
+  try { const s = JSON.parse(row.signature_json) as Signature; return s && s.name && s.at ? s : null; } catch { return null; }
+}
+
+/** « 21 octobre 2026 à 14h05 » (heure de Paris). */
+export function parisDateTimeFR(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const p = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }).formatToParts(d);
+  const g = (t: string) => p.find((x) => x.type === t)?.value || "";
+  return `${g("day")} ${g("month")} ${g("year")} à ${g("hour")}h${g("minute")}`;
+}
 
 export type EstimateOption = { id: string; label: string; amount: number };
 

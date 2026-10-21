@@ -2,9 +2,10 @@ import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { getRequestByToken, isAdmin } from "../../../lib/server";
-import { quoteFileName } from "../../../lib/quote";
+import { computeTotals, formatEUR, offPeriod, parisDateTimeFR, parseQuote, parseSignature, quoteFileName } from "../../../lib/quote";
 import QuoteDocument from "../document";
 import PrintButton from "../print-button";
+import SignBox from "../sign-box";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default async function QuotePage({ params, searchParams }: { params: Prom
   const row = await getRequestByToken(token);
   if (!row || !row.quote_json) notFound();
   // Le bouton « Préparer le mail » n’apparaît que pour l’administratrice connectée.
+  const signature = parseSignature(row);
   const admin = await isAdmin(new Request("https://cuilleredor.fr/", { headers: { cookie: (await headers()).get("cookie") || "" } }));
   return (
     <main className="dv-wrap">
@@ -34,7 +36,15 @@ export default async function QuotePage({ params, searchParams }: { params: Prom
           ) : null}
         </div>
       </div>
+      {signature ? (
+        <p className="dv-signed-banner">✍️ Signé électroniquement le {parisDateTimeFR(signature.at)} par {signature.name}.</p>
+      ) : null}
       <QuoteDocument row={row} quoteOnly={quoteOnly} />
+      {!signature && ["nouvelle", "en_cours", "devis_pret", "envoye"].includes(row.status) && !offPeriod(row.event_date) ? (
+        admin
+          ? <p className="dv-signbox dv-signbox-admin">Aperçu administratrice : le client verra ici le bloc « Signer en ligne ».</p>
+          : <SignBox token={token} quoteOnly={quoteOnly} clientName={row.client_name} total={formatEUR(computeTotals(parseQuote(row), row.event_date, row.service_mode).total)} />
+      ) : null}
     </main>
   );
 }

@@ -228,3 +228,5 @@
 .adm-status.s-envoye select { background-color: #dbe8fb; color: #1c4a8a; border-color: #b9cff0; }
 .adm-status.s-signe select, .adm-status.s-acompte select { background-color: #d8f0dd; color: #1d6a33; border-color: #b3dcbd; }
 .adm-status.s-archivee select, .adm-status.s-abandonnee select { background-color: #eeeeee; color: #444; border-color: #d6d6d6; }
+
+.adm-signed { color: #2f6b3a; }

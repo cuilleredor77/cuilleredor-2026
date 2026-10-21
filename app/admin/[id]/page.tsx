@@ -4,7 +4,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { useParams } from "next/navigation";
 import {
   FORMULAS, FORMULA_KEYS, OPTION_PRESETS, mariagesNetReply, honorWineLines, isHonorWineLine, travelLast, isIncluded, withGroup, groupOrder, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
-  formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, amendmentChanges, twoDayQuote, paidTotal, type Payment, parseSnapshot, snapshotOf, type Amendment, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
+  formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, amendmentChanges, parseSignature, twoDayQuote, paidTotal, type Payment, parseSnapshot, snapshotOf, type Amendment, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
 const STATUS: Array<[string, string]> = [
@@ -294,6 +294,7 @@ export default function Editor() {
           <h1>{req.client_name || "Demande sans nom"}</h1>
           <p className="adm-origin">
             Origine : <b>{SOURCE_LABEL[req.source] || req.source}</b> · reçue le <b>{receivedAt(req.created_at)}</b>{req.sent_at ? ` · envoyé le ${receivedAt(req.sent_at)}` : ""}
+            {parseSignature(req) ? <b className="adm-signed"> · ✍️ signé en ligne le {receivedAt(parseSignature(req)!.at)} par « {parseSignature(req)!.name} »{parseSignature(req)!.image ? ` (droit à l’image : ${parseSignature(req)!.image === "accepte" ? "accepté" : "refusé"})` : ""}</b> : null}
             {req.source === "mariages_net" && /Répondre : (https:\/\/\S+)/.test(req.internal_notes) ? (
               <> · <a href={req.internal_notes.match(/Répondre : (https:\/\/\S+)/)![1]} target="_blank" rel="noopener noreferrer">💬 Répondre sur Mariages.net ↗</a></>
             ) : null}

@@ -13,6 +13,8 @@ import {
   type RequestRow,
   clientRemarks,
   round2,
+  parisDateTimeFR,
+  parseSignature,
   type Payment,
   type Quote,
 } from "../../lib/quote";
@@ -123,6 +125,9 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
   const remarks = quote.remarks.trim() === "—" ? "" : clientRemarks(quote.remarks);
   const totals = computeTotals(quote, row.event_date, row.service_mode);
   const days = (quote.days || []).map((d) => d.trim()).filter(Boolean);
+  // Signature en ligne, affichée seulement sur la version du devis qui a été signée.
+  const sig = parseSignature(row);
+  const signed = sig && sig.version === row.quote_version ? sig : null;
   const eventLong = row.event_date ? formatDateFR(row.event_date, true) : "";
   const issued = formatDateFR(quote.issuedOn);
   const guests =
@@ -226,9 +231,15 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
             <p className="dv-signname">Huguette MVUNDA KILOLA</p>
           </div>
           <div>
-            <p>Signé le : ______________</p>
-            <p>Signature client(s) : {row.client_name}</p>
-            <div className="dv-box" />
+            {signed ? <>
+              <p>Signé le : {parisDateTimeFR(signed.at)}</p>
+              <p>Signature client(s) : {row.client_name}</p>
+              <div className="dv-box dv-box-signed">Signé électroniquement par <b>{signed.name}</b><br /><small>Signature électronique simple · empreinte {signed.hash.slice(0, 16)}…</small></div>
+            </> : <>
+              <p>Signé le : ______________</p>
+              <p>Signature client(s) : {row.client_name}</p>
+              <div className="dv-box" />
+            </>}
           </div>
         </div>
         <footer className="dv-foot">Cuillère d’Or — 8 Allée des Bois, 77240 Vert-Saint-Denis — SIRET 889 933 800 00019 — contact@cuilleredor.fr — 07 83 74 89 71 — TVA non applicable (art. 293 B du CGI)</footer>
@@ -406,7 +417,7 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
 
         <h3>ARTICLE 9 — DROIT À L’IMAGE</h3>
         <p>Les photographies et vidéos des réalisations culinaires de Cuillère d’Or et des séquences de l’événement pourront être utilisées à des fins de communication, sans limitation de durée.</p>
-        <p className="dv-choices">Le Client autorise ou refuse ce droit : <span className="dv-tick" aria-hidden="true" /> <b>J’accepte</b> <span className="dv-tick" aria-hidden="true" /> <b>Je refuse</b></p>
+        <p className="dv-choices">Le Client autorise ou refuse ce droit : <span className="dv-tick" aria-hidden="true">{signed?.image === "accepte" ? "✓" : ""}</span> <b>J’accepte</b> <span className="dv-tick" aria-hidden="true">{signed?.image === "refuse" ? "✓" : ""}</span> <b>Je refuse</b></p>
 
         <p className="dv-fait">Fait à Vert-Saint-Denis, le {issued}</p>
         <div className="dv-sign">
@@ -415,9 +426,15 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
             <p className="dv-signname">CUILLÈRE D’OR — Huguette MVUNDA KILOLA</p>
           </div>
           <div>
-            <p>Signé le : ______________</p>
-            <p>Signature client(s) : {row.client_name}</p>
-            <div className="dv-box" />
+            {signed ? <>
+              <p>Signé le : {parisDateTimeFR(signed.at)}</p>
+              <p>Signature client(s) : {row.client_name}</p>
+              <div className="dv-box dv-box-signed">Signé électroniquement par <b>{signed.name}</b><br /><small>Signature électronique simple · empreinte {signed.hash.slice(0, 16)}…</small></div>
+            </> : <>
+              <p>Signé le : ______________</p>
+              <p>Signature client(s) : {row.client_name}</p>
+              <div className="dv-box" />
+            </>}
           </div>
         </div>
         <footer className="dv-foot">Cuillère d’Or — 8 Allée des Bois, 77240 Vert-Saint-Denis — SIRET 889 933 800 00019 — contact@cuilleredor.fr — 07 83 74 89 71 — TVA non applicable (art. 293 B du CGI)</footer>
