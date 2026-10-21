@@ -10,7 +10,7 @@ import {
   type Amendment,
   type RequestRow,
 } from "../../lib/quote";
-import { PaymentsTable, cautionText } from "./document";
+import { PaymentSchedule } from "./document";
 
 const KIND: Record<string, string> = { info: "Information", ajout: "Ajout", retrait: "Retrait", modif: "Modification" };
 
@@ -26,7 +26,6 @@ export default function AmendmentDocument({ row, amendment }: { row: RequestRow;
   const diff = next.total - previous;
   // Paiements : ceux de la fiche telle qu’elle est aujourd’hui (dates de réception et de confirmation).
   const current = parseQuote(row);
-  const deposit = (current.payments || []).find((p) => /acompte/i.test(p.label));
   const signedOn = formatDateFR(signed.at.slice(0, 10));
   const issued = formatDateFR(amendment.created_at.slice(0, 10));
   const eventDate = after.event_date ? formatDateShort(after.event_date) : "";
@@ -61,42 +60,48 @@ export default function AmendmentDocument({ row, amendment }: { row: RequestRow;
         </p>
         {amendment.reason ? <p className="dv-sum"><b>Objet :</b> {amendment.reason}</p> : null}
 
+        <p className="dv-conditions"><b>Modifications</b></p>
         <table className="dv-lines dv-amend">
-          <thead><tr><th>Type</th><th>Prestation</th><th>Avant</th><th>Après</th><th className="r">Écart financier</th></tr></thead>
+          <thead><tr><th>Élément modifié</th><th>Avant</th><th>Après</th><th className="r">Écart financier</th></tr></thead>
           <tbody>
             {changes.map((c, i) => (
               <tr key={i}>
-                <td className="dv-kind">{KIND[c.kind]}</td>
-                <td>{c.label}</td>
-                <td>{c.before}</td>
-                <td>{c.after}</td>
-                <td className="r b">{c.kind === "info" ? "" : `${c.delta > 0 ? "+" : ""}${formatEUR(c.delta)}`}</td>
+                <td className="b">{c.label}{c.kind === "ajout" || c.kind === "retrait" ? <span className={`dv-tag dv-tag-${c.kind}`}>{KIND[c.kind]}</span> : null}</td>
+                <td className="dv-old">{c.before}</td>
+                <td className="dv-new">{c.after}</td>
+                <td className="r b">{c.kind === "info" ? <span className="dv-muted">—</span> : `${c.delta > 0 ? "+" : ""}${formatEUR(c.delta)}`}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <ul className="dv-terms">
-          <li><b>Total avant avenant</b><span>{formatEUR(previous)}</span></li>
-          <li><b>Écart financier</b><span>{diff > 0 ? "+" : ""}{formatEUR(diff)}</span></li>
-        </ul>
-        <div className="dv-totalbar"><span>NOUVEAU TOTAL</span><span>{formatEUR(next.total)}</span></div>
+        <table className="dv-amend-sum">
+          <tbody>
+            <tr>
+              <td><small>Total avant avenant</small><b>{formatEUR(previous)}</b></td>
+              <td><small>Écart financier</small><b>{diff > 0 ? "+" : ""}{formatEUR(diff)}</b></td>
+              <td className="dv-amend-new"><small>Nouveau total</small><b>{formatEUR(next.total)}</b></td>
+            </tr>
+          </tbody>
+        </table>
 
-        <p className="dv-conditions"><b>Règlement</b></p>
-        <ul className="dv-terms">
-          {contract.fullAtSignature
-            ? <li><b>Complément</b><span>{diff >= 0
-                ? `${formatEUR(diff)} à régler à la signature du présent avenant.`
-                : `${formatEUR(-diff)} vous seront remboursés ou déduits d’une prochaine facture.`}</span></li>
-            : <>
-                <li><b>Acompte</b><span>{formatEUR(contract.deposit)}, inchangé{deposit?.receivedOn ? ` (reçu le ${formatDateFR(deposit.receivedOn)}${deposit.confirmedOn ? `, réception confirmée le ${formatDateFR(deposit.confirmedOn)}` : ""})` : " (versé à la signature du contrat)"}</span></li>
-                <li><b>Nouveau solde</b><span>{formatEUR(Math.max(0, next.total - contract.deposit))}{next.balanceDue ? ` au plus tard le ${formatDateFR(next.balanceDue)}` : ""}</span></li>
-              </>}
-          <li><b>Caution</b><span>{cautionText(contract.caution, contract.fullAtSignature, next.balanceDue)}</span></li>
-          <li><b>Autres clauses</b><span>Toutes les autres clauses du contrat initial restent inchangées et continuent de s’appliquer.</span></li>
-        </ul>
-
-        <PaymentsTable quote={current} total={next.total} />
+        <p className="dv-conditions"><b>Échéancier de paiement</b></p>
+        <PaymentSchedule
+          rows={contract.fullAtSignature
+            ? [
+                { label: "Règlement à la signature du contrat", amount: contract.total, due: "À la signature du contrat", match: /acompte|r[èe]glement|solde/i },
+                ...(diff > 0 ? [{ label: `Complément (avenant n°${amendment.number})`, amount: diff, due: "À la signature de l’avenant", match: /compl[ée]ment/i }] : []),
+              ]
+            : [
+                { label: "Acompte (30 %)", amount: contract.deposit, due: "À la signature du contrat", match: /acompte/i },
+                { label: "Nouveau solde", amount: Math.max(0, next.total - contract.deposit), due: next.balanceDue ? `Au plus tard le ${formatDateFR(next.balanceDue)}` : "2 mois avant l’événement", match: /solde/i },
+              ]}
+          payments={current.payments}
+          caution={contract.caution}
+          cautionDue={contract.fullAtSignature ? "Avec le règlement" : next.balanceDue ? `Avec le solde (${formatDateFR(next.balanceDue)})` : "Avec le solde"}
+        />
+        {contract.fullAtSignature && diff < 0 ? <p className="dv-sum">{formatEUR(-diff)} vous seront remboursés ou déduits d’une prochaine facture.</p> : null}
+        <p className="dv-sum">Toutes les autres clauses du contrat initial restent inchangées et continuent de s’appliquer.</p>
 
         <div className="dv-sign">
           <div>

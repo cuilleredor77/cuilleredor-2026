@@ -12,7 +12,7 @@ import {
   parseQuote,
   type RequestRow,
   clientRemarks,
-  paidTotal,
+  round2,
   type Payment,
   type Quote,
 } from "../../lib/quote";
@@ -47,29 +47,66 @@ function groupDetail(parts: string[]) {
 }
 
 
-/** Règlements reçus : date de réception et de confirmation de chacun, reste à régler, puis la caution à part. */
-export function PaymentsTable({ quote, total }: { quote: Quote; total: number }) {
-  const payments = (quote.payments || []).filter((p) => !/caution/i.test(p.label));
-  const cautions = (quote.payments || []).filter((p) => /caution/i.test(p.label));
-  if (!payments.length && !cautions.length) return null;
-  const paid = paidTotal(quote);
-  const when = (p: Payment) => `${formatEUR(p.amount)} — reçu${/caution/i.test(p.label) ? "e" : ""} le ${p.receivedOn ? formatDateFR(p.receivedOn) : "—"}${p.confirmedOn ? `, réception confirmée le ${formatDateFR(p.confirmedOn)}` : ""}`;
+export type ScheduleRow = { label: string; amount: number; due: string; match: RegExp };
+
+/** Échéancier : chaque paiement avec son échéance et son statut (reçu / confirmé), puis la caution à part. */
+export function PaymentSchedule({ rows, payments = [], caution, cautionDue }: { rows: ScheduleRow[]; payments?: Payment[]; caution: number; cautionDue: string }) {
+  const used = new Set<string>();
+  const find = (re: RegExp) => { const p = payments.find((x) => !used.has(x.id) && re.test(x.label)); if (p) used.add(p.id); return p; };
+  const status = (p?: Payment) => p
+    ? <span className="dv-paid">✓ Reçu le {p.receivedOn ? formatDateFR(p.receivedOn) : "—"}{p.confirmedOn ? <><br />confirmé le {formatDateFR(p.confirmedOn)}</> : null}</span>
+    : <span className="dv-due">À régler</span>;
+  const lines = rows.map((r) => ({ ...r, paid: find(r.match) }));
+  const cautionPaid = find(/caution/i);
+  const extra = payments.filter((p) => !used.has(p.id));
+  const total = round2(lines.reduce((sum, l) => sum + l.amount, 0));
+  const received = round2(lines.reduce((sum, l) => sum + (l.paid ? l.paid.amount : 0), 0) + extra.reduce((sum, p) => sum + p.amount, 0));
   return (
     <>
-      <p className="dv-conditions"><b>Paiements reçus</b></p>
-      <ul className="dv-terms">
-        {payments.map((p) => <li key={p.id}><b>{p.label || "Paiement"}</b><span>{when(p)}</span></li>)}
-        <li><b>Reste à régler</b><span>{formatEUR(Math.max(0, total - paid))} (total reçu : {formatEUR(paid)})</span></li>
-        {cautions.map((p) => <li key={p.id}><b>{p.label}</b><span>{when(p)} — restituée si aucun retard constaté</span></li>)}
-      </ul>
+      <table className="dv-lines dv-sched">
+        <thead><tr><th>Échéance</th><th className="r">Montant</th><th>À régler</th><th>Statut</th></tr></thead>
+        <tbody>
+          {lines.map((l) => (
+            <tr key={l.label}><td className="b">{l.label}</td><td className="r b">{formatEUR(l.amount)}</td><td>{l.due}</td><td>{status(l.paid)}</td></tr>
+          ))}
+          {extra.map((p) => (
+            <tr key={p.id}><td className="b">{p.label || "Paiement"}</td><td className="r b">{formatEUR(p.amount)}</td><td>—</td><td>{status(p)}</td></tr>
+          ))}
+          {received ? <tr className="dv-sched-sum"><td>Reste à régler</td><td className="r">{formatEUR(Math.max(0, total - received))}</td><td colSpan={2}>sur {formatEUR(total)} · déjà reçu : {formatEUR(received)}</td></tr> : null}
+        </tbody>
+      </table>
+      <table className="dv-lines dv-sched dv-caution">
+        <tbody>
+          <tr><td className="b">Caution<br /><small>hors prix, restituée si aucun retard</small></td><td className="r b">{formatEUR(caution)}</td><td>{cautionDue}</td><td>{cautionPaid ? status(cautionPaid) : <span className="dv-due">À verser</span>}</td></tr>
+        </tbody>
+      </table>
     </>
   );
 }
 
-/** Caution, toujours présentée à part du prix des prestations. */
-export function cautionText(caution: number, fullAtSignature: boolean, balanceDue: string) {
-  return `${formatEUR(caution)}, à verser ${fullAtSignature ? "à la signature" : `avec le solde${balanceDue ? `, au plus tard le ${formatDateFR(balanceDue)}` : ""}`}. Elle ne fait pas partie du prix des prestations et vous est restituée si aucun retard n’est constaté.`;
+/** Échéances d’un devis pas encore réglé : lignes de la liste « Conditions » (plus compact qu’un tableau). */
+export function ScheduleItems({ rows, caution, cautionDue }: { rows: ScheduleRow[]; caution: number; cautionDue: string }) {
+  const lower = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
+  return (
+    <>
+      {rows.map((r) => <li key={r.label}><b>{r.label}</b><span>{formatEUR(r.amount)} — {lower(r.due)}</span></li>)}
+      <li><b>Caution</b><span>{formatEUR(caution)} — {lower(cautionDue)} · hors prix, restituée si aucun retard</span></li>
+    </>
+  );
 }
+
+/** Lignes de l’échéancier d’un devis : acompte + solde, ou règlement intégral à moins de 2 mois. */
+export function scheduleRows(totals: { total: number; deposit: number; balance: number; balanceDue: string; fullAtSignature: boolean }): ScheduleRow[] {
+  return totals.fullAtSignature
+    ? [{ label: "Règlement intégral", amount: totals.total, due: "À la signature", match: /acompte|r[èe]glement|solde/i }]
+    : [
+        { label: "Acompte (30 %)", amount: totals.deposit, due: "À la signature", match: /acompte/i },
+        { label: "Solde (70 %)", amount: totals.balance, due: totals.balanceDue ? `Au plus tard le ${formatDateFR(totals.balanceDue)}` : "2 mois avant l’événement", match: /solde/i },
+      ];
+}
+
+export const cautionDue = (totals: { fullAtSignature: boolean; balanceDue: string }) =>
+  totals.fullAtSignature ? "À la signature" : totals.balanceDue ? `Avec le solde (${formatDateFR(totals.balanceDue)})` : "Avec le solde";
 
 export default function QuoteDocument({ row, quoteOnly = false }: { row: RequestRow; quoteOnly?: boolean }) {
   const quote = parseQuote(row);
@@ -154,19 +191,12 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
 
         <p className="dv-conditions"><b>Conditions</b></p>
         <ul className="dv-terms">
-          <li><b>Total des prestations</b><span>{formatEUR(totals.total)}</span></li>
-          {totals.fullAtSignature
-            ? <li><b>Règlement</b><span>L’événement ayant lieu dans moins de 2 mois, la totalité ({formatEUR(totals.total)}) est à régler à la signature.</span></li>
-            : <>
-                <li><b>Acompte (30 %)</b><span>{formatEUR(totals.deposit)} à la signature</span></li>
-                <li><b>Solde</b><span>{formatEUR(totals.balance)} au plus tard le {formatDateFR(totals.balanceDue)}</span></li>
-              </>}
-          <li><b>Caution</b><span>{cautionText(totals.caution, totals.fullAtSignature, totals.balanceDue)}</span></li>
-          <li><b>Validité</b><span>30 jours à compter du {issued}. Tarifs et disponibilités garantis après signature et versement {totals.fullAtSignature ? "du règlement" : "de l’acompte"}.</span></li>
+          {quote.payments?.length ? null : <ScheduleItems rows={scheduleRows(totals)} caution={totals.caution} cautionDue={cautionDue(totals)} />}
+          <li><b>Validité</b><span>30 jours (jusqu’au {formatDateFR(totals.validUntil)}) · tarifs et date garantis après signature et {totals.fullAtSignature ? "règlement" : "acompte"}</span></li>
           <li><b>Catalogue</b><span>Formules, menus et services complémentaires : <a href="https://catalogue.cuilleredor.fr/" target="_blank" rel="noopener noreferrer">catalogue.cuilleredor.fr</a></span></li>
           {quote.note ? <li><b>Remarque</b><span>{quote.note}</span></li> : null}
         </ul>
-        <PaymentsTable quote={quote} total={totals.total} />
+        {quote.payments?.length ? <PaymentSchedule rows={scheduleRows(totals)} payments={quote.payments} caution={totals.caution} cautionDue={cautionDue(totals)} /> : null}
 
         <div className="dv-sign">
           <div>
@@ -250,9 +280,9 @@ export default function QuoteDocument({ row, quoteOnly = false }: { row: Request
               <li>Solde (70 %) : {formatEUR(totals.balance)} — à régler au plus tard le {formatDateFR(totals.balanceDue)}</li>
             </>
           )}
-          <li>Caution (à part du prix) : {cautionText(totals.caution, totals.fullAtSignature, totals.balanceDue)}</li>
+          <li>Caution (hors prix des prestations) : {formatEUR(totals.caution)}, {cautionDue(totals).toLowerCase()} — restituée si aucun retard constaté</li>
         </ul>
-        <PaymentsTable quote={quote} total={totals.total} />
+        <PaymentSchedule rows={scheduleRows(totals)} payments={quote.payments} caution={totals.caution} cautionDue={cautionDue(totals)} />
         <p>Le Prestataire se réserve le droit de suspendre la prestation en cas de non-paiement du solde, sans obligation de remboursement des sommes déjà versées.</p>
         <p>Aucun service ne sera exécuté sans règlement complet du montant dû.</p>
         <p>Après règlement du solde, aucun ajustement à la baisse ne sera accepté. Toute hausse reste possible sous réserve de faisabilité.</p>

@@ -177,3 +177,66 @@
 
 /* Paiements reçus */
 .dv-pay td { font-size: 12.5px; padding-top: 6px; padding-bottom: 6px; }
+
+/* Échéancier de paiement */
+.dv-sched { margin: 6px 0 4px; }
+.dv-sched td { font-size: 12.5px; padding-top: 7px; padding-bottom: 7px; vertical-align: middle; }
+.dv-sched th { font-size: 11px; padding-top: 7px; padding-bottom: 7px; }
+.dv-sched .dv-paid { color: #2f6b3a; font-weight: 600; }
+.dv-sched .dv-due { color: #8a6a1c; font-weight: 600; }
+.dv-sched-sum td { background: #f6efe4; font-weight: 700; border-bottom: 0; }
+.dv-caution { margin: 8px 0 12px; border: 1px solid #e3ddcc; }
+.dv-caution small { font-weight: 400; color: #6b6b6b; }
+.dv-caution .dv-note { font-size: 11.5px; color: #555; padding-top: 2px; }
+@media print {
+  .dv-sched td { padding-top: 4px; padding-bottom: 4px; font-size: 11.5px; }
+  .dv-sched th { padding-top: 5px; padding-bottom: 5px; }
+}
+.dv-sched { table-layout: fixed; }
+.dv-sched tr > :nth-child(1) { width: 30%; }
+.dv-sched tr > :nth-child(2) { width: 15%; }
+.dv-sched tr > :nth-child(3) { width: 30%; }
+.dv-caution .dv-note { width: auto; }
+
+@media print {
+  .dv-sched { margin: 3px 0 2px; }
+  .dv-sched td { padding-top: 2.5px; padding-bottom: 2.5px; line-height: 1.25; }
+  .dv-sched th { padding-top: 3.5px; padding-bottom: 3.5px; }
+  .dv-caution { margin: 4px 0 6px; }
+}
+
+/* Avenant : tableau des modifications et récapitulatif */
+.dv-amend { table-layout: fixed; }
+.dv-amend tr > :nth-child(1) { width: 34%; }
+.dv-amend tr > :nth-child(2), .dv-amend tr > :nth-child(3) { width: 24%; }
+.dv-amend td { font-size: 13px; vertical-align: middle; }
+.dv-amend .dv-old { color: #6b6b6b; text-decoration: line-through; text-decoration-color: #b9b2a0; }
+.dv-amend .dv-new { font-weight: 700; color: #1a1a1a; }
+.dv-amend .dv-muted { color: #b9b2a0; font-weight: 400; }
+.dv-tag { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 10.5px; font-weight: 700; vertical-align: 1px; }
+.dv-tag-ajout { background: #e3efe5; color: #2f6b3a; }
+.dv-tag-retrait { background: #f6e3e1; color: #8a2f25; }
+.dv-amend-sum { width: 100%; border-collapse: separate; border-spacing: 8px 0; margin: 4px -8px 14px; table-layout: fixed; width: calc(100% + 16px); }
+.dv-amend-sum td { border: 1px solid #e3ddcc; border-radius: 6px; padding: 8px 12px; background: #faf7f0; }
+.dv-amend-sum small { display: block; font-size: 11px; color: #6b6b6b; text-transform: uppercase; letter-spacing: .04em; }
+.dv-amend-sum b { display: block; font-size: 16px; margin-top: 2px; }
+.dv-amend-sum .dv-amend-new { background: #8b6914; border-color: #8b6914; }
+.dv-amend-sum .dv-amend-new small, .dv-amend-sum .dv-amend-new b { color: #fff; }
+@media print { .dv-amend-sum td, .dv-amend-sum .dv-amend-new { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+
+/* Harmonisation devis / avenant : mêmes tableaux, mêmes encadrés, mêmes titres */
+.dv-amend td, .dv-sched td { font-size: 12.5px; padding: 7px 14px; }
+.dv-amend th, .dv-sched th { font-size: 11px; padding: 7px 14px; }
+.dv-amend, .dv-sched { margin: 6px 0 10px; }
+.dv-amend-sum { margin: 2px -8px 12px; }
+.dv-amend-sum td { border-radius: 0; border-color: #e3ddcc; background: #faf7f0; padding: 7px 14px; }
+.dv-amend-sum b { font-size: 15px; }
+.dv-caution { border: 0; background: #faf7f0; }
+.dv-caution td { border-bottom: 0; }
+.dv-doc .dv-conditions { margin: 12px 0 4px; }
+@media print {
+  .dv-amend td, .dv-sched td { padding: 3px 10px; font-size: 11.5px; }
+  .dv-amend th, .dv-sched th { padding: 4px 10px; }
+  .dv-amend-sum td { padding: 5px 10px; }
+  .dv-doc .dv-conditions { margin: 8px 0 3px; }
+}

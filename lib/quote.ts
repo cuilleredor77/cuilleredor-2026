@@ -665,8 +665,10 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
   const infos = [
     `Validité du devis : 30 jours (jusqu’au ${formatDateFR(totals.validUntil)}).`,
     totals.fullAtSignature && knownDate
-      ? `Confirmation : l’événement ayant lieu dans moins de deux mois, la réservation sera effective après signature${withContract ? " du contrat" : ""} et règlement de la totalité, soit ${formatEUR(totals.total)}, accompagné de la caution de ${formatEUR(totals.caution)} (en prévention de retard, restituée si aucun retard constaté).`
-      : `Confirmation : la réservation sera effective après signature${withContract ? " du contrat" : " du devis"} et versement d’un acompte de 30 %, soit ${formatEUR(knownDate ? totals.deposit : round2(totals.total * PRICES.depositRate))}. Le solde restant de ${formatEUR(knownDate ? totals.balance : round2(totals.total - round2(totals.total * PRICES.depositRate)))} sera à régler ${totals.balanceDue && knownDate ? `au plus tard le ${formatDateFR(totals.balanceDue)}` : "au plus tard deux mois avant l’événement"}, accompagné de la caution de ${formatEUR(totals.caution)} (en prévention de retard, restituée si aucun retard constaté).`,
+      ? `Confirmation : l’événement ayant lieu dans moins de deux mois, la réservation sera effective après signature${withContract ? " du contrat" : ""} et règlement de la totalité, soit ${formatEUR(totals.total)}.`
+      : `Confirmation : la réservation sera effective après signature${withContract ? " du contrat" : " du devis"} et versement d’un acompte de 30 %, soit ${formatEUR(knownDate ? totals.deposit : round2(totals.total * PRICES.depositRate))}. Le solde restant de ${formatEUR(knownDate ? totals.balance : round2(totals.total - round2(totals.total * PRICES.depositRate)))} sera à régler ${totals.balanceDue && knownDate ? `au plus tard le ${formatDateFR(totals.balanceDue)}` : "au plus tard deux mois avant l’événement"}.`,
+    // Caution toujours à part : elle ne fait pas partie du prix des prestations.
+    `Caution : ${formatEUR(totals.caution)}, à verser ${totals.fullAtSignature && knownDate ? "à la signature" : `avec le solde${totals.balanceDue && knownDate ? `, au plus tard le ${formatDateFR(totals.balanceDue)}` : ""}`}, en prévention de retard. Elle ne fait pas partie du prix des prestations et vous est restituée si aucun retard n’est constaté.`,
     withContract ? "Règlement par virement : les coordonnées bancaires figurent dans le contrat." : "",
   ].filter(Boolean);
   const reread = withContract
