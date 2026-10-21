@@ -260,3 +260,8 @@
 
 /* Contrat : sous-parties des articles (3.1 – Horaires…) en gras */
 .dv-contract h4 { font-weight: 700; color: #1a1a1a; }
+
+/* Contrat : listes avec tirets « - » */
+.dv-contract ul:not(.dv-terms) { list-style: none; }
+.dv-contract ul:not(.dv-terms) > li { position: relative; padding-left: 14px; }
+.dv-contract ul:not(.dv-terms) > li::before { content: "-"; position: absolute; left: 0; }
