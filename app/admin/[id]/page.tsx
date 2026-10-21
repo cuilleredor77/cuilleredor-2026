@@ -3,7 +3,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, mariagesNetReply, travelLast, isIncluded, withGroup, groupOrder, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
+  FORMULAS, FORMULA_KEYS, OPTION_PRESETS, mariagesNetReply, honorWineLines, isHonorWineLine, travelLast, isIncluded, withGroup, groupOrder, offPeriod, SOURCE_LABEL, receivedAt, withoutTechNoise, unavailableEmail, agendaDayLink, charterEmail, computeTotals, formatDateFR,
   formatEUR, isTravelPending, isLodgingPending, lineTotal, presetToLine, quoteAlerts, serviceModeLabel, weddingPlannerLabel, type Quote, type QuoteLine, type RequestRow,
 } from "../../../lib/quote";
 
@@ -346,7 +346,14 @@ export default function Editor() {
               <label>Enfants<input type="number" min={0} value={req.children} onChange={(e) => setField("children", Number(e.target.value))} /></label>
               <label>Prestataires<input type="number" min={0} value={req.providers} onChange={(e) => setField("providers", Number(e.target.value))} /></label>
               </div>
-              <label className="chk"><input type="checkbox" checked={Boolean(req.honor_wine)} onChange={(e) => setField("honor_wine", e.target.checked ? 1 : 0)} /> Avec vin d’honneur (buffet, plateau, assiette)</label>
+              <label className="chk"><input type="checkbox" checked={Boolean(req.honor_wine)} onChange={(e) => {
+                // Coché : les deux suppléments (10 pièces + 4 cocktails) s’ajoutent juste après le repas ; décoché : ils sont retirés.
+                const on = e.target.checked;
+                setField("honor_wine", on ? 1 : 0);
+                const rest = quote.lines.filter((l) => !isHonorWineLine(l));
+                const at = Math.max(0, rest.findIndex((l) => l.id === "main") + 1);
+                setQ({ lines: on ? groupOrder([...rest.slice(0, at), ...honorWineLines(req.adults), ...rest.slice(at)]) : rest });
+              }} /> Avec vin d’honneur : 10 pièces + 4 cocktails (buffet, plateau, assiette)</label>
             </div>
             {(
               <div className="adm-client">

@@ -201,7 +201,7 @@ export type OptionPreset = {
 
 export const OPTION_PRESETS: OptionPreset[] = [
   { id: "soft", label: "Forfait soft et eau (Coca-Cola, Fanta, Oasis, eau plate et gazeuse)", unit: "pers.", price: 5, basis: "guests" },
-  { id: "vh-cocktails", label: "Vin d’honneur — 4 cocktails au choix", unit: "pers.", price: PRICES.honorWine, basis: "adults", detail: "4 cocktails par personne, au choix parmi nos cocktails" },
+  { id: "vh-cocktails", label: "Suppl. vin d’honneur — 4 cocktails au choix", unit: "pers.", price: PRICES.honorWine, basis: "adults", detail: "4 cocktails par personne, au choix parmi nos cocktails" },
   { id: "cocktails", label: "Cocktails supplémentaires (au-delà des 4 cocktails)", unit: "litre", price: 10, basis: "one", detail: "1 litre pour environ 4 convives" },
   { id: "serveurs", label: "Service des boissons toute la soirée", unit: "serveur", price: 160, basis: "servers", detail: "1 serveur conseillé pour 50 convives" },
   { id: "fromages", label: "Assiette de fromages avant le dessert", unit: "pers.", price: 9, basis: "adults" },
@@ -287,16 +287,7 @@ export function buildDefaultQuote(req: RequestRow): Quote {
     price: tierPrice(key, totalGuests),
   });
 
-  if (meta.honorWine && req.honor_wine) {
-    lines.push({
-      id: "vin-honneur",
-      qty: adults,
-      unit: "pers.",
-      label: "Vin d’honneur — 10 pièces au choix",
-      detail: "10 pièces par personne, au choix parmi nos mignardises salées et sucrées",
-      price: PRICES.honorWine,
-    });
-  }
+  if (meta.honorWine && req.honor_wine) lines.push(...honorWineLines(adults));
   if (children > 0) {
     lines.push({
       id: "enfants",
@@ -881,3 +872,14 @@ function missingInfo(guests: number, venue: string): string {
   const parts = [guests ? "" : "du nombre d’invités", venue ? "" : "du lieu", "de la formule qui vous plaît"].filter(Boolean);
   return parts.length > 1 ? `${parts.slice(0, -1).join(", ")} et ${parts[parts.length - 1]}` : parts[0];
 }
+
+/** « Avec vin d’honneur » : 10 pièces et 4 cocktails au choix, en supplément par adulte (prestations incluses du devis). */
+export function honorWineLines(adults: number): QuoteLine[] {
+  return [
+    { id: "vin-honneur", qty: adults, unit: "pers.", label: "Suppl. vin d’honneur — 10 pièces au choix", detail: "10 pièces par personne, au choix parmi nos mignardises salées et sucrées", price: PRICES.honorWine },
+    { id: "inc-vh-cocktails", qty: adults, unit: "pers.", label: "Suppl. vin d’honneur — 4 cocktails au choix", detail: "4 cocktails par personne, au choix parmi nos cocktails", price: PRICES.honorWine },
+  ];
+}
+
+/** Lignes du vin d’honneur déjà présentes (anciens et nouveaux libellés). */
+export const isHonorWineLine = (l: QuoteLine) => l.id === "vin-honneur" || /vh-cocktails$/.test(l.id) || /^(Suppl\. )?vin d’honneur —/i.test(l.label);
