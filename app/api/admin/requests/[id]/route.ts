@@ -70,7 +70,9 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
   if (body.regenerate) quote = buildDefaultQuote({ ...next, quote_json: "" });
   const quoteJson = quote ? JSON.stringify(quote) : existing.quote_json;
 
-  let status = body.status && STATUSES.includes(body.status) ? body.status : existing.status;
+  // Statut choisi dans la fiche (menu Statut, enregistré avec le reste) ou imposé par une action (body.status).
+  const wanted = body.status ?? (typeof r.status === "string" ? r.status : undefined);
+  let status = wanted && STATUSES.includes(wanted) ? wanted : existing.status;
   let sentAt = existing.sent_at;
   let version = existing.quote_version;
   if (quote && quoteJson !== existing.quote_json) {
