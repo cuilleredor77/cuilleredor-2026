@@ -51,7 +51,7 @@ export const FORMULAS: Record<FormulaKey, FormulaMeta> = {
     label: "Service à l’assiette",
     title: "Repas — service à l’assiette avec service compris",
     detail:
-      "Entrée : 1 choix | Plat : 1 viande ou 1 poisson avec féculent et légumes | Dessert : 1 choix",
+      "Entrée : 1 choix | Plat : 1 viande ou 1 poisson avec féculent ou légumes | Dessert : 1 choix",
     min: 30,
     tiers: [70, 65, 60],
     honorWine: true,
