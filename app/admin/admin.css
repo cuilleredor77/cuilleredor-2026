@@ -246,3 +246,10 @@
 .adm-inv-line b { font-size: 12.5px; text-align: right; }
 .adm-inv-ded { grid-template-columns: 1fr 100px 20px; }
 @media (max-width: 720px) { .adm-inv-line { grid-template-columns: 1fr 1fr; } }
+.adm-paste { display: grid; gap: 6px; font-size: 13px; font-weight: 700; color: #5a4618; margin: 8px 0 6px; }
+.adm-paste textarea { min-height: 96px; border: 2px dashed #d4af37; border-radius: 10px; padding: 10px; font: inherit; font-weight: 400; background: #fffdf6; }
+.adm-paste-found { font-size: 13px; color: #2e6b3a; margin: 4px 0 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.adm-paste-warn { font-size: 13px; background: #fff3e0; border: 1px solid #f0c27a; border-radius: 8px; padding: 8px 10px; margin: 6px 0; display: grid; gap: 4px; }
+.adm-paste-warn a { color: #8b5a00; font-weight: 600; }
+.adm-chip { border: 1px solid #c9bda0; background: #fff; border-radius: 999px; padding: 2px 10px; font-size: 12px; cursor: pointer; }
+.adm-chip.on { background: #d4af37; border-color: #b8932a; font-weight: 700; }

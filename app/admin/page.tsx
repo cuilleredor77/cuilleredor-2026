@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FORMULAS, FORMULA_KEYS, SOURCE_LABEL, receivedAt, offPeriod, formatDateShort, formatEUR, type FormulaKey } from "../../lib/quote";
+import { guessRequest, type PasteGuess } from "../../lib/paste";
 
 type Item = {
   id: number; createdAt: string; source: string; status: string; name: string; email: string; phone: string;
@@ -227,7 +228,7 @@ export default function AdminHome() {
           );
         })}
       </ul>
-      {creating ? <NewRequest onClose={() => setCreating(false)} /> : null}
+      {creating ? <NewRequest items={items || []} onClose={() => setCreating(false)} /> : null}
     </div>
   );
 }
@@ -251,10 +252,35 @@ function Login({ onDone }: { onDone: () => void }) {
   );
 }
 
-function NewRequest({ onClose }: { onClose: () => void }) {
+function NewRequest({ items, onClose }: { items: Item[]; onClose: () => void }) {
   const [f, setF] = useState({ name: "", email: "", phone: "", eventType: "Mariage", eventDate: "", place: "", formula: "buffet", adults: 80, children: 0, providers: 0, honorWine: true, message: "", twoDays: false, brunchGuests: 0 });
   const [busy, setBusy] = useState(false);
+  const [paste, setPaste] = useState("");
+  const [guess, setGuess] = useState<PasteGuess | null>(null);
   const set = (k: string, v: string | number | boolean) => setF((s) => ({ ...s, [k]: v }));
+  // Message collé : on pré-remplit ce qui a été reconnu, le reste garde sa valeur.
+  function read(text: string) {
+    if (!text.trim()) return;
+    const g = guessRequest(text);
+    setGuess(g);
+    setF((s) => ({
+      ...s,
+      name: g.name || s.name, email: g.email || s.email, phone: g.phone || s.phone, eventType: g.eventType,
+      eventDate: g.eventDate || s.eventDate, place: g.place || s.place, formula: g.formula || s.formula,
+      adults: g.adults || s.adults, children: g.children, providers: g.providers, honorWine: g.honorWine,
+      twoDays: g.twoDays, message: text.trim().slice(0, 2000),
+    }));
+  }
+  // Déjà dans la liste ? Même e-mail, même téléphone ou même nom de famille à la même date.
+  const digits = (v: string) => v.replace(/\D/g, "").slice(-9);
+  const lastName = (v: string) => norm(v).split(/[^a-z]+/).filter((w) => w.length > 2).pop() || "";
+  const duplicates = items.filter((it) =>
+    (f.email && it.email && norm(it.email) === norm(f.email))
+    || (f.phone && it.phone && digits(f.phone).length === 9 && digits(it.phone) === digits(f.phone))
+    || (lastName(f.name) && norm(it.name).includes(lastName(f.name)) && (!f.eventDate || !it.eventDate || it.eventDate === f.eventDate || norm(it.name).includes(norm(f.name).split(" ")[0]))),
+  ).slice(0, 5);
+  const off = f.eventDate ? offPeriod(f.eventDate) : null;
+  const sameDay = f.eventDate ? items.filter((it) => it.eventDate === f.eventDate && ["signe", "acompte"].includes(it.status)) : [];
   return (
     <div className="adm-modal" onClick={onClose}>
       <form className="adm-card" onClick={(e) => e.stopPropagation()} onSubmit={async (e) => {
@@ -267,6 +293,21 @@ function NewRequest({ onClose }: { onClose: () => void }) {
       }}>
         <h2>Nouvelle demande</h2>
         <p className="adm-muted">Pour une demande reçue par téléphone, WhatsApp ou e-mail.</p>
+        <label className="adm-paste">📋 Coller le message du client (e-mail, WhatsApp, Instagram…)
+          <textarea rows={5} value={paste} placeholder="Collez ici le message tel quel : les champs ci-dessous se remplissent tout seuls." onChange={(e) => setPaste(e.target.value)} onPaste={(e) => { const t = e.clipboardData.getData("text"); setTimeout(() => read(t), 0); }} />
+        </label>
+        {paste && !guess ? <button type="button" className="adm-btn" onClick={() => read(paste)}>Lire le message</button> : null}
+        {guess ? (
+          <p className="adm-paste-found">
+            {guess.found.length ? <>✓ Reconnu : {guess.found.join(" · ")}. Vérifiez les champs avant de créer.</> : <>Rien de reconnu : remplissez les champs à la main.</>}
+            {guess.otherDates.length ? <> Autres dates citées : {[guess.eventDate, ...guess.otherDates].map((d) => <button key={d} type="button" className={`adm-chip${d === f.eventDate ? " on" : ""}`} onClick={() => set("eventDate", d)}>{formatDateShort(d)}</button>)}</> : null}
+          </p>
+        ) : null}
+        {duplicates.length ? (
+          <div className="adm-paste-warn">⚠️ Déjà dans la liste ? {duplicates.map((it) => <a key={it.id} href={`/admin/${it.id}`} target="_blank" rel="noopener noreferrer">{it.name} · {it.eventDate ? formatDateShort(it.eventDate) : "sans date"} · {STATUS_LABEL[it.status] || it.status} (fiche {it.id}) ↗</a>)}</div>
+        ) : null}
+        {off ? <div className="adm-paste-warn">⛔ {off.label} : réponse « indisponible » à prévoir.</div> : null}
+        {!off && sameDay.length >= 2 ? <div className="adm-paste-warn">⚠️ Déjà {sameDay.length} événements confirmés ce jour-là : vérifiez la disponibilité.</div> : null}
         <div className="adm-grid">
           <label>Nom et prénom<input required value={f.name} onChange={(e) => set("name", e.target.value)} /></label>
           <label>Téléphone<input value={f.phone} onChange={(e) => set("phone", e.target.value)} /></label>
@@ -280,8 +321,12 @@ function NewRequest({ onClose }: { onClose: () => void }) {
             </select>
           </label>
           <label>Adultes<input type="number" min={1} value={f.adults} onChange={(e) => set("adults", Number(e.target.value))} /></label>
+          <label>Enfants<input type="number" min={0} value={f.children} onChange={(e) => set("children", Number(e.target.value))} /></label>
+          <label>Prestataires<input type="number" min={0} value={f.providers} onChange={(e) => set("providers", Number(e.target.value))} /></label>
+          <label className="chk"><input type="checkbox" checked={f.honorWine} onChange={(e) => set("honorWine", e.target.checked)} /> Avec vin d’honneur</label>
           <label className="chk wide"><input type="checkbox" checked={f.twoDays} onChange={(e) => set("twoDays", e.target.checked)} /> 📅 Événement sur 2 jours : + brunch du lendemain (devis en 2 sections, brunch, déchets et déplacement chiffrés)</label>
           {f.twoDays ? <label>Personnes au brunch<input type="number" min={1} placeholder={String(f.adults)} value={f.brunchGuests || ""} onChange={(e) => set("brunchGuests", Number(e.target.value))} /></label> : null}
+          <label className="wide">Message du client (gardé dans la fiche)<textarea rows={3} value={f.message} onChange={(e) => set("message", e.target.value)} /></label>
         </div>
         <div className="adm-actions">
           <button type="button" className="adm-btn" onClick={onClose}>Annuler</button>
