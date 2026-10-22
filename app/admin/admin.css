@@ -253,3 +253,5 @@
 .adm-paste-warn a { color: #8b5a00; font-weight: 600; }
 .adm-chip { border: 1px solid #c9bda0; background: #fff; border-radius: 999px; padding: 2px 10px; font-size: 12px; cursor: pointer; }
 .adm-chip.on { background: #d4af37; border-color: #b8932a; font-weight: 700; }
+.adm-paste-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 8px; }
+.adm-paste-shot { min-height: 34px; font-size: 12.5px; cursor: pointer; }

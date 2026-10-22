@@ -257,6 +257,7 @@ function NewRequest({ items, onClose }: { items: Item[]; onClose: () => void }) 
   const [busy, setBusy] = useState(false);
   const [paste, setPaste] = useState("");
   const [guess, setGuess] = useState<PasteGuess | null>(null);
+  const [ocr, setOcr] = useState("");
   const set = (k: string, v: string | number | boolean) => setF((s) => ({ ...s, [k]: v }));
   // Message collé : on pré-remplit ce qui a été reconnu, le reste garde sa valeur.
   function read(text: string) {
@@ -270,6 +271,36 @@ function NewRequest({ items, onClose }: { items: Item[]; onClose: () => void }) 
       adults: g.adults || s.adults, children: g.children, providers: g.providers, honorWine: g.honorWine,
       twoDays: g.twoDays, message: text.trim().slice(0, 2000),
     }));
+  }
+  // Capture d’écran (WhatsApp, Instagram…) : lecture du texte dans la page (Tesseract, chargé à la demande), puis même pré-remplissage.
+  async function readImages(files: File[]) {
+    const images = files.filter((file) => file.type.startsWith("image/"));
+    if (!images.length) return;
+    try {
+      setOcr("Préparation de la lecture…");
+      const w = window as unknown as { Tesseract?: { recognize: (img: File, lang: string, opts: object) => Promise<{ data: { text: string } }> } };
+      if (!w.Tesseract) {
+        await new Promise<void>((ok, ko) => {
+          const tag = document.createElement("script");
+          tag.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
+          tag.onload = () => ok(); tag.onerror = () => ko(new Error("chargement"));
+          document.head.appendChild(tag);
+        });
+      }
+      const texts: string[] = [];
+      for (const [i, img] of images.entries()) {
+        const { data } = await w.Tesseract!.recognize(img, "fra+eng", {
+          logger: (m: { status: string; progress: number }) => {
+            if (m.status === "recognizing text") setOcr(`Lecture de la capture${images.length > 1 ? ` ${i + 1}/${images.length}` : ""}… ${Math.round(m.progress * 100)} %`);
+          },
+        });
+        texts.push(data.text.trim());
+      }
+      const text = [paste.trim(), ...texts].filter(Boolean).join("\n\n");
+      setPaste(text); setOcr(""); read(text);
+    } catch {
+      setOcr("Lecture impossible : recopiez le texte à la main ou réessayez.");
+    }
   }
   // Déjà dans la liste ? Même e-mail, même téléphone ou même nom de famille à la même date.
   const digits = (v: string) => v.replace(/\D/g, "").slice(-9);
@@ -293,9 +324,18 @@ function NewRequest({ items, onClose }: { items: Item[]; onClose: () => void }) 
       }}>
         <h2>Nouvelle demande</h2>
         <p className="adm-muted">Pour une demande reçue par téléphone, WhatsApp ou e-mail.</p>
-        <label className="adm-paste">📋 Coller le message du client (e-mail, WhatsApp, Instagram…)
-          <textarea rows={5} value={paste} placeholder="Collez ici le message tel quel : les champs ci-dessous se remplissent tout seuls." onChange={(e) => setPaste(e.target.value)} onPaste={(e) => { const t = e.clipboardData.getData("text"); setTimeout(() => read(t), 0); }} />
+        <label className="adm-paste">📋 Coller le message ou la capture du client (e-mail, WhatsApp, Instagram…)
+          <textarea rows={5} value={paste} placeholder="Collez ici le message ou une capture d’écran : les champs ci-dessous se remplissent tout seuls." onChange={(e) => setPaste(e.target.value)} onPaste={(e) => {
+            const shots = Array.from(e.clipboardData.files || []).filter((file) => file.type.startsWith("image/"));
+            if (shots.length) { e.preventDefault(); readImages(shots); return; }
+            const t = e.clipboardData.getData("text"); setTimeout(() => read(t), 0);
+          }} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { const shots = Array.from(e.dataTransfer.files || []); if (shots.some((file) => file.type.startsWith("image/"))) { e.preventDefault(); readImages(shots); } }} />
         </label>
+        <div className="adm-paste-tools">
+          <label className="adm-btn adm-paste-shot">📷 Ajouter une capture<input type="file" accept="image/*" multiple hidden onChange={(e) => { readImages(Array.from(e.target.files || [])); e.target.value = ""; }} /></label>
+          <span className="adm-muted">ou collez / glissez la capture dans la zone ci-dessus</span>
+        </div>
+        {ocr ? <p className="adm-paste-found">⏳ {ocr}</p> : null}
         {paste && !guess ? <button type="button" className="adm-btn" onClick={() => read(paste)}>Lire le message</button> : null}
         {guess ? (
           <p className="adm-paste-found">

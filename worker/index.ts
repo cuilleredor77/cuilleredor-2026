@@ -115,6 +115,14 @@ const worker = {
       const headers = new Headers(response.headers);
       headers.set("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
       headers.set("Cache-Control", "private, no-store");
+      // Espace devis : lecture des captures d’écran (Tesseract, chargé depuis jsDelivr, modèles de langue sur tessdata).
+      if (/^\/admin(\/|$)/.test(url.pathname)) {
+        const csp = headers.get("Content-Security-Policy");
+        if (csp) headers.set("Content-Security-Policy", csp
+          .replace("script-src 'self'", "script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net blob:")
+          .replace("connect-src 'self'", "connect-src 'self' https://cdn.jsdelivr.net https://tessdata.projectnaptha.com blob: data:")
+          .replace("img-src 'self' data:", "img-src 'self' data: blob:") + "; worker-src 'self' blob: https://cdn.jsdelivr.net");
+      }
       return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
     }
     return response;
