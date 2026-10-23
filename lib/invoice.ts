@@ -1,4 +1,4 @@
-// Factures Cuillère d'Or : numérotation continue, factures d'acompte, de solde, unique, personnalisée et avoirs.
+// Factures Cuillère d'Or : numérotation continue FAC-AAAA-NNN (format des factures émises avant l'outil), factures d'acompte, de solde, unique, personnalisée et avoirs.
 // Montants TTC, TVA non applicable (art. 293 B du CGI). Une facture reste modifiable tant qu'elle n'est pas envoyée.
 import { computeTotals, formatDateFR, formatEUR, formatDateShort, lineTotal, parseQuote, quoteFileName, round2, type RequestRow } from "./quote";
 
@@ -20,10 +20,13 @@ export type InvoiceDeduction = { label: string; amount: number };
 
 export type InvoiceData = {
   title: string; // « FACTURE D’ACOMPTE », modifiable
-  client: { name: string; address: string; email: string; phone: string; extra: string }; // extra : SIREN / n° TVA d'un client professionnel
+  client: { name: string; address: string; email: string; phone: string; extra: string; attention?: string }; // extra : SIREN / n° TVA d'un client professionnel ; attention : « À l'attention de … »
+  subject?: string; // « Objet : Prestation traiteur — Mariage de … » (sinon déduit de l'événement)
   event: { type: string; date: string; place: string };
   lines: InvoiceLine[];
   deductions: InvoiceDeduction[]; // acomptes déjà facturés (facture de solde)
+  portion?: InvoiceDeduction; // part facturée (facture d'acompte : « Acompte facturé (30 %) »), sinon le total net
+  remaining?: number; // facture d'acompte : reste à régler ensuite (facture de solde à venir)
   dueOn: string; // AAAA-MM-JJ, ou "" = à réception
   note: string;
 };
@@ -45,7 +48,7 @@ export type Invoice = {
   updated_at: string;
 };
 
-export const invoiceNumber = (year: number, seq: number) => `F-${year}-${String(seq).padStart(4, "0")}`;
+export const invoiceNumber = (year: number, seq: number) => `FAC-${year}-${String(seq).padStart(3, "0")}`;
 
 export function parseInvoice(inv: Pick<Invoice, "data_json">): InvoiceData {
   return JSON.parse(inv.data_json) as InvoiceData;
@@ -54,12 +57,15 @@ export function parseInvoice(inv: Pick<Invoice, "data_json">): InvoiceData {
 export function invoiceTotals(data: InvoiceData) {
   const gross = round2(data.lines.reduce((s, l) => s + lineTotal({ id: "", ...l }), 0));
   const deducted = round2(data.deductions.reduce((s, d) => s + (d.amount || 0), 0));
-  return { gross, deducted, net: round2(gross - deducted) };
+  return { gross, deducted, net: data.portion ? round2(data.portion.amount) : round2(gross - deducted) };
 }
 
 function base(row: RequestRow, title: string): InvoiceData {
+  const guests = row.adults + row.children + row.providers;
+  const formula = parseQuote(row).summary?.split(" — ")[0] || "";
   return {
     title,
+    subject: [`Prestation traiteur — ${row.event_type} de ${row.client_name}`, row.event_date ? formatDateFR(row.event_date, true) + (row.event_place ? `, ${row.event_place}` : "") : row.event_place, guests ? `${guests} convives` : "", formula].filter(Boolean).join(" — "),
     client: { name: row.client_name, address: row.billing_address || "", email: row.client_email, phone: row.client_phone, extra: "" },
     event: { type: row.event_type, date: row.event_date, place: row.event_place },
     lines: [],
@@ -90,8 +96,11 @@ export function draftInvoice(kind: InvoiceKind, row: RequestRow, previous: Invoi
     const received = (quote.payments || []).find((p) => /acompte/i.test(p.label) && p.amount > 0);
     const amount = received ? received.amount : totals.deposit;
     const rate = totals.total ? Math.round((amount / totals.total) * 100) : 30;
-    data.lines = [{ label: `Acompte de ${rate} % sur le ${quoteRef(row)}`, detail: `Montant total de la prestation : ${formatEUR(totals.total)}`, qty: 1, unit: "forfait", price: amount }];
-    data.dueOn = received?.receivedOn || "";
+    const guests = row.adults + row.children + row.providers;
+    data.lines = [{ label: `Prestation traiteur — ${row.event_type}${row.event_date ? ` du ${formatDateFR(row.event_date)}` : ""}${guests ? ` (${guests} convives)` : ""}`, qty: 1, unit: "forfait", price: totals.total }];
+    data.portion = { label: `Acompte facturé (${rate} %)`, amount };
+    data.remaining = round2(totals.total - amount);
+    data.dueOn = totals.balanceDue || "";
     data.note = received ? `Acompte reçu le ${formatDateFR(received.receivedOn)}.` : "";
   } else if (kind === "solde" || kind === "unique") {
     data.lines = quoteLines(row);

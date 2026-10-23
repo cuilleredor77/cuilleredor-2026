@@ -64,10 +64,11 @@ export default function Invoices({ id, token, invoices, setInvoices }: { id: str
                   {inv.status === "brouillon" ? <button type="button" className="adm-linkbtn" onClick={() => remove(inv)}>supprimer</button> : null}
                 </div>
                 <div className="adm-amend-track">
-                  <span className={`adm-pill ${inv.paid_on ? "ok" : inv.sent_on ? "sent" : ""}`}>{inv.paid_on ? (inv.kind === "avoir" ? "✓ Remboursé" : "✓ Payée") : inv.sent_on ? "Envoyée · figée" : "Brouillon modifiable"}</span>
+                  <span className={`adm-pill ${inv.paid_on ? "ok" : inv.sent_on ? "sent" : ""}`}>{inv.paid_on ? (inv.kind === "avoir" ? "✓ Remboursé" : "✓ Soldée") : inv.sent_on ? "Envoyée · à régler" : "Brouillon · à régler"}</span>
                   <label>Envoyée le<input type="date" value={inv.sent_on || ""} onChange={(e) => (e.target.value || confirm("Repasser en brouillon modifiable ? À éviter si le client l’a déjà reçue.")) && track(inv, { sent_on: e.target.value })} /></label>
                   {!inv.sent_on ? <button type="button" className="adm-btn" onClick={() => confirm(`Marquer ${inv.number} comme envoyée ? Elle ne sera plus modifiable.`) && track(inv, { sent_on: today() })}>Envoyée aujourd’hui</button> : null}
-                  <label>{inv.kind === "avoir" ? "Remboursé le" : "Payée le"}<input type="date" value={inv.paid_on || ""} onChange={(e) => track(inv, { paid_on: e.target.value })} /></label>
+                  <label>{inv.kind === "avoir" ? "Remboursé le" : "Soldée le"}<input type="date" value={inv.paid_on || ""} onChange={(e) => track(inv, { paid_on: e.target.value })} /></label>
+                  {!inv.paid_on && inv.kind !== "avoir" ? <button type="button" className="adm-btn" onClick={() => track(inv, { paid_on: today() })}>✓ Soldée aujourd’hui</button> : null}
                 </div>
                 {open === inv.id && draft ? (
                   <div className="adm-inv-edit">
@@ -76,6 +77,8 @@ export default function Invoices({ id, token, invoices, setInvoices }: { id: str
                       <label>Date d’émission<input type="date" value={issued} onChange={(e) => setIssued(e.target.value)} /></label>
                       <label>Client (nom ou société)<input value={draft.client.name} onChange={(e) => setDraft({ ...draft, client: { ...draft.client, name: e.target.value } })} /></label>
                       <label>SIREN / n° TVA (client pro)<input value={draft.client.extra} onChange={(e) => setDraft({ ...draft, client: { ...draft.client, extra: e.target.value } })} /></label>
+                      <label>À l’attention de<input value={draft.client.attention || ""} placeholder="Ex. M. Derrick ADU" onChange={(e) => setDraft({ ...draft, client: { ...draft.client, attention: e.target.value } })} /></label>
+                      <label className="wide">Objet<input value={draft.subject || ""} placeholder="Prestation traiteur — Mariage de … — date, lieu — convives, formule" onChange={(e) => setDraft({ ...draft, subject: e.target.value })} /></label>
                       <label className="wide">Adresse de facturation<textarea rows={2} value={draft.client.address} onChange={(e) => setDraft({ ...draft, client: { ...draft.client, address: e.target.value } })} /></label>
                       <label>Échéance (vide = à réception)<input type="date" value={draft.dueOn} onChange={(e) => setDraft({ ...draft, dueOn: e.target.value })} /></label>
                     </div>

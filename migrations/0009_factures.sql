@@ -1,4 +1,4 @@
--- Factures : numérotation continue F-AAAA-NNNN (la numérotation 2026 reprend après F-2026-0021, émise hors de l'outil)
+-- Factures : numérotation continue FAC-AAAA-NNN (la numérotation 2026 reprend après FAC-2026-021, émise hors de l'outil)
 CREATE TABLE IF NOT EXISTS invoices (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   request_id INTEGER NOT NULL,

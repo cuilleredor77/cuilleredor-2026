@@ -15,7 +15,7 @@ export async function GET(request: Request, ctx: { params: Promise<{ id: string 
   return json({ invoices: await list(Number(id)) });
 }
 
-// Nouvelle facture (brouillon) avec le numéro suivant de l'année : F-AAAA-NNNN, sans trou.
+// Nouvelle facture (brouillon) avec le numéro suivant de l'année : FAC-AAAA-NNN, sans trou.
 export async function POST(request: Request, ctx: { params: Promise<{ id: string }> }) {
   const denied = await requireAdmin(request);
   if (denied) return denied;
