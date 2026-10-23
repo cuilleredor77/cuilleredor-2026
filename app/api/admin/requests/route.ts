@@ -1,4 +1,4 @@
-import { db, isAdmin, json, newToken, requireAdmin } from "../../../../lib/server";
+import { db, getRequestById, isAdmin, json, newToken, requireAdmin } from "../../../../lib/server";
 import { computeTotals, isFormulaKey, parseQuote, type RequestRow } from "../../../../lib/quote";
 
 const ARCHIVE_AFTER_DAYS = 45;
@@ -50,13 +50,17 @@ export async function POST(request: Request) {
   const text = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
   const num = (v: unknown) => Math.max(0, Math.floor(Number(v)) || 0);
   const formula = text(body.formula, 20);
+  // Nouvelle demande d'un client déjà connu : on reprend son adresse de facturation et son wedding planner, avec un lien vers l'ancienne fiche.
+  const from = Number(body.fromId) > 0 ? await getRequestById(Number(body.fromId)) : null;
+  const fromNote = from ? `Même client que la fiche ${from.id} (${from.event_type}${from.event_date ? ` du ${from.event_date.split("-").reverse().join("/")}` : ""}).` : "";
   const now = new Date().toISOString();
   const token = newToken();
   const result = await db()
     .prepare(
       `INSERT INTO requests (token, created_at, updated_at, status, source, client_name, client_email, client_phone,
-        event_type, event_date, event_place, formula, adults, children, providers, honor_wine, message)
-       VALUES (?, ?, ?, 'nouvelle', 'manuel', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        event_type, event_date, event_place, formula, adults, children, providers, honor_wine, message,
+        billing_address, wedding_planner, internal_notes)
+       VALUES (?, ?, ?, 'nouvelle', 'manuel', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       token, now, now,
@@ -72,6 +76,9 @@ export async function POST(request: Request) {
       num(body.providers),
       body.honorWine === false ? 0 : 1,
       text(body.message, 2000),
+      from?.billing_address || "",
+      from?.wedding_planner || "",
+      fromNote,
     )
     .run();
   return json({ ok: true, id: result.meta.last_row_id });

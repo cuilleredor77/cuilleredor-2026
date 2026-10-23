@@ -337,6 +337,7 @@ export default function Editor() {
                 </select>
               </label>
               <button className="adm-btn" onClick={createSecondQuote} disabled={busy}>➕ Créer le second devis</button>
+              <a className="adm-btn" href={`/admin?client=${id}`}>👤 Nouvelle demande pour ce client</a>
               <hr />
               <button className="adm-btn adm-danger" onClick={removeRequest} disabled={busy}>🗑 Supprimer la demande</button>
             </div>

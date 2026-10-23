@@ -52,6 +52,13 @@ export default function AdminHome() {
   const dateFilter = Boolean(from || to || offOnly);
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
+  // « Nouvelle demande pour ce client » depuis une fiche : /admin?client=<id> ouvre le formulaire pré-rempli.
+  const [sameClient, setSameClient] = useState<Item | null>(null);
+  useEffect(() => {
+    const from = Number(new URLSearchParams(window.location.search).get("client"));
+    const it = from && items ? items.find((x) => x.id === from) : null;
+    if (it) { setSameClient(it); setCreating(true); window.history.replaceState(null, "", "/admin"); }
+  }, [items]);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/requests", { cache: "no-store" });
@@ -228,7 +235,7 @@ export default function AdminHome() {
           );
         })}
       </ul>
-      {creating ? <NewRequest items={items || []} onClose={() => setCreating(false)} /> : null}
+      {creating ? <NewRequest items={items || []} client={sameClient} onClose={() => { setCreating(false); setSameClient(null); }} /> : null}
     </div>
   );
 }
@@ -252,8 +259,11 @@ function Login({ onDone }: { onDone: () => void }) {
   );
 }
 
-function NewRequest({ items, onClose }: { items: Item[]; onClose: () => void }) {
-  const [f, setF] = useState({ name: "", email: "", phone: "", eventType: "Mariage", eventDate: "", place: "", formula: "buffet", adults: 80, children: 0, providers: 0, honorWine: true, message: "", twoDays: false, brunchGuests: 0 });
+function NewRequest({ items, client, onClose }: { items: Item[]; client?: Item | null; onClose: () => void }) {
+  const [f, setF] = useState({ name: client?.name || "", email: client?.email || "", phone: client?.phone || "", eventType: client?.eventType || "Mariage", eventDate: "", place: "", formula: client?.formula || "buffet", adults: client?.adults || 80, children: 0, providers: 0, honorWine: true, message: "", twoDays: false, brunchGuests: 0, fromId: client?.id || 0 });
+  // Client déjà connu : on reprend ses coordonnées (la nouvelle fiche garde un lien vers l'ancienne).
+  const takeClient = (it: Item) => setF((s) => ({ ...s, name: it.name, email: it.email || s.email, phone: it.phone || s.phone, fromId: it.id }));
+  const fromItem = f.fromId ? items.find((it) => it.id === f.fromId) : null;
   const [busy, setBusy] = useState(false);
   const [paste, setPaste] = useState("");
   const [guess, setGuess] = useState<PasteGuess | null>(null);
@@ -337,7 +347,7 @@ function NewRequest({ items, onClose }: { items: Item[]; onClose: () => void }) 
   // Déjà dans la liste ? Même e-mail, même téléphone ou même nom de famille à la même date.
   const digits = (v: string) => v.replace(/\D/g, "").slice(-9);
   const lastName = (v: string) => norm(v).split(/[^a-z]+/).filter((w) => w.length > 2).pop() || "";
-  const duplicates = items.filter((it) =>
+  const duplicates = items.filter((it) => it.id !== f.fromId).filter((it) =>
     (f.email && it.email && norm(it.email) === norm(f.email))
     || (f.phone && it.phone && digits(f.phone).length === 9 && digits(it.phone) === digits(f.phone))
     || (lastName(f.name) && norm(it.name).includes(lastName(f.name)) && (!f.eventDate || !it.eventDate || it.eventDate === f.eventDate || norm(it.name).includes(norm(f.name).split(" ")[0]))),
@@ -356,6 +366,9 @@ function NewRequest({ items, onClose }: { items: Item[]; onClose: () => void }) 
       }}>
         <h2>Nouvelle demande</h2>
         <p className="adm-muted">Pour une demande reçue par téléphone, WhatsApp ou e-mail.</p>
+        {fromItem ? (
+          <div className="adm-paste-same">👤 Même client que la <a href={`/admin/${fromItem.id}`} target="_blank" rel="noopener noreferrer">fiche {fromItem.id} ({fromItem.eventType}{fromItem.eventDate ? ` du ${formatDateShort(fromItem.eventDate)}` : ""}) ↗</a> : coordonnées reprises. Indiquez la date, le lieu et la prestation de cette nouvelle demande. <button type="button" className="adm-linkbtn" onClick={() => setF((s) => ({ ...s, fromId: 0 }))}>retirer le lien</button></div>
+        ) : null}
         <label className="adm-paste">📋 Coller le message, la capture ou le PDF du client (e-mail, WhatsApp, Instagram, devis…)
           <textarea rows={5} value={paste} placeholder="Collez ici le message ou une capture d’écran : les champs ci-dessous se remplissent tout seuls." onChange={(e) => setPaste(e.target.value)} onPaste={(e) => {
             const shots = Array.from(e.clipboardData.files || []).filter((file) => file.type.startsWith("image/") || file.type === "application/pdf");
@@ -376,7 +389,7 @@ function NewRequest({ items, onClose }: { items: Item[]; onClose: () => void }) 
           </p>
         ) : null}
         {duplicates.length ? (
-          <div className="adm-paste-warn">⚠️ Déjà dans la liste ? {duplicates.map((it) => <a key={it.id} href={`/admin/${it.id}`} target="_blank" rel="noopener noreferrer">{it.name} · {it.eventDate ? formatDateShort(it.eventDate) : "sans date"} · {STATUS_LABEL[it.status] || it.status} (fiche {it.id}) ↗</a>)}</div>
+          <div className="adm-paste-warn">⚠️ Déjà dans la liste ? {duplicates.map((it) => <span key={it.id}><a href={`/admin/${it.id}`} target="_blank" rel="noopener noreferrer">{it.name} · {it.eventDate ? formatDateShort(it.eventDate) : "sans date"} · {STATUS_LABEL[it.status] || it.status} (fiche {it.id}) ↗</a> <button type="button" className="adm-chip" onClick={() => takeClient(it)}>👤 Même client, autre demande</button></span>)}</div>
         ) : null}
         {off ? <div className="adm-paste-warn">⛔ {off.label} : réponse « indisponible » à prévoir.</div> : null}
         {!off && sameDay.length >= 2 ? <div className="adm-paste-warn">⚠️ Déjà {sameDay.length} événements confirmés ce jour-là : vérifiez la disponibilité.</div> : null}
