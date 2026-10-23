@@ -272,29 +272,61 @@ function NewRequest({ items, onClose }: { items: Item[]; onClose: () => void }) 
       twoDays: g.twoDays, message: text.trim().slice(0, 2000),
     }));
   }
-  // Capture d’écran (WhatsApp, Instagram…) : lecture du texte dans la page (Tesseract, chargé à la demande), puis même pré-remplissage.
-  async function readImages(files: File[]) {
-    const images = files.filter((file) => file.type.startsWith("image/"));
-    if (!images.length) return;
+  // Capture d’écran ou PDF : lecture du texte dans la page (pdf.js pour les PDF, Tesseract pour les images et les PDF scannés),
+  // les deux chargés à la demande depuis jsDelivr, puis même pré-remplissage que pour un message collé.
+  const loadScript = (src: string) => new Promise<void>((ok, ko) => {
+    if (document.querySelector(`script[src="${src}"]`)) return ok();
+    const tag = document.createElement("script");
+    tag.src = src; tag.onload = () => ok(); tag.onerror = () => ko(new Error("chargement"));
+    document.head.appendChild(tag);
+  });
+  type Ocr = { recognize: (img: Blob, lang: string, opts: object) => Promise<{ data: { text: string } }> };
+  type PdfPage = { getTextContent: () => Promise<{ items: Array<{ str: string; hasEOL?: boolean }> }>; getViewport: (o: { scale: number }) => { width: number; height: number }; render: (o: object) => { promise: Promise<void> } };
+  type PdfLib = { GlobalWorkerOptions: { workerSrc: string }; getDocument: (o: { data: ArrayBuffer }) => { promise: Promise<{ numPages: number; getPage: (n: number) => Promise<PdfPage> }> } };
+  async function ocrImage(img: Blob, label: string): Promise<string> {
+    const w = window as unknown as { Tesseract?: Ocr };
+    if (!w.Tesseract) await loadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js");
+    const { data } = await w.Tesseract!.recognize(img, "fra+eng", {
+      logger: (m: { status: string; progress: number }) => { if (m.status === "recognizing text") setOcr(`Lecture ${label}… ${Math.round(m.progress * 100)} %`); },
+    });
+    return data.text.trim();
+  }
+  async function readPdf(file: File): Promise<string> {
+    const w = window as unknown as { pdfjsLib?: PdfLib };
+    if (!w.pdfjsLib) await loadScript("https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js");
+    const lib = w.pdfjsLib!;
+    lib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+    const pdf = await lib.getDocument({ data: await file.arrayBuffer() }).promise;
+    const pages = Math.min(pdf.numPages, 6);
+    let text = "";
+    for (let n = 1; n <= pages; n++) {
+      setOcr(`Lecture du PDF… page ${n}/${pages}`);
+      const content = await (await pdf.getPage(n)).getTextContent();
+      text += content.items.map((it) => it.str + (it.hasEOL ? "\n" : " ")).join("") + "\n";
+    }
+    if (text.replace(/\s/g, "").length > 40) return text.trim();
+    // PDF scanné (sans texte) : on photographie les pages et on lit l’image.
+    const out: string[] = [];
+    for (let n = 1; n <= Math.min(pages, 3); n++) {
+      const page = await pdf.getPage(n);
+      const viewport = page.getViewport({ scale: 2 });
+      const canvas = document.createElement("canvas");
+      canvas.width = viewport.width; canvas.height = viewport.height;
+      await page.render({ canvasContext: canvas.getContext("2d")!, viewport }).promise;
+      const blob = await new Promise<Blob>((ok) => canvas.toBlob((b) => ok(b!), "image/png"));
+      out.push(await ocrImage(blob, `du PDF scanné (page ${n})`));
+    }
+    return out.join("\n\n");
+  }
+  async function readFiles(files: File[]) {
+    const usable = files.filter((file) => file.type.startsWith("image/") || file.type === "application/pdf" || /\.pdf$/i.test(file.name));
+    if (!usable.length) return;
     try {
       setOcr("Préparation de la lecture…");
-      const w = window as unknown as { Tesseract?: { recognize: (img: File, lang: string, opts: object) => Promise<{ data: { text: string } }> } };
-      if (!w.Tesseract) {
-        await new Promise<void>((ok, ko) => {
-          const tag = document.createElement("script");
-          tag.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
-          tag.onload = () => ok(); tag.onerror = () => ko(new Error("chargement"));
-          document.head.appendChild(tag);
-        });
-      }
       const texts: string[] = [];
-      for (const [i, img] of images.entries()) {
-        const { data } = await w.Tesseract!.recognize(img, "fra+eng", {
-          logger: (m: { status: string; progress: number }) => {
-            if (m.status === "recognizing text") setOcr(`Lecture de la capture${images.length > 1 ? ` ${i + 1}/${images.length}` : ""}… ${Math.round(m.progress * 100)} %`);
-          },
-        });
-        texts.push(data.text.trim());
+      for (const [i, file] of usable.entries()) {
+        const pdf = file.type === "application/pdf" || /\.pdf$/i.test(file.name);
+        texts.push(pdf ? await readPdf(file) : await ocrImage(file, `de la capture${usable.length > 1 ? ` ${i + 1}/${usable.length}` : ""}`));
       }
       const text = [paste.trim(), ...texts].filter(Boolean).join("\n\n");
       setPaste(text); setOcr(""); read(text);
@@ -324,16 +356,16 @@ function NewRequest({ items, onClose }: { items: Item[]; onClose: () => void }) 
       }}>
         <h2>Nouvelle demande</h2>
         <p className="adm-muted">Pour une demande reçue par téléphone, WhatsApp ou e-mail.</p>
-        <label className="adm-paste">📋 Coller le message ou la capture du client (e-mail, WhatsApp, Instagram…)
+        <label className="adm-paste">📋 Coller le message, la capture ou le PDF du client (e-mail, WhatsApp, Instagram, devis…)
           <textarea rows={5} value={paste} placeholder="Collez ici le message ou une capture d’écran : les champs ci-dessous se remplissent tout seuls." onChange={(e) => setPaste(e.target.value)} onPaste={(e) => {
-            const shots = Array.from(e.clipboardData.files || []).filter((file) => file.type.startsWith("image/"));
-            if (shots.length) { e.preventDefault(); readImages(shots); return; }
+            const shots = Array.from(e.clipboardData.files || []).filter((file) => file.type.startsWith("image/") || file.type === "application/pdf");
+            if (shots.length) { e.preventDefault(); readFiles(shots); return; }
             const t = e.clipboardData.getData("text"); setTimeout(() => read(t), 0);
-          }} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { const shots = Array.from(e.dataTransfer.files || []); if (shots.some((file) => file.type.startsWith("image/"))) { e.preventDefault(); readImages(shots); } }} />
+          }} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { const shots = Array.from(e.dataTransfer.files || []); if (shots.length) { e.preventDefault(); readFiles(shots); } }} />
         </label>
         <div className="adm-paste-tools">
-          <label className="adm-btn adm-paste-shot">📷 Ajouter une capture<input type="file" accept="image/*" multiple hidden onChange={(e) => { readImages(Array.from(e.target.files || [])); e.target.value = ""; }} /></label>
-          <span className="adm-muted">ou collez / glissez la capture dans la zone ci-dessus</span>
+          <label className="adm-btn adm-paste-shot">📷 Capture ou 📄 PDF<input type="file" accept="image/*,application/pdf,.pdf" multiple hidden onChange={(e) => { readFiles(Array.from(e.target.files || [])); e.target.value = ""; }} /></label>
+          <span className="adm-muted">ou collez / glissez la capture ou le PDF dans la zone ci-dessus</span>
         </div>
         {ocr ? <p className="adm-paste-found">⏳ {ocr}</p> : null}
         {paste && !guess ? <button type="button" className="adm-btn" onClick={() => read(paste)}>Lire le message</button> : null}

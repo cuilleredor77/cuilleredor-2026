@@ -104,16 +104,18 @@ export function guessRequest(text: string, today = new Date().toISOString().slic
   const lines = text.split(/\r?\n/);
   const p = plain(text);
   const found: string[] = [];
-  const email = (/[\w.+-]+@[\w-]+\.[\w.-]+/.exec(text) || [""])[0];
-  const phone = ((/(?:\+\d{2,3}[\s.]?\(?0?\)?[\s.]?|\b0)[1-9](?:[\s.-]?\d{2}){4}\b/.exec(text) || [""])[0]).trim();
+  // Coordonnées de Cuillère d'Or (en-tête des devis PDF) : jamais prises pour celles du client.
+  const OWN = /cuilleredor|cuillere-dor|7\D?83\D?74\D?89\D?71/i;
+  const email = [...text.matchAll(/[\w.+-]+@[\w-]+\.[\w.-]+/g)].map((m) => m[0]).find((e) => !OWN.test(e)) || "";
+  const phone = ([...text.matchAll(/(?:\+\d{2,3}[\s.]?\(?0?\)?[\s.]?|\b0)[1-9](?:[\s.-]?\d{2,4}){3,4}\b/g)].map((m) => m[0].trim()).find((t) => !OWN.test(t)) || "");
   const all = dates(lines, today);
   const adults = count(p, "adultes?|invites?|personnes?|convives?|pers|couverts|guests|people|pax");
   const children = count(p, "enfants?|children|kids");
   const providers = count(p, "prestataires?|vendors?");
 
   let formula: PasteGuess["formula"] = "";
-  if (/a l'assiette|a l’assiette|service assiette|entree,? plat,? (?:et )?dessert|entree plat dessert/.test(p)) formula = "assiette";
-  else if (/plateau/.test(p)) formula = "plateau";
+  if (/a l'assiette|a l’assiette|service assiette|entree,? plat,? (?:et )?dessert|entree plat dessert|plated/.test(p)) formula = "assiette";
+  else if (/plateau|sharing platters?|family-style/.test(p)) formula = "plateau";
   else if (/buffet(?! de bienvenue)/.test(p)) formula = "buffet";
   else if (/cocktail dinatoire|cocktail|aperitif|amuse-bouche|mignardises/.test(p)) formula = "aperitifs";
   else if (/brunch/.test(p)) formula = "brunch";
@@ -132,9 +134,30 @@ export function guessRequest(text: string, today = new Date().toISOString().slic
   else if (/gala|soiree d'entreprise|seminaire|entreprise|corporate/.test(p)) eventType = "Événement professionnel";
   else if (/fiancailles/.test(p)) eventType = "Fiançailles";
 
+  // Documents structurés (devis PDF, formulaires) : « Nom du client : … », la valeur pouvant être sur la ligne suivante.
+  const field = (label: RegExp) => {
+    const clean = lines.map((l) => l.trim());
+    for (let i = 0; i < clean.length; i++) {
+      const m = new RegExp(`^(?:${label.source})\\s*:\\s*(.*)$`, "i").exec(clean[i]);
+      if (!m) continue;
+      const at = m[1].trim() ? i : i + 1 + clean.slice(i + 1).findIndex(Boolean);
+      let value = m[1].trim() || clean[at] || "";
+      // Adresse coupée sur deux lignes (« Château de …, » puis « Allée …, 95270 … ») : on rattache les suites.
+      for (let k = at + 1; /(,|\b\d{5})\s*$/.test(value) && clean[k] && !/:/.test(clean[k]); k++) value = `${value} ${clean[k]}`;
+      return value;
+    }
+    return "";
+  };
+  const fName = field(/nom du client|client name|nom et pr[ée]nom|nom|name|client/);
+  const fPlace = field(/lieu|venue|adresse du lieu|lieu de la r[ée]ception/);
+  const fType = field(/type(?: d['’]?[ée]v[ée]nement)?|event type/);
+  const fDate = field(/date de l['’][ée]v[ée]nement|date du mariage|event date|date/);
+  const fDates = fDate ? dates([fDate], today) : [];
   const g: PasteGuess = {
-    name: name(lines, email), email, phone, eventType, eventDate: all[0] || "", otherDates: all.slice(1),
-    place: place(lines), formula, adults, children, providers, honorWine, twoDays, found,
+    name: fName && !/@|\d{4}/.test(fName) ? fName : name(lines, email), email, phone,
+    eventType: fType ? fType.replace(/^wedding$/i, "Mariage").replace(/^birthday$/i, "Anniversaire") : eventType,
+    eventDate: fDates[0] || all[0] || "", otherDates: all.filter((d) => d !== (fDates[0] || all[0])),
+    place: fPlace || place(lines), formula, adults, children, providers, honorWine, twoDays, found,
   };
   if (g.name) found.push("nom");
   if (email) found.push("e-mail");
