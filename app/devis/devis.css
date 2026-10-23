@@ -396,3 +396,8 @@
   .inv-doc .inv-foot { position: fixed; left: 0; right: 0; bottom: 0; }
   .inv-doc .inv-body { padding-bottom: 80px; }
 }
+/* Facture : en-tête blanc (logo doré, numéro foncé, filet or) */
+.inv-doc .inv-head { background: #fff; color: var(--inv-dark); border-bottom: 3px solid var(--inv-gold); }
+.inv-doc .inv-head-r small { color: #8b6914; }
+.inv-doc .inv-head-r strong { color: var(--inv-dark); }
+.inv-doc .inv-head-r span { color: #6b6b6b; }
