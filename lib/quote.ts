@@ -440,7 +440,7 @@ export function buildDefaultQuote(req: RequestRow): Quote {
     summary: `${summaryFor(req)} — ${guestsText}`,
     remarks: clientRemarks(form.message).slice(0, 280) || "—",
     note: "",
-    includeComplementary: true,
+    includeComplementary: false,
   };
   // Brunch demandé pour le lendemain : devis présenté sur 2 jours.
   return brunch ? twoDayQuote(req, quote) : quote;
