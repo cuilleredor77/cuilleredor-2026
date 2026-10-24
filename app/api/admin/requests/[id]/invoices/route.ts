@@ -60,6 +60,12 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
   const issued = day(body.issued_on);
   if (issued) await db().prepare("UPDATE invoices SET issued_on = ?, updated_at = ? WHERE id = ?").bind(issued, now, inv.id).run();
   const sent = day(body.sent_on);
+  // Mention obligatoire : pas d'envoi sans l'adresse du client (et sans son SIREN pour un client professionnel).
+  if (sent) {
+    const d = JSON.parse(inv.data_json) as InvoiceData;
+    if (!(d.client.address || "").trim()) return json({ error: "Adresse du client obligatoire sur une facture : renseignez l’adresse de facturation (bouton « modifier »), puis marquez-la envoyée." }, { status: 400 });
+    if (d.client.pro && !(d.client.extra || "").trim()) return json({ error: "Client professionnel : renseignez son SIREN avant l’envoi." }, { status: 400 });
+  }
   if (sent !== null) await db().prepare("UPDATE invoices SET sent_on = ?, status = ?, updated_at = ? WHERE id = ?").bind(sent, sent ? "envoyee" : "brouillon", now, inv.id).run();
   const paid = day(body.paid_on);
   if (paid !== null) await db().prepare("UPDATE invoices SET paid_on = ?, updated_at = ? WHERE id = ?").bind(paid, now, inv.id).run();

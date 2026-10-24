@@ -20,7 +20,7 @@ export type InvoiceDeduction = { label: string; amount: number };
 
 export type InvoiceData = {
   title: string; // « FACTURE D’ACOMPTE », modifiable
-  client: { name: string; address: string; email: string; phone: string; extra: string; attention?: string }; // extra : SIREN / n° TVA d'un client professionnel ; attention : « À l'attention de … »
+  client: { name: string; address: string; email: string; phone: string; extra: string; attention?: string; pro?: boolean }; // pro : client professionnel (mentions B2B obligatoires) // extra : SIREN / n° TVA d'un client professionnel ; attention : « À l'attention de … »
   subject?: string; // « Objet : Prestation traiteur — Mariage de … » (sinon déduit de l'événement)
   event: { type: string; date: string; place: string };
   lines: InvoiceLine[];
@@ -42,6 +42,7 @@ export type Invoice = {
   status: "brouillon" | "envoyee";
   sent_on: string;
   paid_on: string;
+  archived_on?: string; // PDF figé copié sur le Drive (scripts/archive-factures.ts)
   ref_number: string;
   data_json: string;
   created_at: string;

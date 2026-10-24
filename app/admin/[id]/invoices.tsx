@@ -67,6 +67,9 @@ export default function Invoices({ id, token, invoices, setInvoices }: { id: str
                   <span className={`adm-pill ${inv.paid_on ? "ok" : inv.sent_on ? "sent" : ""}`}>{inv.paid_on ? (inv.kind === "avoir" ? "✓ Remboursé" : "✓ Soldée") : inv.sent_on ? "Envoyée · à régler" : "Brouillon · à régler"}</span>
                   <label>Envoyée le<input type="date" value={inv.sent_on || ""} onChange={(e) => (e.target.value || confirm("Repasser en brouillon modifiable ? À éviter si le client l’a déjà reçue.")) && track(inv, { sent_on: e.target.value })} /></label>
                   {!inv.sent_on ? <button type="button" className="adm-btn" onClick={() => confirm(`Marquer ${inv.number} comme envoyée ? Elle ne sera plus modifiable.`) && track(inv, { sent_on: today() })}>Envoyée aujourd’hui</button> : null}
+                  {inv.archived_on ? <span className="adm-muted">📁 PDF archivé sur le Drive le {formatDateFR(inv.archived_on)}</span> : inv.sent_on ? <span className="adm-muted">📁 Archivage du PDF sur le Drive : à faire</span> : null}
+                  {!inv.sent_on && !(d.client.address || "").trim() ? <span className="adm-inv-warn">⚠️ Adresse du client manquante (obligatoire avant l’envoi)</span> : null}
+                  {!inv.sent_on && d.client.pro && !(d.client.extra || "").trim() ? <span className="adm-inv-warn">⚠️ SIREN du client professionnel manquant</span> : null}
                   <label>{inv.kind === "avoir" ? "Remboursé le" : "Soldée le"}<input type="date" value={inv.paid_on || ""} onChange={(e) => track(inv, { paid_on: e.target.value })} /></label>
                   {!inv.paid_on && inv.kind !== "avoir" ? <button type="button" className="adm-btn" onClick={() => track(inv, { paid_on: today() })}>✓ Soldée aujourd’hui</button> : null}
                 </div>
@@ -76,10 +79,11 @@ export default function Invoices({ id, token, invoices, setInvoices }: { id: str
                       <label>Titre<input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} /></label>
                       <label>Date d’émission<input type="date" value={issued} onChange={(e) => setIssued(e.target.value)} /></label>
                       <label>Client (nom ou société)<input value={draft.client.name} onChange={(e) => setDraft({ ...draft, client: { ...draft.client, name: e.target.value } })} /></label>
+                      <label className="chk"><input type="checkbox" checked={Boolean(draft.client.pro)} onChange={(e) => setDraft({ ...draft, client: { ...draft.client, pro: e.target.checked || undefined } })} /> Client professionnel (entreprise, wedding planner…) : ajoute les mentions de retard obligatoires</label>
                       <label>SIREN / n° TVA (client pro)<input value={draft.client.extra} onChange={(e) => setDraft({ ...draft, client: { ...draft.client, extra: e.target.value } })} /></label>
                       <label>À l’attention de<input value={draft.client.attention || ""} placeholder="Ex. M. Derrick ADU" onChange={(e) => setDraft({ ...draft, client: { ...draft.client, attention: e.target.value } })} /></label>
                       <label className="wide">Objet<input value={draft.subject || ""} placeholder="Prestation traiteur — Mariage de … — date, lieu — convives, formule" onChange={(e) => setDraft({ ...draft, subject: e.target.value })} /></label>
-                      <label className="wide">Adresse de facturation<textarea rows={2} value={draft.client.address} onChange={(e) => setDraft({ ...draft, client: { ...draft.client, address: e.target.value } })} /></label>
+                      <label className="wide">Adresse de facturation (obligatoire avant l’envoi)<textarea rows={2} value={draft.client.address} onChange={(e) => setDraft({ ...draft, client: { ...draft.client, address: e.target.value } })} /></label>
                       <label>Échéance (vide = à réception)<input type="date" value={draft.dueOn} onChange={(e) => setDraft({ ...draft, dueOn: e.target.value })} /></label>
                     </div>
                     <p className="adm-muted">Lignes</p>

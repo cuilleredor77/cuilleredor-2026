@@ -100,8 +100,8 @@ export default function InvoiceDocument({ invoice }: { invoice: Invoice }) {
               </div>
             </>
           ) : null}
-          {data.client.extra && !avoir ? (
-            <p className="inv-fine">Pas d’escompte pour paiement anticipé. En cas de retard de paiement : pénalités au taux de trois fois le taux d’intérêt légal et indemnité forfaitaire de 40 € pour frais de recouvrement.</p>
+          {(data.client.pro || data.client.extra) && !avoir ? (
+            <p className="inv-fine">Pas d’escompte pour paiement anticipé. En cas de retard de paiement : pénalités au taux de trois fois le taux d’intérêt légal et indemnité forfaitaire de 40 € pour frais de recouvrement (art. L441-10 du Code de commerce).</p>
           ) : null}
         </div>
 
