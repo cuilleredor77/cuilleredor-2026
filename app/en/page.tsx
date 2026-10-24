@@ -16,6 +16,7 @@ import QuoteChooser from "../quote-chooser";
 import CatalogueTabs from "../catalogue-tabs";
 import FormulaExperience from "../formula-experience";
 import LiseuseOverlay from "../liseuse-overlay";
+import MenuItemsPreview from "../menu-items-preview";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -109,11 +110,7 @@ function MenuCategory({
     // Volet ouvert sur ordinateur ; refermé sur mobile (voir hash-scroll-fix) pour raccourcir la page.
     <details className="formula-menu-category-flat" open>
       <summary><h4>{category.title}</h4></summary>
-      <ul>
-        {category.items.map((item) => (
-          <li key={`${keyPrefix}-${item}`}>{item}</li>
-        ))}
-      </ul>
+      <MenuItemsPreview items={category.items} keyPrefix={keyPrefix} en />
     </details>
   );
 }
@@ -674,7 +671,7 @@ export default function HomeEn() {
           </picture>
         </div>
         <div className="hero-content">
-          <p className="eyebrow">Catering · Catalogue 2027 · 2028</p>
+          <p className="eyebrow">Catering · Catalogue <span className="nowrap">2027 · 2028</span></p>
           <h1>
             <span className="sr-only">
               Event catering in the Paris region —{" "}
@@ -693,6 +690,31 @@ export default function HomeEn() {
               Estimate my event <ArrowRight size={17} />
             </a>
           </div>
+          <a
+            className="hero-awards"
+            href="https://www.mariages.net/traiteur-mariage/cuillere-dor--e310106"
+            target="_blank"
+            rel="noopener"
+          >
+            <span className="hero-awards-badges">
+              <img
+                src="/awards/mariages-net-wedding-awards-2025.jpg"
+                width={447}
+                height={447}
+                loading="lazy"
+                alt="Mariages.net Wedding Awards 2025"
+              />
+              <img
+                className="round"
+                src="/awards/mariages-net-wedding-awards-2026.png"
+                width={223}
+                height={223}
+                loading="lazy"
+                alt="Mariages.net Wedding Awards 2026"
+              />
+            </span>
+            <span>Mariages.net award winner <span className="nowrap">2025 &amp; 2026</span></span>
+          </a>
           <div className="hero-facts">
             <span>
               <Users size={20} aria-hidden="true" /> From 30 guests
@@ -885,22 +907,10 @@ export default function HomeEn() {
                     <div className="formula-dishes-flat">
                       <div className="formula-menu-categories aperitif-menu-categories">
                         <div className="formula-menu-category-flat"><h4>Savoury creations · {savoury.length} choices</h4>
-                            <ul>
-                              {savoury.map((item) => (
-                                <li key={`menu-${item.name}`}>
-                                  <span>{item.name}</span>
-                                </li>
-                              ))}
-                            </ul>
+                            <MenuItemsPreview items={savoury.map((item) => item.name)} keyPrefix="menu-savoury" en wrap />
                           </div>
                         <div className="formula-menu-category-flat"><h4>Sweet treats · {sweet.length} choices</h4>
-                            <ul>
-                              {sweet.map((item) => (
-                                <li key={`menu-${item.name}`}>
-                                  <span>{item.name}</span>
-                                </li>
-                              ))}
-                            </ul>
+                            <MenuItemsPreview items={sweet.map((item) => item.name)} keyPrefix="menu-sweet" en wrap />
                           </div>
                       </div>
                     </div>
@@ -1278,9 +1288,11 @@ export default function HomeEn() {
               essential answers to help you prepare for your celebration with
               confidence.
             </p>
-            <a href={WHATSAPP} target="_blank" rel="noreferrer">
-              Still have a question? <span>Message us on WhatsApp</span>{" "}
-              <ArrowRight size={15} />
+            <a className="faq-ask" href={WHATSAPP} target="_blank" rel="noreferrer">
+              <span className="faq-ask-question">Still have a question?</span>{" "}
+              <span className="faq-ask-cta">
+                <span>Message us on WhatsApp</span> <ArrowRight size={15} />
+              </span>
             </a>
           </div>
         </div>
