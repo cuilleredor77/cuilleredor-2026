@@ -51,8 +51,8 @@ export default function InvoiceDocument({ invoice }: { invoice: Invoice }) {
             <div className="inv-box inv-box-dark">
               <small>FACTURÉ À</small>
               <b>{data.client.name}</b>
-              {addressLines.map((l, i) => <span key={i}>{l}</span>)}
-              {data.client.extra ? <span>{data.client.extra}</span> : null}
+              {addressLines.length ? addressLines.map((l, i) => <span key={i}>{l}</span>) : <><span className="inv-fill">Adresse :</span><span className="inv-fill" /></>}
+              {data.client.extra ? <span>{data.client.extra}</span> : data.client.pro ? <span className="inv-fill">SIREN :</span> : null}
               {data.client.attention ? <span>À l’attention de {data.client.attention}</span> : null}
               {!addressLines.length && data.client.email ? <span>{data.client.email}</span> : null}
               {!addressLines.length && data.client.phone ? <span>{data.client.phone}</span> : null}

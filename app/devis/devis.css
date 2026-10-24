@@ -401,3 +401,5 @@
 .inv-doc .inv-head-r small { color: #8b6914; }
 .inv-doc .inv-head-r strong { color: var(--inv-dark); }
 .inv-doc .inv-head-r span { color: #6b6b6b; }
+/* Facture : ligne à remplir à la main (adresse, SIREN non renseignés) */
+.inv-doc .inv-fill { display: block; min-height: 1.5em; border-bottom: 1px dotted rgba(255,255,255,.55); margin-bottom: 4px; }
