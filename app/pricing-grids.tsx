@@ -43,7 +43,7 @@ export default function PricingGrids({
       <summary>
         <span>{en ? "View all prices and tiers" : "Voir tous les tarifs et paliers"}</span>
         <small>
-          {en ? "Full details remain available" : "Les détails complets restent disponibles"}
+          {en ? "Price per guest according to the number of guests" : "Prix par convive selon le nombre d’invités"}
         </small>
         <b aria-hidden="true">+</b>
       </summary>
@@ -206,7 +206,7 @@ export default function PricingGrids({
           >
             {summary(
               "04",
-              en ? "Cocktail reception" : "Apéritifs & vin d’honneur",
+              en ? "Canapés & drinks reception" : "Apéritifs & vin d’honneur",
               en ? "€25 per guest · from 50 guests" : "25 € par personne · dès 50 convives",
             )}
           </summary>
@@ -245,15 +245,15 @@ export default function PricingGrids({
               <span>{en ? "Includes" : "Comprend"}</span>
               <p>
                 {en
-                  ? "Shared base (viennoiseries, pancakes, eggs, drinks) + 10 savoury or sweet bites of your choice"
+                  ? "Brunch essentials (pastries, pancakes, eggs, drinks) + 10 savoury or sweet bites of your choice"
                   : "Base commune (viennoiseries, pancakes, œufs, boissons) + 10 pièces salées ou sucrées au choix"}
               </p>
             </div>
             <strong>
               {en ? "€35" : "35 €"} <small>{en ? "per guest" : "par personne"}</small>
             </strong>
-            <a href="#formulaire-brunch">
-              {en ? "Receive my quote" : "Recevoir mon devis"} <ArrowRight size={16} />
+            <a href="#calculateur" data-select-formula="brunch">
+              {en ? "Estimate my event" : "Estimer mon événement"} <ArrowRight size={16} />
             </a>
           </div>
         </details>
@@ -275,13 +275,16 @@ export default function PricingGrids({
               <span>{en ? "Includes" : "Comprend"}</span>
               <p>
                 {en
-                  ? "5 nibbles · salads · grilled meats · sides. The venue must permit barbecues."
+                  ? "5 savoury or sweet bites · salads · grilled meats · sides. The venue must permit barbecues."
                   : "5 pièces à grignoter · salades · grillades · accompagnements. Le lieu doit autoriser les barbecues."}
               </p>
             </div>
             <strong>
               {en ? "€60" : "60 €"} <small>{en ? "per guest" : "par personne"}</small>
             </strong>
+            <a href="#calculateur" data-select-formula="barbecue">
+              {en ? "Estimate my event" : "Estimer mon événement"} <ArrowRight size={16} />
+            </a>
           </div>
         </details>
         <details data-formule="chef" open={openFormula === "chef"}>
@@ -309,6 +312,9 @@ export default function PricingGrids({
             <strong>
               {en ? "from €95" : "dès 95 €"} <small>{en ? "per guest" : "par personne"}</small>
             </strong>
+            <a href="#calculateur" data-select-formula="chef">
+              {en ? "Estimate my event" : "Estimer mon événement"} <ArrowRight size={16} />
+            </a>
           </div>
         </details>
       </div>

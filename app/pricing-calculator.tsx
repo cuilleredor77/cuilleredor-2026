@@ -76,7 +76,7 @@ const formulaNamesEn: Record<Formula, string> = {
   buffet: "Buffet",
   plateau: "Platter service",
   assiette: "Plated service",
-  aperitifs: "Cocktail reception",
+  aperitifs: "Canapés & drinks reception",
   brunch: "Signature Brunch",
   barbecue: "Barbecue Party",
   chef: "Private chef",
@@ -141,7 +141,7 @@ const OPTION_EN: Record<
     unitLabel: "€5/guest",
   },
   cocktails: {
-    label: "Additional cocktails, beyond the 4 included (1 litre for about 4 guests)",
+    label: "Additional cocktails, beyond the 4 optional cocktails – 1 litre for about 4 guests",
     unitLabel: "€10/litre",
     qtyLabel: "litre(s)",
   },
@@ -160,7 +160,7 @@ const OPTION_EN: Record<
   warmer: { label: "Professional warming cabinet", unitLabel: "€150 flat fee" },
   maitreHotel: {
     label: "Maître d’hôtel",
-    unitLabel: "€160",
+    unitLabel: "€160 flat fee",
     help: "Coordinates the team and the venue until the end of the evening.",
   },
   setup: { label: "Set-up and clear-down", unitLabel: "€150 flat fee" },
@@ -168,7 +168,7 @@ const OPTION_EN: Record<
   waste: {
     label: "Food waste management (excluding glass)",
     unitLabel: "€50 flat fee",
-    help: "Included by default. Untick only if your venue handles food waste itself.",
+    help: "Added by default. Untick only if your venue handles food waste itself.",
   },
 };
 const CATEGORY_EN: Record<string, string> = {
@@ -199,7 +199,7 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
     options: [
       {
         id: "cheese",
-        label: "Assiette d'assortiment de 3 fromages",
+        label: "Assiette d’assortiment de 3 fromages",
         unit: 9,
         unitLabel: "9 €/pers.",
         kind: "toggle",
@@ -224,7 +224,7 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
       },
       {
         id: "honorCocktails",
-        label: "4 cocktails au choix par personne (vin d’honneur ou cocktail dînatoire)",
+        label: "4 cocktails au choix par personne (vin d’honneur ou formule Apéritifs)",
         unit: 5,
         unitLabel: "5 €/pers.",
         kind: "toggle",
@@ -233,7 +233,7 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
       },
       {
         id: "cocktails",
-        label: "Cocktails supplémentaires, au-delà des 4 cocktails (1 litre pour environ 4 convives)",
+        label: "Cocktails supplémentaires, au-delà des 4 cocktails – 1 litre pour environ 4 convives",
         unit: 10,
         unitLabel: "10 €/litre",
         kind: "qty",
@@ -299,7 +299,7 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
         id: "maitreHotel",
         label: "Maître d’hôtel",
         unit: 160,
-        unitLabel: "160 €",
+        unitLabel: "forfait 160 €",
         kind: "toggle",
         help: "Coordonne l’équipe et le lieu jusqu’à la fin de soirée.",
       },
@@ -323,7 +323,7 @@ const OPTION_CATEGORIES: Array<{ title: string; options: OptionDef[] }> = [
         unit: 50,
         unitLabel: "50 € le forfait",
         kind: "toggle",
-        help: "Incluse par défaut. À décocher uniquement si votre lieu de réception conserve les déchets alimentaires.",
+        help: "Ajoutée par défaut. À décocher uniquement si votre lieu de réception conserve les déchets alimentaires.",
       },
     ],
   },
@@ -674,8 +674,8 @@ export default function PricingCalculator({
         <div className="calculator-heading-side">
           <p>
             {en
-              ? "Choose your formula and enter your guest numbers for an instant budget estimate."
-              : "Choisissez la formule et indiquez vos convives pour obtenir immédiatement un ordre de budget."}
+              ? "Choose your package and enter your guest numbers for an instant budget estimate."
+              : "Choisissez la formule et indiquez vos convives pour obtenir immédiatement une première estimation de budget."}
           </p>
           <button
             type="button"
@@ -691,7 +691,7 @@ export default function PricingCalculator({
       <div className="calculator-controls">
         <div className="calculator-controls-row">
           <label>
-            <span>{en ? "Your formula" : "Votre formule"}</span>
+            <span>{en ? "Your package" : "Votre formule"}</span>
             <select
               value={formula}
               onChange={(e) => changeFormula(e.target.value as Formula)}
@@ -701,7 +701,7 @@ export default function PricingCalculator({
                   <option value="buffet">Buffet</option>
                   <option value="plateau">Platter service</option>
                   <option value="assiette">Plated service</option>
-                  <option value="aperitifs">Cocktail reception</option>
+                  <option value="aperitifs">Canapés & drinks reception</option>
                   <option value="brunch">Signature Brunch</option>
                   <option value="barbecue">Barbecue Party</option>
                   <option value="chef">Private chef</option>
@@ -847,7 +847,7 @@ export default function PricingCalculator({
                 ? "Cheese, drinks, tableware, furniture…"
                 : "Fromages, boissons, vaisselle, mobilier…"
               : extraLines.length === 1
-                ? `${extraLines[0].shown.replace(/ \([^)]*\)\s*$/, "")}${extraLines[0].id === "waste" ? (en ? " — selected by default" : " — sélectionné par défaut") : ""} · ${fmtMoney(extraLines[0].amount, lang)}`
+                ? `${extraLines[0].shown.replace(/ \([^)]*\)\s*$/, "")}${extraLines[0].id === "waste" ? (en ? " — selected by default" : " — sélectionnée par défaut") : ""} · ${fmtMoney(extraLines[0].amount, lang)}`
                 : `${extraLines.length} ${en ? "options selected" : "options sélectionnées"} · ${fmtMoney(extrasTotal, lang)}`}
           </small>
           <b aria-hidden="true">+</b>
@@ -857,8 +857,8 @@ export default function PricingCalculator({
             <ListChecks size={18} />
             <p>
               {en
-                ? "Only waste management is included by default; add just the options you need for your reception."
-                : "Seule la gestion des déchets est incluse par défaut ; ajoutez uniquement les options utiles à votre réception."}
+                ? "Only waste management (€50) is added by default; add just the options you need for your reception."
+                : "Seule la gestion des déchets (50 €) est ajoutée par défaut ; ajoutez uniquement les options utiles à votre réception."}
             </p>
           </div>
           {OPTION_CATEGORIES.map((category) => (
@@ -913,7 +913,7 @@ export default function PricingCalculator({
                         {def.id === "waste"
                           ? en
                             ? " · selected by default"
-                            : " · sélectionné par défaut"
+                            : " · sélectionnée par défaut"
                           : ""}
                         )
                       </small>

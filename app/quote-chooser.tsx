@@ -46,6 +46,17 @@ const FORMULA_FORM_VALUE: Record<FormulaId, string> = {
   chef: "Chef à domicile",
 };
 
+// Libellés affichés en français (FORMULA_FORM_VALUE reste la valeur attendue par le formulaire Google).
+const FORMULA_LABEL_FR: Record<FormulaId, string> = {
+  buffet: "Buffet",
+  plateau: "Plateau",
+  assiette: "Service à l’assiette",
+  aperitifs: "Apéritifs & vin d’honneur",
+  brunch: "Brunch Signature",
+  barbecue: "Barbecue Party",
+  chef: "Chef à domicile",
+};
+
 // Formules pour lesquelles le vin d'honneur est une option (cf. lib/quote.ts).
 const WITH_HONOR_WINE: FormulaId[] = ["buffet", "plateau", "assiette"];
 
@@ -65,7 +76,7 @@ const FORMULA_LABEL_EN: Record<FormulaId, string> = {
   buffet: "Buffet",
   plateau: "Platter service",
   assiette: "Plated service",
-  aperitifs: "Cocktail reception",
+  aperitifs: "Canapés & drinks reception",
   brunch: "Signature Brunch",
   barbecue: "Barbecue Party",
   chef: "Private chef",
@@ -135,7 +146,7 @@ const T = {
     child: ["child", "children"],
     provider: ["vendor", "vendors"],
     noOption: "No options selected",
-    onQuote: "On quote",
+    onQuote: "On quotation",
     locale: "en-GB",
     serviceModes: {
       service: "With on-site service",
@@ -158,7 +169,7 @@ const T = {
     placePh: "e.g. 12 rue des Lilas, 77240 Vert-Saint-Denis",
     placeHint:
       "With the full address, travel is costed as precisely as possible. With the town alone, it is estimated; with the département alone, it will be costed afterwards.",
-    formula: "Preferred formula *",
+    formula: "Preferred package *",
     honorWine: "With cocktail reception",
     adults: "Adults *",
     children: "Children (under 12)",
@@ -173,7 +184,7 @@ const T = {
     badge: "Quote by email",
     title: "Save my estimate",
     resumes: "It carries over your estimate for",
-    askInfo: "Please tell us the date, the venue, the number of guests and your preferred formula.",
+    askInfo: "Please tell us the date, the venue, the number of guests and your preferred package.",
     required:
       "We only ask for what we need to price your quote. You will receive it by email, and we will then get in touch.",
     preparing: "Preparing your form…",
@@ -214,7 +225,9 @@ function optionsLine(estimate: Estimate) {
 function totalValue(estimate: Estimate, lang: Lang = "fr") {
   return estimate.total === null
     ? T[lang].onQuote
-    : `${estimate.total.toLocaleString(T[lang].locale, { minimumFractionDigits: estimate.total % 1 ? 2 : 0 })} €`;
+    : lang === "en"
+      ? `€${estimate.total.toLocaleString(T[lang].locale, { minimumFractionDigits: estimate.total % 1 ? 2 : 0 })}`
+      : `${estimate.total.toLocaleString(T[lang].locale, { minimumFractionDigits: estimate.total % 1 ? 2 : 0 })} €`;
 }
 
 function buildFormUrl(baseUrl: string, choice: Choice, estimate: Estimate | null) {
@@ -341,7 +354,8 @@ function NativeForm({
       const data = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) {
         setStatus("error");
-        setError(data.error || t.sendFailed);
+        // Messages du serveur en français : en anglais, on affiche le message générique.
+        setError(lang === "en" ? t.sendFailed : data.error || t.sendFailed);
         return;
       }
       setStatus("sent");
@@ -414,7 +428,7 @@ function NativeForm({
           <select required value={fields.formula} onChange={(e) => set("formula", e.target.value as FormulaId)}>
             {(Object.keys(FORMULA_FORM_VALUE) as FormulaId[]).map((id) => (
               <option key={id} value={id}>
-                {lang === "en" ? FORMULA_LABEL_EN[id] : FORMULA_FORM_VALUE[id]}
+                {lang === "en" ? FORMULA_LABEL_EN[id] : FORMULA_LABEL_FR[id]}
               </option>
             ))}
           </select>
@@ -593,7 +607,7 @@ export default function QuoteChooser({ formUrl, lang = "fr" }: { formUrl: string
         )}
         <p className="quote-privacy-note">
           {t.privacy}{" "}
-          <a href="/politique-confidentialite" target="_blank" rel="noreferrer">
+          <a href={lang === "en" ? "/en/privacy-policy" : "/politique-confidentialite"} target="_blank" rel="noreferrer">
             {t.privacyLink}
           </a>
           .{" "}

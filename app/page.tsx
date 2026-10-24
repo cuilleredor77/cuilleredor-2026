@@ -141,13 +141,14 @@ const offers = [
     secondLabel: "Idéal pour",
     secondValue: "Réception élégante avec un service fluide",
     price: "40 à 50 €",
+    priceNote: "Tarifs dégressifs pour les grandes réceptions",
     wineNote: "+5 € par personne avec vin d’honneur",
     suffix: "/ personne · dès 30 convives",
     cta: "Choisir le plateau",
   },
   {
     number: "03",
-    title: "À l’assiette",
+    title: "Service à l’assiette",
     tone: "Élégant & raffiné",
     image: "/assiette-traiteur",
     imageAlt: "Plat dressé pour un service à l’assiette",
@@ -158,14 +159,15 @@ const offers = [
     secondLabel: "Idéal pour",
     secondValue: "Mariage, dîner de gala et réception formelle",
     price: "60 à 70 €",
+    priceNote: "Tarifs dégressifs pour les grandes réceptions",
     wineNote: "+5 € par personne avec vin d’honneur",
     suffix: "/ personne · dès 30 convives",
     cta: "Choisir le service à l’assiette",
   },
   {
     number: "04",
-    title: "Apéritifs",
-    tone: "Cocktail",
+    title: "Apéritifs & vin d’honneur",
+    tone: "Festif & élégant",
     image: "/hero-bouchee",
     imageAlt: "Création apéritive Cuillère d’Or",
     description:
@@ -181,7 +183,7 @@ const offers = [
   {
     number: "05",
     title: "Brunch Signature",
-    tone: "Généreux & convivial",
+    tone: "Gourmand & détendu",
     image: "/brunch/brunch-signature",
     imageAlt: "Brunch Signature Cuillère d’Or",
     description:
@@ -268,6 +270,12 @@ function OfferRecap({ formula }: { formula: string }) {
               <>
                 <br />
                 {offer.secondValue}
+              </>
+            ) : null}
+            {"priceNote" in offer && offer.priceNote ? (
+              <>
+                <br />
+                {offer.priceNote}
               </>
             ) : null}
             {"wineNote" in offer && offer.wineNote ? (
@@ -465,7 +473,7 @@ const MENU_JSON_LD = {
         title: "Base commune",
         items: [
           "Pain, beurre et confitures",
-          "Mini viennoiseries",
+          "Mini-viennoiseries",
           "Pancakes et toppings",
           "Œufs brouillés ou au plat",
           "Thé, café, chocolat chaud, eaux et jus de fruits",
@@ -509,7 +517,7 @@ const faqItems = [
   {
     question: "Quelle formule choisir pour mon événement ?",
     answer:
-      "Comparez les 7 formules dans la section « Nos formules » : chacune précise son ambiance et son budget. Si vous hésitez entre deux options, écrivez-nous sur WhatsApp. Nous vous conseillerons selon le nombre de convives et le style de votre réception.",
+      "Comparez les 7 formules dans la section « Formules & menus » : chacune précise son ambiance et son budget. Si vous hésitez entre deux options, écrivez-nous sur WhatsApp. Nous vous conseillerons selon le nombre de convives et le style de votre réception.",
   },
   {
     question: "À partir de combien de convives intervenez-vous ?",
@@ -568,9 +576,9 @@ const faqItems = [
       "Ils sont calculés au départ de Vert-Saint-Denis, sur la base de 1,90 € par kilomètre aller-retour (péages et stationnement compris), puis présentés sur une ligne distincte du devis. Au-delà de 250 km, des frais de logement s’ajoutent, à définir avec la cheffe. Les prestations hors Île-de-France et à l’international sont étudiées sur demande.",
   },
   {
-    question: "Proposez-vous d’autres formules (Barbecue Party, Chef à domicile) ?",
+    question: "Proposez-vous des prestations sur mesure ?",
     answer:
-      "Oui. Barbecue Party : 60 € par personne, grillades cuites en direct, à condition que le lieu autorise les barbecues. Chef à domicile : dès 95 € par personne, dès 12 couverts, amuse-bouche, entrée, plat, dessert, vaisselle, nappage et service inclus. Frais de déplacement en sus. Demandez votre devis pour ces formules.",
+      "Oui. En plus du buffet, du plateau, du service à l’assiette, des apéritifs et du brunch, nous proposons la Barbecue Party : 60 € par personne, grillades cuites en direct, à condition que le lieu autorise les barbecues. Et le Chef à domicile : dès 95 € par personne, dès 12 couverts, amuse-bouche, entrée, plat, dessert, vaisselle, nappage et service inclus. Frais de déplacement en sus. Pour une demande particulière, demandez votre devis.",
   },
   {
     question: "Y a-t-il une caution et des frais de dépassement ?",
@@ -617,6 +625,7 @@ export default function Home() {
           <a href="#formules">Formules</a>
           <a href="#calculateur">Tarifs</a>
           <a href="#feuilleter">Catalogue</a>
+          <a href="#faq">FAQ</a>
           <a href="#contact">Contact</a>
           <a href="/en" hrefLang="en" lang="en" className="lang-switch">EN</a>
         </nav>
@@ -634,6 +643,7 @@ export default function Home() {
             <a href="#formules">Formules</a>
             <a href="#calculateur">Tarifs & estimation</a>
             <a href="#feuilleter">Catalogue</a>
+            <a href="#faq">FAQ</a>
             <a href="#contact">Contact</a>
             <a href="/en" hrefLang="en" lang="en">English version</a>
           </nav>
@@ -656,7 +666,7 @@ export default function Home() {
           </picture>
         </div>
         <div className="hero-content">
-          <p className="eyebrow">Service traiteur · Catalogue 2027 · 2028</p>
+          <p className="eyebrow">Service traiteur · Catalogue 2027-2028</p>
           <h1>
             <span className="sr-only">
               Traiteur événementiel en Île-de-France —{" "}
@@ -784,7 +794,7 @@ export default function Home() {
         <div className="intro-copy">
           <p>
             Choisissez le style de réception : son menu s’ouvre juste en
-            dessous. Estimez ensuite votre événement, le devis personnalisé
+            dessous. Estimez ensuite votre événement : le devis personnalisé
             vous est envoyé par e-mail.
           </p>
         </div>
@@ -1062,7 +1072,7 @@ export default function Home() {
                         <div className="formula-menu-category-flat"><h4>Base commune, incluse pour tous les convives</h4>
                             <ul>
                               <li>Pain, beurre et confitures</li>
-                              <li>Mini viennoiseries (croissants, pains au chocolat)</li>
+                              <li>Mini-viennoiseries (croissants, pains au chocolat)</li>
                               <li>Pancakes, toppings au choix (Nutella, confiture, caramel)</li>
                               <li>Œufs brouillés ou au plat</li>
                               <li>Thé, café, chocolat chaud, eaux, jus d’orange et de pomme</li>
@@ -1071,9 +1081,6 @@ export default function Home() {
                           </div>
                       </div>
                     </div>
-                    <a className="formula-menu-cta" href="#formulaire-brunch">
-                      Recevoir mon devis <ArrowRight size={16} />
-                    </a>
                   </div>
                 </details>
                 <details data-menu-formula="barbecue">
@@ -1320,7 +1327,7 @@ export default function Home() {
         <div>
           <p className="eyebrow dark">Une question avant de vous décider ?</p>
           <h2>
-            On reste
+            Nous restons
             <br />
             <em>disponibles.</em>
           </h2>

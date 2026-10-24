@@ -42,7 +42,7 @@ export default function LiseuseOverlay({ lang = "fr" }: { lang?: "fr" | "en" }) 
       </button>
       <iframe
         key={page}
-        src={`/liseuse/?embed${page > 1 ? `#p=${page}` : ""}`}
+        src={`/liseuse/?embed${en ? "&lang=en" : ""}${page > 1 ? `#p=${page}` : ""}`}
         title={en ? "Cuillère d’Or 2027-2028 catalogue to browse" : "Catalogue Cuillère d’Or 2027-2028 à feuilleter"}
         allow="fullscreen"
         allowFullScreen

@@ -149,6 +149,7 @@ const offers = [
     secondLabel: "Ideal for",
     secondValue: "Elegant receptions with smooth, relaxed table service",
     price: "€40 to €50",
+    priceNote: "Reduced rates for larger receptions",
     wineNote: "+€5 per guest with a cocktail reception",
     suffix: "/ guest · from 30 guests",
     cta: "Choose platter service",
@@ -166,20 +167,21 @@ const offers = [
     secondLabel: "Ideal for",
     secondValue: "Weddings, gala dinners and formal receptions",
     price: "€60 to €70",
+    priceNote: "Reduced rates for larger receptions",
     wineNote: "+€5 per guest with a cocktail reception",
     suffix: "/ guest · from 30 guests",
     cta: "Choose plated service",
   },
   {
     number: "04",
-    title: "Canapés",
-    tone: "Cocktail",
+    title: "Canapés & drinks reception",
+    tone: "Festive & elegant",
     image: "/hero-bouchee",
     imageAlt: "Cuillère d’Or canapé creation",
     description:
       "Choose ten savoury or sweet creations to begin your celebration. Cocktails are available as an optional extra.",
     firstLabel: "Includes",
-    firstValue: "10 savoury or sweet canapés of your choice",
+    firstValue: "10 savoury or sweet bites of your choice",
     secondLabel: "Ideal for",
     secondValue: "Wedding cocktail receptions, drinks receptions and corporate events",
     price: "€25",
@@ -189,14 +191,14 @@ const offers = [
   {
     number: "05",
     title: "Signature Brunch",
-    tone: "Generous & friendly",
+    tone: "Indulgent & relaxed",
     image: "/brunch/brunch-signature",
     imageAlt: "Cuillère d’Or Signature Brunch",
     description:
       "A complete selection of savoury and sweet favourites, perfect for extending the celebrations and bringing everyone together again.",
     firstLabel: "Includes",
     firstValue:
-      "Pastries · pancakes · eggs · drinks · 10 pieces of your choice",
+      "Pastries · pancakes · eggs · drinks · 10 bites of your choice",
     secondLabel: "Ideal for",
     secondValue: "Post-wedding brunches and daytime family celebrations",
     price: "€35",
@@ -233,7 +235,7 @@ const offers = [
     secondLabel: "Ideal for",
     secondValue: "Entertaining at home without having to organise a thing",
     price: "from €95",
-    suffix: "/ guest · from 12 covers",
+    suffix: "/ guest · from 12 guests",
     cta: "Choose a private chef",
   },
 ];
@@ -276,6 +278,12 @@ function OfferRecap({ formula }: { formula: string }) {
               <>
                 <br />
                 {offer.secondValue}
+              </>
+            ) : null}
+            {"priceNote" in offer && offer.priceNote ? (
+              <>
+                <br />
+                {offer.priceNote}
               </>
             ) : null}
             {"wineNote" in offer && offer.wineNote ? (
@@ -548,7 +556,7 @@ const faqItems = [
   {
     question: "What does the cocktail reception include?",
     answer:
-      "The cocktail reception includes 10 savoury or sweet canapés of your choice and service throughout. Cocktails are optional (€10 per litre, about 4 guests per litre).",
+      "The cocktail reception includes 10 savoury or sweet bites of your choice and service throughout. Cocktails are optional (€10 per litre, about 4 guests per litre).",
   },
   {
     question: "Can the menu be customised?",
@@ -576,9 +584,9 @@ const faqItems = [
       "They are calculated from Vert-Saint-Denis at €1.90 per round-trip kilometre (tolls and parking included) and shown on a separate line of the quote. Beyond 250 km, accommodation costs are added, to be agreed with the chef. Events outside Île-de-France and abroad are considered on request.",
   },
   {
-    question: "Do you offer other packages, such as Barbecue Party or Private chef at home?",
+    question: "Do you offer bespoke services?",
     answer:
-      "Yes. Barbecue Party: €60 per guest, grills cooked live, provided the venue allows barbecues. Private chef: from €95 per guest, from 12 covers, with amuse-bouche, starter, main course, dessert, tableware, linen and service included. Travel costs extra. Request a quote for these packages.",
+      "Yes. Alongside the buffet, platter service, plated service, canapés and brunch, we offer the Barbecue Party: €60 per guest, grills cooked live, provided the venue allows barbecues. And Private chef at home: from €95 per guest, from 12 guests, with amuse-bouche, starter, main course, dessert, tableware, linen and service included. Travel costs extra. For any special request, ask for a quote.",
   },
   {
     question: "Is there a security deposit or overtime charge?",
@@ -612,19 +620,20 @@ export default function HomeEn() {
         <a
           className="brand"
           href="#accueil"
-          aria-label="Cuillère d'Or - home"
+          aria-label="Cuillère d’Or - home"
         >
           <img
             src="/logo-cuillere-dor.png?v=2"
             width="711"
             height="209"
-            alt="Cuillère d'Or - A taste of paradise"
+            alt="Cuillère d’Or - A taste of paradise"
           />
         </a>
         <nav className="desktop-nav" aria-label="Main navigation">
           <a href="#formules">Packages</a>
           <a href="#calculateur">Prices</a>
           <a href="#feuilleter">Catalogue</a>
+          <a href="#faq">FAQ</a>
           <a href="#contact">Contact</a>
           <a href="/" hrefLang="fr" lang="fr" className="lang-switch">FR</a>
         </nav>
@@ -642,6 +651,7 @@ export default function HomeEn() {
             <a href="#formules">Packages</a>
             <a href="#calculateur">Prices & estimate</a>
             <a href="#feuilleter">Catalogue</a>
+            <a href="#faq">FAQ</a>
             <a href="#contact">Contact</a>
             <a href="/" hrefLang="fr" lang="fr">Version française</a>
           </nav>
@@ -658,7 +668,7 @@ export default function HomeEn() {
               sizes="100vw"
               width={1200}
               height={797}
-              alt="Dish plated by Cuillère d'Or"
+              alt="Dish plated by Cuillère d’Or"
               loading="eager"
             />
           </picture>
@@ -705,7 +715,7 @@ export default function HomeEn() {
             sizes="(max-width: 720px) 100vw, 46vw"
             width={900}
             height={506}
-            alt="Huguette MVUNDA-KILOLA, founder and chef of Cuillère d'Or"
+            alt="Huguette MVUNDA-KILOLA, founder and chef of Cuillère d’Or"
           />
           <div className="chef-caption">
             <strong>Huguette MVUNDA-KILOLA</strong>
@@ -842,9 +852,9 @@ export default function HomeEn() {
                   <summary>
                     <span>04</span>
                     <div>
-                      <strong>Canapés & cocktail reception</strong>
+                      <strong>Canapés & drinks reception</strong>
                       <small>
-                        10 pieces of your choice · savoury or sweet ·
+                        10 bites of your choice · savoury or sweet ·
                         cocktails optional
                       </small>
                     </div>
@@ -866,7 +876,7 @@ export default function HomeEn() {
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="/liseuse/#p=9"
+                      href="/liseuse/?lang=en#p=9"
                       data-liseuse="9"
                     >
                       See photos of this menu in the catalogue{" "}
@@ -927,7 +937,7 @@ export default function HomeEn() {
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="/liseuse/#p=6"
+                      href="/liseuse/?lang=en#p=6"
                       data-liseuse="6"
                     >
                       See photos of this menu in the catalogue{" "}
@@ -973,7 +983,7 @@ export default function HomeEn() {
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="/liseuse/#p=7"
+                      href="/liseuse/?lang=en#p=7"
                       data-liseuse="7"
                     >
                       See photos of this menu in the catalogue{" "}
@@ -1019,7 +1029,7 @@ export default function HomeEn() {
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="/liseuse/#p=6"
+                      href="/liseuse/?lang=en#p=6"
                       data-liseuse="6"
                     >
                       See photos of this menu in the catalogue{" "}
@@ -1059,7 +1069,7 @@ export default function HomeEn() {
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="/liseuse/#p=12"
+                      href="/liseuse/?lang=en#p=12"
                       data-liseuse="12"
                     >
                       See photos of this menu in the catalogue{" "}
@@ -1079,9 +1089,6 @@ export default function HomeEn() {
                           </div>
                       </div>
                     </div>
-                    <a className="formula-menu-cta" href="#formulaire-brunch">
-                      Get my quote <ArrowRight size={16} />
-                    </a>
                   </div>
                 </details>
                 <details data-menu-formula="barbecue">
@@ -1112,7 +1119,7 @@ export default function HomeEn() {
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="/liseuse/#p=14"
+                      href="/liseuse/?lang=en#p=14"
                       data-liseuse="14"
                     >
                       See photos of this menu in the catalogue{" "}
@@ -1157,7 +1164,7 @@ export default function HomeEn() {
                     </a>
                     <a
                       className="formula-catalogue-link"
-                      href="/liseuse/#p=15"
+                      href="/liseuse/?lang=en#p=15"
                       data-liseuse="15"
                     >
                       See photos of this menu in the catalogue{" "}
@@ -1230,7 +1237,7 @@ export default function HomeEn() {
             {" · "}
             <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-FR.pdf?v=20" download>French PDF</a>
             {" · "}
-            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN-HD-print.pdf?v=20" download>High resolution for printing</a>
+            <a href="/catalogue/Cuillere-dOr-Catalogue-2027-2028-EN-HD-print.pdf?v=20" download>High resolution for printing (18 MB)</a>
           </p>
         </div>
         <a
@@ -1413,7 +1420,7 @@ export default function HomeEn() {
             href="https://www.instagram.com/cuillere.dor/"
             target="_blank"
             rel="noreferrer"
-            aria-label="Follow Cuillère d'Or on Instagram, opens in a new tab"
+            aria-label="Follow Cuillère d’Or on Instagram, opens in a new tab"
           >
             <InstagramIcon />
             <span>Instagram</span>
@@ -1423,7 +1430,7 @@ export default function HomeEn() {
             href="https://www.tiktok.com/@cuillere.dor"
             target="_blank"
             rel="noreferrer"
-            aria-label="Follow Cuillère d'Or on TikTok, opens in a new tab"
+            aria-label="Follow Cuillère d’Or on TikTok, opens in a new tab"
           >
             <TikTokIcon />
             <span>TikTok</span>
@@ -1433,7 +1440,7 @@ export default function HomeEn() {
             href={WHATSAPP}
             target="_blank"
             rel="noreferrer"
-            aria-label="Contact Cuillère d'Or on WhatsApp, opens in a new tab"
+            aria-label="Contact Cuillère d’Or on WhatsApp, opens in a new tab"
           >
             <MessageCircle size={18} />
             <span>WhatsApp</span>
