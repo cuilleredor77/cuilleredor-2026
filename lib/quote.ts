@@ -754,8 +754,8 @@ export function charterEmail(req: RequestRow, quote: Quote, totals: Totals, link
     withContract ? "Règlement par virement : les coordonnées bancaires figurent dans le contrat." : "",
   ].filter(Boolean);
   const reread = withContract
-    ? "Nous vous invitons à bien relire et vérifier le devis et le contrat avant de les signer."
-    : "Nous vous invitons à bien relire et vérifier le devis avant de le signer.";
+    ? "Nous vous invitons à prendre le temps de bien relire votre devis et votre contrat avant de les signer : si un point vous interroge ou si vous souhaitez l’ajuster, la Cheffe Huguette se fera un plaisir d’en parler avec vous au 07 83 74 89 71."
+    : "Nous vous invitons à prendre le temps de bien relire votre devis avant de le signer : si un point vous interroge ou si vous souhaitez l’ajuster, la Cheffe Huguette se fera un plaisir d’en parler avec vous au 07 83 74 89 71.";
   const td = "padding:11px 14px;border-bottom:1px solid #e6dccb;font-size:14px";
   const table = `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:8px 0 18px;font-family:Arial,Helvetica,sans-serif">`
     + `<tr style="background:#0f1a14"><th style="padding:12px 14px;text-align:left;color:#c9a227;font-size:14px">Prestation</th><th style="padding:12px 14px;text-align:center;color:#c9a227;font-size:14px">Qté</th><th style="padding:12px 14px;text-align:right;color:#c9a227;font-size:14px">Total</th></tr>`

@@ -182,7 +182,7 @@ export function charterEmailEn(req: RequestRow, quote: Quote, totals: Totals, li
     !totals.caution ? "" : `Security deposit: ${m(totals.caution)}, payable ${totals.fullAtSignature && knownDate ? "upon signature" : `with the balance${totals.balanceDue && knownDate ? `, no later than ${dateText(totals.balanceDue, lang)}` : ""}`}, as a guarantee against delays. It is not part of the price and is refunded if no delay occurs.`,
     withContract ? "Payment by bank transfer: the bank details are included in the agreement." : "",
   ].filter(Boolean);
-  const reread = withContract ? "Please read and check the quote and the agreement carefully before signing them." : "Please read and check the quote carefully before signing it.";
+  const reread = withContract ? "We invite you to take the time to read your quote and agreement carefully before signing them: if anything raises a question or you would like to adjust something, Chef Huguette will be delighted to talk it through with you on +33 7 83 74 89 71." : "We invite you to take the time to read your quote carefully before signing it: if anything raises a question or you would like to adjust something, Chef Huguette will be delighted to talk it through with you on +33 7 83 74 89 71.";
   const discover = "Find out more about us and all our packages on our website, and browse our online catalogue to plan your menu:";
   const td = "padding:11px 14px;border-bottom:1px solid #e6dccb;font-size:14px";
   const table = `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:8px 0 18px;font-family:Arial,Helvetica,sans-serif">`
